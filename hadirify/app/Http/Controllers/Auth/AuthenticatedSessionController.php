@@ -19,20 +19,19 @@ class AuthenticatedSessionController extends Controller
 
     public function store(LoginRequest $request)
     {
-        // 1. Ambil nilai dari input 'email' (di Postman tetap kirim key 'email')
+        // 1. Ambil nilai dari input 'email' (nama input di form blade kamu adalah 'email')
         $loginValue = $request->email;
 
         // 2. Tentukan field database berdasarkan format input
         if (filter_var($loginValue, FILTER_VALIDATE_EMAIL)) {
             $field = 'email';
         } elseif (is_numeric($loginValue)) {
-            // Jika angka dan panjang <= 10 digit anggap NISN, lebih dari itu NUPTK
             $field = strlen($loginValue) <= 10 ? 'nisn' : 'nuptk';
         } else {
-            $field = 'email'; // fallback ke email jika format tidak dikenal
+            $field = 'email';
         }
 
-        // 3. Proses Autentikasi Langsung
+        // 3. Proses Autentikasi Langsung (Manual Attempt)
         if (! Auth::attempt([$field => $loginValue, 'password' => $request->password], $request->boolean('remember'))) {
             throw ValidationException::withMessages([
                 'email' => __('auth.failed'),

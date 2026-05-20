@@ -57,10 +57,18 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    
+    // TAMBAHAN: Rute Ganti Password (Universal)
+    Route::post('/profile/update-password', [AuthController::class, 'updatePassword'])->name('profile.password.update');
 
     // Akses list absen (Bisa dibuka Guru & Admin)
     Route::get('/absensi-list/{jadwal}', [AbsensiController::class, 'getAttendanceList'])->name('absensi.list');
 });
+
+Route::middleware('role:admin,guru')->group(function () {
+        Route::get('/laporan/rekap', [LaporanController::class, 'index'])->name('laporan.index');
+        Route::get('/laporan/export-csv', [LaporanController::class, 'exportCSV'])->name('laporan.export.csv');
+    });
 
 /*
 |--------------------------------------------------------------------------
@@ -68,19 +76,17 @@ Route::middleware('auth')->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/admin/dashboard', function () { return view('admin.dashboard'); })->name('admin.dashboard');
-    
-    // Rute punyamu (Kelola Akun & Kelas)
+    Route::get('/admin/dashboard', [AdminUserController::class, 'dashboardStats'])->name('admin.dashboard');
     Route::get('/admin/akun', [AdminUserController::class, 'index'])->name('admin.akun');
     Route::get('/admin/kelas', [AdminKelasController::class, 'index'])->name('admin.kelas');
-    
-    // Tambahan rute proses Admin agar fitur kelola akun jalan
-    Route::post('/admin/users/{id}/reset-password', [AdminUserController::class, 'resetPassword'])->name('admin.users.reset');
-    Route::put('/admin/koreksi-absen/{id}', [AdminJadwalController::class, 'koreksiAbsen'])->name('admin.koreksi.update');
-
-    // View rute punyamu yang lain
+    Route::get('/admin/mapel', [AdminMapelController::class, 'index'])->name('admin.mapel');
+    Route::get('/admin/jadwal', [AdminJadwalController::class, 'index'])->name('admin.jadwal');
     Route::get('/admin/koreksi', function () { return view('admin.koreksi'); })->name('admin.koreksi');
     Route::get('/admin/laporan', function () { return view('admin.laporan'); })->name('admin.laporan');
+
+    // Logic Admin
+    Route::post('/admin/users/{id}/reset-password', [AdminUserController::class, 'resetPassword'])->name('admin.users.reset');
+    Route::put('/admin/koreksi-absen/{id}', [AdminJadwalController::class, 'koreksiAbsen'])->name('admin.koreksi.update');
 });
 
 /*
@@ -89,15 +95,16 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'role:guru'])->group(function () {
-    // Rute view punyamu
     Route::get('/guru/dashboard', [GuruController::class, 'dashboardStats'])->name('guru.dashboard');
     Route::get('/guru/qr', function () { return view('guru.qr'); })->name('guru.qr');
     Route::get('/guru/manual', function () { return view('guru.manual'); })->name('guru.manual');
     Route::get('/guru/izin', [IzinController::class, 'index'])->name('guru.izin');
     Route::get('/guru/rekap', function () { return view('guru.rekap'); })->name('guru.rekap');
     Route::get('/guru/pengumuman', function () { return view('guru.pengumuman'); })->name('guru.pengumuman');
+    Route::post('/guru/tutup-absensi/{jadwalId}', [GuruController::class, 'tutupAbsensi'])->name('guru.tutup-absensi');
+    Route::get('/guru/rekap-kelas', [LaporanController::class, 'index'])->name('guru.rekap.index');
 
-    // Rute proses Guru (Logic)
+    // Logic Guru
     Route::get('/guru/generate-qr/{jadwal}', [QRController::class, 'generate'])->name('guru.generate-qr');
     Route::post('/guru/absensi-manual', [GuruController::class, 'storeManual'])->name('guru.absensi-manual');
     Route::post('/guru/izin/{id}/proses', [IzinController::class, 'proses'])->name('guru.izin.proses');
@@ -110,16 +117,17 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'role:siswa'])->group(function () {
-    // Rute view punyamu
     Route::get('/siswa/dashboard', [SiswaController::class, 'rekap'])->name('siswa.dashboard');
     Route::get('/siswa/scan-qr', function () { return view('siswa.scan-qr'); })->name('siswa.scan-qr');
     Route::get('/siswa/rekap', [SiswaController::class, 'rekap'])->name('siswa.rekap');
-    Route::get('/siswa/izin', function () { return view('siswa.izin'); })->name('siswa.izin');
     Route::get('/siswa/notifikasi', [SiswaController::class, 'pengumuman'])->name('siswa.notifikasi');
-
-    // Rute proses Siswa (Logic)
-    Route::post('/siswa/scan-proses', [AbsensiController::class, 'scanQR'])->name('siswa.scan.proses');
+    
+    // Tampilan Form Izin
+    Route::get('/siswa/izin', function () { return view('siswa.izin'); })->name('siswa.izin');
+    // Proses Logic Simpan Izin
     Route::post('/siswa/izin/ajukan', [IzinController::class, 'ajukan'])->name('siswa.izin.ajukan');
+
+    Route::post('/siswa/scan-proses', [AbsensiController::class, 'scanQR'])->name('siswa.scan.proses');
 });
 
 require __DIR__.'/auth.php';

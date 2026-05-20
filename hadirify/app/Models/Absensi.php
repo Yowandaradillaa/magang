@@ -25,4 +25,10 @@ class Absensi extends Model
     {
         return $this->belongsTo(User::class, 'siswa_id');
     }
+
+    // Tambahkan relasi ini untuk memperbaiki error "undefined relationship [jadwal]"
+    public function jadwal(): BelongsTo
+    {
+        return $this->belongsTo(Jadwal::class, 'jadwal_id');
+    }
 }

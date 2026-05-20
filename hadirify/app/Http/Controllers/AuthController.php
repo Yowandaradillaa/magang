@@ -35,7 +35,6 @@ class AuthController extends Controller
         }
 
         // 3. Coba Login menggunakan Session (Auth::attempt)
-        // Kita gunakan Auth::attempt agar Laravel otomatis mengelola Session & Cookie
         if (!Auth::attempt([$field => $loginValue, 'password' => $request->password], $request->boolean('remember'))) {
             throw ValidationException::withMessages([
                 'email' => 'Kredensial salah. NISN/NUPTK atau password tidak cocok.',

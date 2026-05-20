@@ -5,22 +5,46 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Kelas;
+use App\Models\Absensi; // Tambahkan import Model Absensi
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 
 class AdminUserController extends Controller
 {
-    // Tampilkan semua user ke halaman Blade Kelola Akun
+    /**
+     * BARU: Menampilkan Dashboard Statistik Admin (Sesuai Flowchart)
+     */
+    public function dashboardStats()
+    {
+        $today = now()->toDateString();
+        
+        $stats = [
+            'total_siswa'    => User::where('role', 'siswa')->count(),
+            'total_guru'     => User::where('role', 'guru')->count(),
+            'hadir_hari_ini' => Absensi::where('tanggal', $today)->where('status', 'H')->count(),
+            'izin_hari_ini'  => Absensi::where('tanggal', $today)->where('status', 'I')->count(),
+            'sakit_hari_ini' => Absensi::where('tanggal', $today)->where('status', 'S')->count(),
+            'alpa_hari_ini'  => Absensi::where('tanggal', $today)->where('status', 'A')->count(),
+        ];
+
+        return view('admin.dashboard', compact('stats'));
+    }
+
+    /**
+     * Tampilkan semua user ke halaman Blade Kelola Akun
+     */
     public function index()
     {
         $users = User::with('kelas')->get();
-        $kelas = Kelas::all(); // Mengambil data kelas untuk dropdown pilih kelas saat tambah siswa
+        $kelas = Kelas::all(); // Untuk dropdown pilih kelas
         
         return view('admin.akun', compact('users', 'kelas'));
     }
 
-    // Simpan User Baru dari Form
+    /**
+     * Simpan User Baru dari Form (Password otomatis NISN/NUPTK)
+     */
     public function store(Request $request)
     {
         $request->validate([
@@ -47,7 +71,9 @@ class AdminUserController extends Controller
         return redirect()->back()->with('success', 'Akun berhasil dibuat!');
     }
 
-    // Update Data User
+    /**
+     * Update Data User
+     */
     public function update(Request $request, $id)
     {
         $user = User::findOrFail($id);
@@ -65,7 +91,9 @@ class AdminUserController extends Controller
         return redirect()->back()->with('success', 'Data akun berhasil diperbarui!');
     }
 
-    // Hapus User
+    /**
+     * Hapus User
+     */
     public function destroy($id)
     {
         $user = User::findOrFail($id);
@@ -74,7 +102,9 @@ class AdminUserController extends Controller
         return redirect()->back()->with('success', 'Akun berhasil dihapus!');
     }
 
-    // Reset Password ke Default (NISN/NUPTK)
+    /**
+     * Reset Password ke Default (NISN/NUPTK)
+     */
     public function resetPassword($id)
     {
         $user = User::findOrFail($id);

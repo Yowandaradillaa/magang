@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\QRCode;
-use SimpleSoftwareIO\QrCode\Generator;
+use SimpleSoftwareIO\QrCode\Facades\QrCode as QrCodeFacade; // Pakai Facade lebih stabil
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 
@@ -15,7 +15,8 @@ class QRController extends Controller
         $token = Str::random(40);
         $expired = Carbon::now()->addMinutes(5);
 
-        // REVISI: Gunakan jadwal_id dan guru_id (sesuai database kamu)
+        // 1. Simpan ke Database
+        // Pastikan key (sebelah kiri) sama dengan $fillable di Model
         QRCode::create([
             'jadwal_id'     => $jadwalId,
             'guru_id'       => auth()->id(),
@@ -25,16 +26,18 @@ class QRController extends Controller
             'status'        => 'aktif'
         ]);
 
-        $qrCode = new Generator();
-
+        // 2. Generate Gambar QR (Format SVG Base64)
+        // Kita gunakan QrCodeFacade agar lebih ringkas
         $qrImage = base64_encode(
-            $qrCode->format('svg')
-                   ->size(300)
-                   ->generate($token)
+            QrCodeFacade::format('svg')
+                ->size(300)
+                ->errorCorrection('H')
+                ->generate($token)
         );
 
+        // 3. Respon JSON (Untuk Postman atau AJAX)
         return response()->json([
-            'message'  => 'QR berhasil dibuat',
+            'message'  => 'QR berhasil dibuat dan tersimpan di database',
             'token'    => $token,
             'expired'  => $expired,
             'qr_image' => $qrImage

@@ -8,8 +8,12 @@
         </div>
 
         <div class="bg-white p-8 rounded-[24px] border border-[#e2e8f0] shadow-sm">
-            <form method="POST" action="/izin/ajukan" enctype="multipart/form-data" class="space-y-5">
+            <!-- REVISI 1: Action menggunakan route name agar tidak 404 -->
+            <form method="POST" action="{{ route('siswa.izin.ajukan') }}" enctype="multipart/form-data" class="space-y-5">
                 @csrf
+
+                <!-- REVISI 2: Hidden input untuk mengirim nilai 'jenis' ke Controller -->
+                <input type="hidden" name="jenis" :value="jenis">
 
                 <div>
                     <label class="block text-[11px] font-black text-[#90a0b4] uppercase tracking-wider mb-2">Kategori Ketidakhadiran</label>
@@ -27,22 +31,32 @@
                     </div>
                 </div>
 
-                <div>
-                    <label class="block text-[11px] font-black text-[#90a0b4] uppercase tracking-wider mb-2">Tanggal Berhalangan</label>
-                    <input type="date" name="tanggal" required
-                        class="w-full px-4 py-3 rounded-xl border-2 border-[#e2e8f0] focus:border-[#00b4d8] outline-none text-[13.5px] font-medium transition-colors">
+                <!-- REVISI 3: Menyesuaikan input tanggal menjadi Rentang (Sesuai Controller) -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[11px] font-black text-[#90a0b4] uppercase tracking-wider mb-2">Mulai Tanggal</label>
+                        <input type="date" name="tanggal_mulai" required
+                            class="w-full px-4 py-3 rounded-xl border-2 border-[#e2e8f0] focus:border-[#00b4d8] outline-none text-[13.5px] font-medium transition-colors">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-black text-[#90a0b4] uppercase tracking-wider mb-2">Sampai Tanggal</label>
+                        <input type="date" name="tanggal_selesai" required
+                            class="w-full px-4 py-3 rounded-xl border-2 border-[#e2e8f0] focus:border-[#00b4d8] outline-none text-[13.5px] font-medium transition-colors">
+                    </div>
                 </div>
 
                 <div>
                     <label class="block text-[11px] font-black text-[#90a0b4] uppercase tracking-wider mb-2">Alasan / Keterangan</label>
-                    <textarea name="keterangan" rows="3" placeholder="Tuliskan alasan detail berkendala..." required
+                    <!-- REVISI 4: Ganti name='keterangan' menjadi name='alasan' sesuai IzinController -->
+                    <textarea name="alasan" rows="3" placeholder="Tuliskan alasan detail berkendala..." required
                         class="w-full px-4 py-3 rounded-xl border-2 border-[#e2e8f0] focus:border-[#00b4d8] outline-none text-[13.5px] font-medium transition-colors resize-none"></textarea>
                 </div>
 
                 <div>
                     <label class="block text-[11px] font-black text-[#90a0b4] uppercase tracking-wider mb-2">Unggah Surat Keterangan (PDF / Gambar)</label>
                     <div class="relative flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-[#e2e8f0] bg-slate-50/50 p-6 text-center hover:border-[#00b4d8] transition-colors cursor-pointer group">
-                        <input type="file" name="surat" accept="image/*,application/pdf" required
+                        <!-- REVISI 5: Ganti name='surat' menjadi name='file_surat' sesuai IzinController -->
+                        <input type="file" name="file_surat" accept="image/*,application/pdf"
                             @change="fileName = $event.target.files[0] ? $event.target.files[0].name : ''"
                             class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
                         
@@ -57,11 +71,13 @@
                 </div>
 
                 <button type="submit"
-                    class="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl font-bold transition-all shadow-md hover:shadow-lg bg-[#0f4c75] hover:bg-[#1b6ca8] text-white text-[14px] pt-4">
+                    class="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl font-bold transition-all shadow-md hover:shadow-lg bg-[#0f4c75] hover:bg-[#1b6ca8] text-white text-[14px] mt-4">
                     Kirim Permohonan <i data-lucide="send" class="w-4 h-4"></i>
                 </button>
             </form>
         </div>
 
     </div>
+    <!-- Script untuk memproses Icon Lucide -->
+    <script>lucide.createIcons();</script>
 </x-app-layout>

@@ -4,15 +4,20 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Kelas;
+use App\Models\User;
+use App\Models\Jadwal;
 use Illuminate\Http\Request;
 
 class AdminKelasController extends Controller
 {
-    // Daftar Kelas beserta Wali Kelasnya
+    // Daftar Kelas beserta Wali Kelas dan Jadwalnya sekaligus
     public function index()
     {
         $kelas = Kelas::with(['waliKelas', 'siswas'])->get();
-        return response()->json($kelas);
+        $gurus = User::where('role', 'guru')->get(); // Untuk dropdown memilih wali kelas
+        $jadwals = Jadwal::with(['kelas', 'mapel', 'guru'])->get(); // Mengisi tabel jadwal pelajaran
+
+        return view('admin.kelas', compact('kelas', 'gurus', 'jadwals'));
     }
 
     // Buat Kelas Baru
@@ -21,12 +26,12 @@ class AdminKelasController extends Controller
         $request->validate([
             'nama_kelas'    => 'required|string|unique:kelas,nama_kelas',
             'tahun_ajaran'  => 'required|string',
-            'id_wali_kelas' => 'nullable|exists:users,id', // Harus ID user dengan role guru
+            'id_wali_kelas' => 'nullable|exists:users,id',
         ]);
 
-        $kelas = Kelas::create($request->all());
+        Kelas::create($request->all());
 
-        return response()->json(['message' => 'Kelas berhasil dibuat', 'data' => $kelas]);
+        return redirect()->back()->with('success', 'Kelas berhasil dibuat!');
     }
 
     // Update Kelas / Wali Kelas
@@ -35,7 +40,7 @@ class AdminKelasController extends Controller
         $kelas = Kelas::findOrFail($id);
         $kelas->update($request->all());
 
-        return response()->json(['message' => 'Data kelas berhasil diperbarui', 'data' => $kelas]);
+        return redirect()->back()->with('success', 'Data kelas berhasil diperbarui!');
     }
 
     // Hapus Kelas
@@ -44,6 +49,6 @@ class AdminKelasController extends Controller
         $kelas = Kelas::findOrFail($id);
         $kelas->delete();
 
-        return response()->json(['message' => 'Kelas berhasil dihapus']);
+        return redirect()->back()->with('success', 'Kelas berhasil dihapus!');
     }
 }

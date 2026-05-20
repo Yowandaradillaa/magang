@@ -9,17 +9,18 @@ use Illuminate\Http\Request;
 class AdminMapelController extends Controller
 {
     public function index() {
-        return response()->json(MataPelajaran::all());
+        $mapels = MataPelajaran::all();
+        return view('admin.kelas', compact('mapels'));
     }
 
     public function store(Request $request) {
         $request->validate(['nama_mapel' => 'required|unique:mata_pelajarans']);
-        $mapel = MataPelajaran::create($request->all());
-        return response()->json(['message' => 'Mapel berhasil ditambah', 'data' => $mapel]);
+        MataPelajaran::create($request->all());
+        return redirect()->back()->with('success', 'Mata pelajaran berhasil ditambah!');
     }
 
     public function destroy($id) {
         MataPelajaran::destroy($id);
-        return response()->json(['message' => 'Mapel berhasil dihapus']);
+        return redirect()->back()->with('success', 'Mata pelajaran berhasil dihapus!');
     }
 }

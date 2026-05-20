@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Http\Controllers\API;
+namespace App\Http\Controllers; // <-- Namespace sudah disesuaikan, bukan API lagi
 
-use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Absensi;
 use App\Models\Jadwal;
@@ -11,7 +10,7 @@ use Illuminate\Http\Request;
 
 class GuruController extends Controller
 {
-    // 1. Ambil daftar siswa di kelas tertentu (berdasarkan jadwal)
+    // 1. Ambil daftar siswa dan arahkan ke halaman Input Manual
     public function getSiswaByJadwal($jadwalId)
     {
         $jadwal = Jadwal::findOrFail($jadwalId);
@@ -19,15 +18,16 @@ class GuruController extends Controller
                      ->where('role', 'siswa')
                      ->get();
         
-        return response()->json($siswa);
+        // Membawa data jadwal dan siswa ke halaman Blade guru.manual
+        return view('guru.manual', compact('jadwal', 'siswa'));
     }
 
-    // 2. Input Absensi Manual (Flowchart: Hadir / Alpa / Sakit / Izin)
+    // 2. Input Absensi Manual (Hadir / Alpa / Sakit / Izin)
     public function storeManual(Request $request)
     {
         $request->validate([
             'jadwal_id' => 'required|exists:jadwals,id',
-            'absensi_data' => 'required|array', // Array berisi siswa_id dan status
+            'absensi_data' => 'required|array', 
         ]);
 
         foreach ($request->absensi_data as $data) {
@@ -38,17 +38,18 @@ class GuruController extends Controller
                     'tanggal' => now()->toDateString(),
                 ],
                 [
-                    'status' => $data['status'], // H, A, S, I
+                    'status' => $data['status'],
                     'metode' => 'Manual',
                     'waktu_absen' => now(),
                 ]
             );
         }
 
-        return response()->json(['message' => 'Absensi manual berhasil disimpan!']);
+        // Kembali ke halaman sebelumnya dengan pesan sukses
+        return redirect()->back()->with('success', 'Absensi manual berhasil disimpan!');
     }
 
-    // 3. Kirim Pengumuman (Sesuai Use Case: UC_Pengumuman)
+    // 3. Kirim Pengumuman
     public function kirimPengumuman(Request $request)
     {
         $request->validate([
@@ -57,7 +58,7 @@ class GuruController extends Controller
             'isi'      => 'required|string',
         ]);
 
-        $pengumuman = Pengumuman::create([
+        Pengumuman::create([
             'id_guru'  => auth()->id(),
             'id_kelas' => $request->id_kelas,
             'judul'    => $request->judul,
@@ -65,6 +66,6 @@ class GuruController extends Controller
             'tanggal'  => now(),
         ]);
 
-        return response()->json(['message' => 'Pengumuman berhasil dikirim!', 'data' => $pengumuman]);
+        return redirect()->back()->with('success', 'Pengumuman berhasil dikirim!');
     }
 }

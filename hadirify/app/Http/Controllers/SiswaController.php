@@ -1,14 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\API;
+namespace App\Http\Controllers; // <-- Namespace sudah disesuaikan, bukan API lagi
 
-use App\Http\Controllers\Controller;
 use App\Models\Absensi;
 use Illuminate\Http\Request;
 
 class SiswaController extends Controller
 {
-    // Lihat rekap kehadiran diri sendiri (Flowchart: Dashboard Siswa)
+    // Lihat rekap kehadiran dan kirim ke Dashboard / Rekap Siswa
     public function rekap(Request $request)
     {
         $siswaId = auth()->id();
@@ -23,14 +22,7 @@ class SiswaController extends Controller
                           ->orderBy('tanggal', 'desc')
                           ->get();
 
-        return response()->json([
-            'statistik' => [
-                'hadir' => $hadir,
-                'izin'  => $izin,
-                'sakit' => $sakit,
-                'alpa'  => $alpa,
-            ],
-            'history' => $history
-        ]);
+        // Mengirim statistik dan riwayat (history) ke halaman rekap siswa
+        return view('siswa.rekap', compact('hadir', 'izin', 'sakit', 'alpa', 'history'));
     }
 }

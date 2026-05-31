@@ -1,4 +1,5 @@
 <x-guru-layout>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         .page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
         .page-header-left h2 { font-size: 20px; font-weight: 800; color: #1a2535; }
@@ -112,24 +113,44 @@
         let qrSeconds = 300;
 
         function generateQR() {
-            if (qrInterval) clearInterval(qrInterval);
-            qrSeconds = 300;
-            document.getElementById('qr-icon').innerHTML = `<svg width="160" height="160" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="10" width="50" height="50" rx="4" fill="none" stroke="#0f4c75" stroke-width="5"/><rect x="22" y="22" width="26" height="26" rx="2" fill="#0f4c75"/><rect x="100" y="10" width="50" height="50" rx="4" fill="none" stroke="#0f4c75" stroke-width="5"/><rect x="112" y="22" width="26" height="26" rx="2" fill="#0f4c75"/><rect x="10" y="100" width="50" height="50" rx="4" fill="none" stroke="#0f4c75" stroke-width="5"/><rect x="22" y="112" width="26" height="26" rx="2" fill="#0f4c75"/><rect x="72" y="10" width="8" height="8" fill="#0f4c75"/><rect x="82" y="10" width="8" height="8" fill="#0f4c75"/><rect x="72" y="22" width="8" height="8" fill="#0f4c75"/><rect x="82" y="30" width="8" height="8" fill="#0f4c75"/><rect x="72" y="40" width="8" height="8" fill="#0f4c75"/><rect x="100" y="72" width="8" height="8" fill="#0f4c75"/><rect x="112" y="72" width="8" height="8" fill="#0f4c75"/><rect x="122" y="80" width="8" height="8" fill="#0f4c75"/><rect x="100" y="90" width="8" height="8" fill="#0f4c75"/><rect x="72" y="72" width="8" height="8" fill="#0f4c75"/><rect x="72" y="82" width="8" height="8" fill="#0f4c75"/><rect x="82" y="92" width="8" height="8" fill="#0f4c75"/><rect x="72" y="100" width="8" height="8" fill="#0f4c75"/><rect x="82" y="110" width="8" height="8" fill="#0f4c75"/><rect x="72" y="120" width="8" height="8" fill="#0f4c75"/><rect x="110" y="100" width="8" height="8" fill="#0f4c75"/><rect x="120" y="110" width="8" height="8" fill="#0f4c75"/><rect x="130" y="100" width="8" height="8" fill="#0f4c75"/><rect x="140" y="120" width="8" height="8" fill="#0f4c75"/><rect x="120" y="130" width="8" height="8" fill="#0f4c75"/><rect x="100" y="140" width="8" height="8" fill="#0f4c75"/><rect x="130" y="140" width="8" height="8" fill="#0f4c75"/></svg>`;
-            document.getElementById('qr-label').textContent = 'QR Aktif — Sesi Kelas Berjalan';
-            document.getElementById('qr-actions').style.display = 'flex';
+    if (qrInterval) clearInterval(qrInterval);
+    qrSeconds = 300;
+
+    // 1. Kosongkan kotak QR lama
+    document.getElementById('qr-icon').innerHTML = '';
+    document.getElementById('qr-icon').style.border = 'none'; 
+
+    // 2. Bikin kode rahasia unik (Bisa digabung id_kelas dan timestamp)
+    const tokenAbsen = "HADIRIFY-" + Date.now();
+
+    // 3. Sulap kode rahasia jadi Gambar QR Code
+    new QRCode(document.getElementById("qr-icon"), {
+        text: tokenAbsen,
+        width: 170,
+        height: 170,
+        colorDark : "#0f4c75",
+        colorLight : "#ffffff",
+        correctLevel : QRCode.CorrectLevel.H
+    });
+
+    document.getElementById('qr-label').textContent = 'QR Aktif — Sesi Kelas Berjalan';
+    document.getElementById('qr-actions').style.display = 'flex';
+
+    updateQRTimer();
+    qrInterval = setInterval(() => {
+        qrSeconds--;
+        if (qrSeconds <= 0) {
+            clearInterval(qrInterval);
+            document.getElementById('qr-timer').textContent = 'EXPIRED';
+            document.getElementById('qr-timer').className = 'qr-timer urgent';
+            document.getElementById('qr-label').textContent = 'QR Kadaluarsa — Silakan klik rilis QR baru';
+            // Hapus QR kalau waktu habis biar ga bisa diabsen lagi
+            document.getElementById('qr-icon').innerHTML = '<div style="font-size:20px; color:#ef476f; font-weight:bold;">EXPIRED</div>';
+        } else {
             updateQRTimer();
-            qrInterval = setInterval(() => {
-                qrSeconds--;
-                if (qrSeconds <= 0) {
-                    clearInterval(qrInterval);
-                    document.getElementById('qr-timer').textContent = 'EXPIRED';
-                    document.getElementById('qr-timer').className = 'qr-timer urgent';
-                    document.getElementById('qr-label').textContent = 'QR Kadaluarsa — Silakan klik rilis QR baru';
-                } else {
-                    updateQRTimer();
-                }
-            }, 1000);
         }
+    }, 1000);
+}
 
         function updateQRTimer() {
             const m = Math.floor(qrSeconds / 60).toString().padStart(2,'0');

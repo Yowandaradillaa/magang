@@ -1,7 +1,6 @@
 <x-app-layout>
     <div class="animate-in fade-in slide-in-from-bottom-8 duration-500 ease-out space-y-8">
         
-        <!-- Header -->
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-6 rounded-[24px] border border-[#e2e8f0] shadow-sm gap-4">
             <div>
                 <span class="text-[11px] font-extrabold tracking-widest text-[#00b4d8] uppercase bg-[#00b4d8]/10 px-3 py-1 rounded-full">Portal Siswa</span>
@@ -17,10 +16,8 @@
             </a>
         </div>
 
-        <!-- Statistik Cards (Data Asli dari Database) -->
         <div class="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
             
-            <!-- Rasio Kehadiran (Contoh Kalkulasi Sederhana) -->
             <div class="group bg-white p-6 rounded-[22px] border border-[#e2e8f0] shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden">
                 <div class="absolute top-0 left-0 w-full h-[4px] bg-[#00b4d8]"></div>
                 <div class="flex justify-between items-start mb-4">
@@ -38,7 +35,6 @@
                 <div class="text-[12px] font-bold text-[#90a0b4] uppercase tracking-wide mt-1">Rasio Kehadiran</div>
             </div>
 
-            <!-- Hadir -->
             <div class="group bg-white p-6 rounded-[22px] border border-[#e2e8f0] shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden">
                 <div class="absolute top-0 left-0 w-full h-[4px] bg-[#06d6a0]"></div>
                 <div class="flex justify-between items-start mb-4">
@@ -46,11 +42,12 @@
                         <i data-lucide="check-circle-2" class="w-5 h-5" stroke-width="2.5"></i>
                     </div>
                 </div>
+                
                 <div class="font-mono text-3xl font-black text-[#1a2535] tracking-tight">{{ $statistik['hadir'] }} <span class="text-sm font-bold text-[#90a0b4]">Hari</span></div>
+                
                 <div class="text-[12px] font-bold text-[#90a0b4] uppercase tracking-wide mt-1">Total Hadir</div>
             </div>
 
-            <!-- Izin & Sakit -->
             <div class="group bg-white p-6 rounded-[22px] border border-[#e2e8f0] shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden">
                 <div class="absolute top-0 left-0 w-full h-[4px] bg-[#ffd166]"></div>
                 <div class="flex justify-between items-start mb-4">
@@ -64,7 +61,6 @@
                 </div>
             </div>
 
-            <!-- Alpa -->
             <div class="group bg-white p-6 rounded-[22px] border border-[#e2e8f0] shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden">
                 <div class="absolute top-0 left-0 w-full h-[4px] bg-[#ef476f]"></div>
                 <div class="flex justify-between items-start mb-4">
@@ -79,7 +75,6 @@
 
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
             
-            <!-- Riwayat Izin Terbaru (Agar kamu bisa lihat data yang baru diinput) -->
             <div class="lg:col-span-2 bg-white rounded-[24px] border border-[#e2e8f0] shadow-sm overflow-hidden">
                 <div class="border-b border-[#e2e8f0] p-5 flex items-center justify-between bg-[#f7f9fc]">
                     <div class="flex items-center gap-2.5">
@@ -109,7 +104,6 @@
                 </div>
             </div>
 
-            <!-- Pengumuman (Data Asli dari Database) -->
             <div class="bg-white rounded-[24px] border border-[#e2e8f0] shadow-sm overflow-hidden flex flex-col">
                 <div class="border-b border-[#e2e8f0] p-5 flex items-center gap-2.5 bg-[#f7f9fc]">
                     <div class="p-2 bg-[#0f4c75]/10 text-[#0f4c75] rounded-lg">

@@ -4,19 +4,26 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\QRCode;
-use SimpleSoftwareIO\QrCode\Facades\QrCode as QrCodeFacade; // Pakai Facade lebih stabil
+use App\Models\Jadwal;
+use SimpleSoftwareIO\QrCode\Facades\QrCode as QrCodeFacade;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 
 class QRController extends Controller
 {
+    /**
+     * Menampilkan halaman Generate QR untuk Guru.
+     */
     public function generate($jadwalId)
     {
-        $token = Str::random(40);
-        $expired = Carbon::now()->addMinutes(5);
+        // 1. Pastikan jadwal ada
+        $jadwal = Jadwal::with(['mapel', 'kelas'])->findOrFail($jadwalId);
 
-        // 1. Simpan ke Database
-        // Pastikan key (sebelah kiri) sama dengan $fillable di Model
+        // 2. Buat token unik dan waktu expired
+        $token = Str::random(40);
+        $expired = Carbon::now()->addMinutes(10); // Kita beri waktu 10 menit agar tidak terburu-buru
+
+        // 3. Simpan ke Database
         QRCode::create([
             'jadwal_id'     => $jadwalId,
             'guru_id'       => auth()->id(),
@@ -26,21 +33,15 @@ class QRController extends Controller
             'status'        => 'aktif'
         ]);
 
-        // 2. Generate Gambar QR (Format SVG Base64)
-        // Kita gunakan QrCodeFacade agar lebih ringkas
+        // 4. Generate Gambar QR (Format SVG Base64)
         $qrImage = base64_encode(
             QrCodeFacade::format('svg')
-                ->size(300)
+                ->size(400)
                 ->errorCorrection('H')
                 ->generate($token)
         );
 
-        // 3. Respon JSON (Untuk Postman atau AJAX)
-        return response()->json([
-            'message'  => 'QR berhasil dibuat dan tersimpan di database',
-            'token'    => $token,
-            'expired'  => $expired,
-            'qr_image' => $qrImage
-        ]);
+        // 5. Lempar ke View guru/qr.blade.php
+        return view('guru.qr', compact('qrImage', 'token', 'expired', 'jadwal'));
     }
 }

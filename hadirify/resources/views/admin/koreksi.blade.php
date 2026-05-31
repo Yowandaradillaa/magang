@@ -17,10 +17,14 @@
         table { width: 100%; border-collapse: collapse; }
         th { text-align: left; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #90a0b4; padding: 10px 14px; border-bottom: 1px solid #e2e8f0; background: #f7f9fc; }
         td { padding: 12px 14px; border-bottom: 1px solid #e2e8f0; font-size: 13.5px; color: #1a2535; vertical-align: middle; }
-        .badge-alpha { padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; background: rgba(239,71,111,0.12); color: #c0213f; }
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 800; display: inline-flex; align-items: center; gap: 4px; }
+        .badge-sakit { background: #ffd166; color: #b07500; }
+        .badge-izin { background: #00b4d8; color: white; }
+        .badge-hadir { background: #06d6a0; color: white; }
+        .badge-alpa { background: #ef476f; color: white; }
         .status-select { padding: 6px 10px; border: 1.5px solid #e2e8f0; border-radius: 7px; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer; outline: none; background: white; }
         .fade-in { animation: fadeIn .3s ease; }
-        @@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity:1; transform:none; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity:1; transform:none; } }
     </style>
 
     <div class="fade-in">
@@ -31,64 +35,71 @@
             </div>
         </div>
 
+        @if(session('success'))
+            <div style="background: #06d6a0; color: white; padding: 12px 16px; border-radius: 10px; font-weight: bold; margin-bottom: 20px;">
+                {{ session('success') }}
+            </div>
+        @endif
+
         <div class="card">
             <div class="card-body">
-                <div class="form-row">
+                <!-- Nantinya form ini bisa diarahkan ke fungsi pencarian (GET) -->
+                <form action="#" method="GET" class="form-row">
                     <div class="form-field">
                         <label>Nama / NISN Siswa</label>
-                        <input type="text" placeholder="Cari data siswa...">
-                    </div>
-                    <div class="form-field">
-                        <label>Tanggal</label>
-                        <input type="date" value="2026-05-11">
-                    </div>
-                    <div class="form-field">
-                        <label>Kelas</label>
-                        <select><option>Semua</option><option>X-A</option><option>X-B</option></select>
+                        <input type="text" name="search" placeholder="Cari data siswa..." value="{{ request('search') }}">
                     </div>
                     <div class="form-field" style="display:flex; align-items:flex-end;">
-                        <button class="btn btn-primary" style="width:100%; justify-content:center;">
+                        <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;">
                             <i data-lucide="search" class="w-4 h-4"></i> Cari Data
                         </button>
                     </div>
-                </div>
+                </form>
             </div>
         </div>
 
         <div class="card">
             <div class="card-header">
                 <i data-lucide="clipboard-list" class="w-5 h-5 text-[#0f4c75]"></i>
-                <h3>Data Hasil Pencarian — 11 Mei 2026</h3>
+                <h3>Data Hasil Pencarian</h3>
             </div>
             <table>
-                <thead><tr><th>Siswa</th><th>Kelas</th><th>Mata Pelajaran</th><th>Status Awal</th><th>Koreksi Menjadi</th><th>Aksi</th></tr></thead>
+                <thead><tr><th>Siswa</th><th>Kelas & Mapel</th><th>Tanggal</th><th>Status Awal</th><th>Koreksi Menjadi</th><th>Aksi</th></tr></thead>
                 <tbody>
+                    <!-- 🌟 BERUBAH DI SINI: Data Pencarian Absensi 🌟 -->
+                    @forelse($absensis ?? [] as $absen)
                     <tr>
-                        <td><b>Dewi Kusuma</b></td><td>X-A</td><td>Matematika</td>
-                        <td><span class="badge-alpha">Alpa</span></td>
+                        <td><b>{{ $absen->siswa->name ?? '-' }}</b><br><span style="font-size:11px;color:#90a0b4;">{{ $absen->siswa->nisn ?? '-' }}</span></td>
+                        <td>{{ $absen->siswa->kelas->nama_kelas ?? '-' }}<br><span style="font-size:11px;color:#90a0b4;">{{ $absen->jadwal->mapel->nama_mapel ?? '-' }}</span></td>
+                        <td>{{ \Carbon\Carbon::parse($absen->tanggal)->translatedFormat('d M Y') }}</td>
                         <td>
-                            <select class="status-select">
-                                <option>A - Alpa</option>
-                                <option>H - Hadir</option>
-                                <option>S - Sakit</option>
-                                <option>I - Izin</option>
-                            </select>
+                            @if($absen->status == 'A') <span class="badge badge-alpa">Alpa</span>
+                            @elseif($absen->status == 'H') <span class="badge badge-hadir">Hadir</span>
+                            @elseif($absen->status == 'I') <span class="badge badge-izin">Izin</span>
+                            @else <span class="badge badge-sakit">Sakit</span>
+                            @endif
                         </td>
-                        <td><button class="btn btn-primary btn-sm" onclick="alert('Absensi diperbarui!')">Simpan</button></td>
+                        
+                        <!-- Form Update Status -->
+                        <form action="{{ route('admin.koreksi.update', $absen->id) }}" method="POST" style="margin:0;">
+                            @csrf
+                            @method('PUT')
+                            <td>
+                                <select name="status" class="status-select">
+                                    <option value="H" {{ $absen->status == 'H' ? 'selected' : '' }}>H - Hadir</option>
+                                    <option value="S" {{ $absen->status == 'S' ? 'selected' : '' }}>S - Sakit</option>
+                                    <option value="I" {{ $absen->status == 'I' ? 'selected' : '' }}>I - Izin</option>
+                                    <option value="A" {{ $absen->status == 'A' ? 'selected' : '' }}>A - Alpa</option>
+                                </select>
+                            </td>
+                            <td>
+                                <button type="submit" class="btn btn-primary btn-sm">Simpan</button>
+                            </td>
+                        </form>
                     </tr>
-                    <tr>
-                        <td><b>Fitri Rahayu</b></td><td>X-A</td><td>Fisika</td>
-                        <td><span class="badge-alpha">Alpa</span></td>
-                        <td>
-                            <select class="status-select">
-                                <option>A - Alpa</option>
-                                <option>H - Hadir</option>
-                                <option>S - Sakit</option>
-                                <option>I - Izin</option>
-                            </select>
-                        </td>
-                        <td><button class="btn btn-primary btn-sm" onclick="alert('Absensi diperbarui!')">Simpan</button></td>
-                    </tr>
+                    @empty
+                    <tr><td colspan="6" style="text-align:center; padding: 20px; color:#90a0b4;">Silakan gunakan fitur pencarian di atas untuk memunculkan riwayat data absensi.</td></tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>

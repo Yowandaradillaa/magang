@@ -11,6 +11,7 @@
         .form-field label { display: block; font-size: 12px; font-weight: 600; color: #5a6a80; text-transform: uppercase; margin-bottom: 6px; }
         .form-field select { width: 100%; padding: 10px 14px; border: 1.5px solid #e2e8f0; border-radius: 9px; font-family: inherit; font-size: 13.5px; outline: none; background: white; }
         .btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px; border-radius: 9px; font-family: inherit; font-size: 13px; font-weight: 600; border: none; cursor: pointer; }
+        .btn-primary { background: #0f4c75; color: white; }
         .btn-success { background: #06d6a0; color: white; }
         .btn-outline { background: white; border: 1.5px solid #e2e8f0; color: #5a6a80; }
         table { width: 100%; border-collapse: collapse; }
@@ -25,35 +26,79 @@
                 <h2>Rekap & Export Presensi</h2>
                 <p>Lihat rekap statistik dan unduh laporan berkas bulanan</p>
             </div>
+            
+            <!-- Tombol Export (Akan diarahkan ke route cetak nantinya) -->
             <div style="display:flex; gap:10px;">
-                <button class="btn btn-outline" onclick="alert('Mengunduh dokumen PDF...')">📄 Export PDF</button>
-                <button class="btn btn-success" onclick="alert('Mengunduh lembar Excel...')">📊 Export Excel</button>
+                <a href="#" class="btn btn-outline">📄 Export PDF</a>
+                <a href="#" class="btn btn-success">📊 Export Excel</a>
             </div>
         </div>
 
-        <div class="form-row">
+        <!-- Form Filter Rekap -->
+        <form action="#" method="GET" class="form-row">
             <div class="form-field">
-                <label>Kelas</label>
-                <select><option>X-A</option><option>X-B</option><option>XI-A</option></select>
+                <label>Pilih Kelas</label>
+                <select name="kelas_id">
+                    <option value="">Semua Kelas</option>
+                    <option value="1" {{ request('kelas_id') == '1' ? 'selected' : '' }}>X-A</option>
+                    <option value="2" {{ request('kelas_id') == '2' ? 'selected' : '' }}>X-B</option>
+                </select>
             </div>
             <div class="form-field">
                 <label>Bulan</label>
-                <select><option>Mei 2026</option><option>April 2026</option></select>
+                <select name="bulan">
+                    <option value="05" {{ request('bulan') == '05' ? 'selected' : '' }}>Mei 2026</option>
+                    <option value="04" {{ request('bulan') == '04' ? 'selected' : '' }}>April 2026</option>
+                </select>
             </div>
-        </div>
+            <div class="form-field" style="display:flex; align-items:flex-end;">
+                <button type="submit" class="btn btn-primary" style="padding: 10px 18px;">
+                    <i data-lucide="filter" class="w-4 h-4"></i> Terapkan
+                </button>
+            </div>
+        </form>
 
         <div class="card">
-            <div class="card-header"><h3>📊 Laporan Kehadiran Kelas X-A — Mei 2026</h3></div>
+            <div class="card-header"><h3>📊 Laporan Kehadiran Kelas</h3></div>
             <table>
                 <thead>
-                    <tr><th>No</th><th>Nama Siswa</th><th>Hadir</th><th>Sakit</th><th>Izin</th><th>Alpa</th><th>Persentase</th></tr>
+                    <tr>
+                        <th>No</th>
+                        <th>Nama Siswa</th>
+                        <th>Hadir</th>
+                        <th>Sakit</th>
+                        <th>Izin</th>
+                        <th>Alpa</th>
+                        <th>Persentase</th>
+                    </tr>
                 </thead>
                 <tbody>
-                    <tr><td>1</td><td>Ahmad Rizki</td><td>16 Hari</td><td>2 Hari</td><td>0 Hari</td><td>0 Hari</td><td><span style="color:#0cb47a; font-weight:700;">100%</span></td></tr>
-                    <tr><td>2</td><td>Budi Santoso</td><td>17 Hari</td><td>0 Hari</td><td>1 Hari</td><td>0 Hari</td><td><span style="color:#0cb47a; font-weight:700;">94%</span></td></tr>
-                    <tr><td>3</td><td>Citra Dewi</td><td>15 Hari</td><td>2 Hari</td><td>0 Hari</td><td>1 Hari</td><td><span style="color:#ffd166; font-weight:700;">83%</span></td></tr>
-                    <tr><td>4</td><td>Dewi Kusuma</td><td>14 Hari</td><td>0 Hari</td><td>2 Hari</td><td>2 Hari</td><td><span style="color:#ef476f; font-weight:700;">78%</span></td></tr>
-                    <tr><td>5</td><td>Eko Prasetyo</td><td>18 Hari</td><td>0 Hari</td><td>0 Hari</td><td>0 Hari</td><td><span style="color:#0cb47a; font-weight:700;">100%</span></td></tr>
+                    <!-- 🌟 BERUBAH DI SINI: Data asli dari Database 🌟 -->
+                    @forelse($rekaps ?? [] as $index => $rekap)
+                        @php
+                            // Menghitung persentase kehadiran
+                            $total_hari = $rekap->hadir + $rekap->sakit + $rekap->izin + $rekap->alpa;
+                            $persentase = $total_hari > 0 ? round(($rekap->hadir / $total_hari) * 100) : 0;
+                            
+                            // Menentukan warna persentase
+                            $warna = $persentase >= 90 ? '#0cb47a' : ($persentase >= 75 ? '#ffd166' : '#ef476f');
+                        @endphp
+                        <tr>
+                            <td>{{ $index + 1 }}</td>
+                            <td>{{ $rekap->siswa->name ?? 'Nama Siswa' }}</td>
+                            <td>{{ $rekap->hadir ?? 0 }} Hari</td>
+                            <td>{{ $rekap->sakit ?? 0 }} Hari</td>
+                            <td>{{ $rekap->izin ?? 0 }} Hari</td>
+                            <td>{{ $rekap->alpa ?? 0 }} Hari</td>
+                            <td><span style="color:{{ $warna }}; font-weight:700;">{{ $persentase }}%</span></td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="7" style="text-align:center; padding: 20px; color:#90a0b4;">
+                                Belum ada data rekap presensi untuk bulan dan kelas ini.
+                            </td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>

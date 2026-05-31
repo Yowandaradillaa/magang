@@ -29,7 +29,7 @@
         td { padding: 12px 14px; border-bottom: 1px solid #e2e8f0; font-size: 13.5px; color: #1a2535; }
         
         .fade-in { animation: fadeIn .3s ease; }
-        @@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity:1; transform:none; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity:1; transform:none; } }
         @media (max-width: 1100px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
     </style>
 
@@ -40,45 +40,57 @@
                 <p>Statistik dan laporan kehadiran seluruh kelas dan siswa</p>
             </div>
             <div style="display:flex; gap:10px;">
-                <button class="btn btn-outline" onclick="alert('Mengunduh Laporan PDF...')">
+                <a href="#" class="btn btn-outline">
                     <i data-lucide="file-text" class="w-4 h-4 text-rose-500"></i> PDF
-                </button>
-                <button class="btn btn-success" onclick="alert('Mengunduh Data Excel...')">
+                </a>
+                <a href="#" class="btn btn-success">
                     <i data-lucide="sheet" class="w-4 h-4"></i> Excel
-                </button>
+                </a>
             </div>
         </div>
 
-        <div class="form-row">
+        <!-- Form Filter Laporan -->
+        <form action="#" method="GET" class="form-row">
             <div class="form-field">
                 <label>Periode Waktu</label>
-                <select><option>Mei 2026</option><option>April 2026</option><option>Semester 2</option></select>
+                <select name="bulan">
+                    <option value="05" {{ request('bulan') == '05' ? 'selected' : '' }}>Mei 2026</option>
+                    <option value="04" {{ request('bulan') == '04' ? 'selected' : '' }}>April 2026</option>
+                </select>
             </div>
             <div class="form-field">
                 <label>Filter Kelas</label>
-                <select><option>Semua Kelas</option><option>X-A</option><option>X-B</option></select>
+                <select name="kelas_id">
+                    <option value="">Semua Kelas</option>
+                    <option value="1" {{ request('kelas_id') == '1' ? 'selected' : '' }}>X-A</option>
+                    <option value="2" {{ request('kelas_id') == '2' ? 'selected' : '' }}>X-B</option>
+                </select>
             </div>
-        </div>
+            <div class="form-field" style="display:flex; align-items:flex-end;">
+                <button type="submit" class="btn btn-primary" style="padding: 10px 18px;">Terapkan</button>
+            </div>
+        </form>
 
+        <!-- 🌟 BERUBAH DI SINI: Data Statistik Asli 🌟 -->
         <div class="stats-grid">
             <div class="stat-card blue">
                 <div class="mb-3"><i data-lucide="trending-up" class="w-8 h-8 text-[#0f4c75]"></i></div>
-                <div class="stat-num">89%</div>
+                <div class="stat-num">{{ $stats['rata_kehadiran'] ?? 0 }}%</div>
                 <div class="stat-label">Rata-rata Kehadiran Sekolah</div>
             </div>
             <div class="stat-card green">
                 <div class="mb-3"><i data-lucide="check-circle" class="w-8 h-8 text-[#06d6a0]"></i></div>
-                <div class="stat-num">2,340</div>
+                <div class="stat-num">{{ number_format($stats['total_hadir'] ?? 0) }}</div>
                 <div class="stat-label">Total Kehadiran Bulan Ini</div>
             </div>
             <div class="stat-card yellow">
                 <div class="mb-3"><i data-lucide="clipboard" class="w-8 h-8 text-[#ffd166]"></i></div>
-                <div class="stat-num">187</div>
+                <div class="stat-num">{{ number_format($stats['total_izin_sakit'] ?? 0) }}</div>
                 <div class="stat-label">Total Izin / Sakit</div>
             </div>
             <div class="stat-card red">
                 <div class="mb-3"><i data-lucide="x-circle" class="w-8 h-8 text-[#ef476f]"></i></div>
-                <div class="stat-num">96</div>
+                <div class="stat-num">{{ number_format($stats['total_alpa'] ?? 0) }}</div>
                 <div class="stat-label">Total Alpa (Tanpa Keterangan)</div>
             </div>
         </div>
@@ -86,16 +98,33 @@
         <div class="card">
             <div class="card-header">
                 <i data-lucide="bar-chart-2" class="w-5 h-5 text-[#0f4c75]"></i>
-                <h3>Rekapitulasi per Kelas — Mei 2026</h3>
+                <h3>Rekapitulasi per Kelas</h3>
             </div>
             <table>
                 <thead><tr><th>Nama Kelas</th><th>Hadir</th><th>Sakit</th><th>Izin</th><th>Alpa</th><th>Persentase Kehadiran</th></tr></thead>
                 <tbody>
-                    <tr><td>X-A</td><td>512</td><td>22</td><td>18</td><td>8</td><td><span style="color:#0cb47a;font-weight:700;">91%</span></td></tr>
-                    <tr><td>X-B</td><td>480</td><td>25</td><td>15</td><td>10</td><td><span style="color:#0cb47a;font-weight:700;">89%</span></td></tr>
-                    <tr><td>XI-A</td><td>496</td><td>30</td><td>20</td><td>14</td><td><span style="color:#b07500;font-weight:700;">84%</span></td></tr>
-                    <tr><td>XI-B</td><td>440</td><td>40</td><td>25</td><td>35</td><td><span style="color:#c0213f;font-weight:700;">73%</span></td></tr>
-                    <tr><td>XII-A</td><td>412</td><td>70</td><td>109</td><td>29</td><td><span style="color:#c0213f;font-weight:700;">67%</span></td></tr>
+                    <!-- 🌟 BERUBAH DI SINI: Data Tabel Laporan Asli 🌟 -->
+                    @forelse($laporans ?? [] as $laporan)
+                        @php
+                            $total_hari = ($laporan->hadir ?? 0) + ($laporan->sakit ?? 0) + ($laporan->izin ?? 0) + ($laporan->alpa ?? 0);
+                            $persentase = $total_hari > 0 ? round((($laporan->hadir ?? 0) / $total_hari) * 100) : 0;
+                            $warna = $persentase >= 90 ? '#0cb47a' : ($persentase >= 75 ? '#b07500' : '#c0213f');
+                        @endphp
+                        <tr>
+                            <td><b>{{ $laporan->kelas->nama_kelas ?? 'Kelas' }}</b></td>
+                            <td>{{ $laporan->hadir ?? 0 }}</td>
+                            <td>{{ $laporan->sakit ?? 0 }}</td>
+                            <td>{{ $laporan->izin ?? 0 }}</td>
+                            <td>{{ $laporan->alpa ?? 0 }}</td>
+                            <td><span style="color:{{ $warna }};font-weight:700;">{{ $persentase }}%</span></td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="6" style="text-align:center; padding: 20px; color:#90a0b4;">
+                                Belum ada data laporan absensi kelas.
+                            </td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>

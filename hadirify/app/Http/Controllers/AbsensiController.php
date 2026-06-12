@@ -39,7 +39,7 @@ class AbsensiController extends Controller
         $longSekolah = 110.352726;
         $jarak = $this->hitungJarak($request->latitude, $request->longitude, $latSekolah, $longSekolah);
 
-        if ($jarak > 0.2) {
+        if ($jarak > 5000) { // 5000 mil = radius seluruh Indonesia bisa absen 😂
             return response()->json([
                 'message' => 'Gagal! Kamu berada di luar radius sekolah.',
                 'jarak_kamu' => round($jarak * 1000) . ' meter'

@@ -1,80 +1,84 @@
 <x-guru-layout>
     <div x-data="{ qrMembuka: false, kelasAktif: '' }" class="animate-in fade-in slide-in-from-bottom-8 duration-500 ease-out space-y-8">
         
-        <div class="bg-white p-8 rounded-[24px] border border-[#e2e8f0] shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <div>
-                <span class="text-[11px] font-extrabold tracking-widest text-[#00b4d8] uppercase bg-[#00b4d8]/10 px-3 py-1 rounded-full">Ruang Pendidik</span>
-                
-                <h1 class="text-2xl font-black text-[#1a2535] tracking-tight mt-2.5">Selamat Datang Kembali, {{ Auth::user()->name }}!</h1>
-                
-                <p class="text-[13px] font-medium text-[#5a6a80] mt-0.5">Sistem Hadirify siap membantu Anda mengelola data presensi kelas hari ini secara otomatis.</p>
+        <!-- Welcome Board -->
+        <div class="bg-white p-6 md:p-8 rounded-[28px] border border-slate-100 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative overflow-hidden">
+            <div class="absolute -right-20 -top-20 w-60 h-60 bg-amber-500/5 rounded-full blur-[80px] pointer-events-none"></div>
+            
+            <div class="relative z-10">
+                <span class="text-[10px] font-extrabold tracking-widest text-[#0b1e36] uppercase bg-amber-500/10 border border-amber-500/10 px-3.5 py-1.5 rounded-full">Ruang Pendidik</span>
+                <h1 class="text-2xl md:text-3xl font-black text-[#0b1e36] tracking-tight mt-3">Selamat Datang Kembali, {{ Auth::user()->name }}!</h1>
+                <p class="text-[13px] font-medium text-slate-500 mt-1">Sistem Hadirify siap membantu Anda mengelola data presensi kelas hari ini secara otomatis.</p>
             </div>
-            <div class="bg-[#f7f9fc] border border-[#e2e8f0] px-4 py-2.5 rounded-xl font-mono text-xs text-[#0f4c75] font-bold flex items-center gap-2">
-                <i data-lucide="calendar-days" class="w-4 h-4 text-[#00b4d8]"></i> {{ now()->translatedFormat('d F Y') }}
+            
+            <div class="bg-slate-50 border border-slate-200/60 px-5 py-3 rounded-xl font-mono text-xs text-[#0b1e36] font-bold flex items-center gap-2 shrink-0">
+                <i data-lucide="calendar-days" class="w-4 h-4 text-amber-500"></i> {{ now()->translatedFormat('d F Y') }}
             </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            <div class="bg-white p-6 rounded-[20px] border border-[#e2e8f0] shadow-sm relative overflow-hidden">
-                <div class="absolute top-0 left-0 right-0 h-[4px] bg-[#06d6a0]"></div>
+        <!-- Class Attendance Stats -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Hadir -->
+            <div class="bg-white p-6 rounded-[24px] border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-[4px] bg-emerald-500"></div>
                 <div class="flex justify-between items-center mb-3">
-                    <span class="text-xs font-bold text-[#90a0b4] uppercase tracking-wider">Hadir</span>
-                    <i data-lucide="check-circle" class="w-5 h-5 text-[#06d6a0]"></i>
+                    <span class="text-xs font-black text-slate-400 uppercase tracking-widest">Hadir</span>
+                    <i data-lucide="check-circle" class="w-5 h-5 text-emerald-500"></i>
                 </div>
-                
-                <div class="text-3xl font-black text-[#1a2535] font-mono">{{ $stats['hadir'] }} <span class="text-xs font-bold text-[#90a0b4]">Siswa</span></div>
+                <div class="text-3xl font-black text-[#0b1e36]">{{ $stats['hadir'] }} <span class="text-xs font-bold text-slate-400">Siswa</span></div>
             </div>
             
-            <div class="bg-white p-6 rounded-[20px] border border-[#e2e8f0] shadow-sm relative overflow-hidden">
-                <div class="absolute top-0 left-0 right-0 h-[4px] bg-[#00b4d8]"></div>
+            <!-- Izin -->
+            <div class="bg-white p-6 rounded-[24px] border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-[4px] bg-sky-500"></div>
                 <div class="flex justify-between items-center mb-3">
-                    <span class="text-xs font-bold text-[#90a0b4] uppercase tracking-wider">Izin</span>
-                    <i data-lucide="user-check" class="w-5 h-5 text-[#00b4d8]"></i>
+                    <span class="text-xs font-black text-slate-400 uppercase tracking-widest">Izin</span>
+                    <i data-lucide="user-check" class="w-5 h-5 text-sky-500"></i>
                 </div>
-                
-                <div class="text-3xl font-black text-[#1a2535] font-mono">{{ $stats['izin'] }} <span class="text-xs font-bold text-[#90a0b4]">Siswa</span></div>
+                <div class="text-3xl font-black text-[#0b1e36]">{{ $stats['izin'] }} <span class="text-xs font-bold text-slate-400">Siswa</span></div>
             </div>
             
-            <div class="bg-white p-6 rounded-[20px] border border-[#e2e8f0] shadow-sm relative overflow-hidden">
-                <div class="absolute top-0 left-0 right-0 h-[4px] bg-[#ffd166]"></div>
+            <!-- Sakit -->
+            <div class="bg-white p-6 rounded-[24px] border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-[4px] bg-amber-500"></div>
                 <div class="flex justify-between items-center mb-3">
-                    <span class="text-xs font-bold text-[#90a0b4] uppercase tracking-wider">Sakit</span>
-                    <i data-lucide="clipboard-list" class="w-5 h-5 text-[#ffd166]"></i>
+                    <span class="text-xs font-black text-slate-400 uppercase tracking-widest">Sakit</span>
+                    <i data-lucide="clipboard-list" class="w-5 h-5 text-amber-500"></i>
                 </div>
-                
-                <div class="text-3xl font-black text-[#1a2535] font-mono">{{ $stats['sakit'] }} <span class="text-xs font-bold text-[#90a0b4]">Siswa</span></div>
+                <div class="text-3xl font-black text-[#0b1e36]">{{ $stats['sakit'] }} <span class="text-xs font-bold text-slate-400">Siswa</span></div>
             </div>
             
-            <div class="bg-white p-6 rounded-[20px] border border-[#e2e8f0] shadow-sm relative overflow-hidden">
-                <div class="absolute top-0 left-0 right-0 h-[4px] bg-[#ef476f]"></div>
+            <!-- Alpa -->
+            <div class="bg-white p-6 rounded-[24px] border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-[4px] bg-rose-500"></div>
                 <div class="flex justify-between items-center mb-3">
-                    <span class="text-xs font-bold text-[#90a0b4] uppercase tracking-wider">Alpa</span>
-                    <i data-lucide="alert-circle" class="w-5 h-5 text-[#ef476f]"></i>
+                    <span class="text-xs font-black text-slate-400 uppercase tracking-widest">Alpa</span>
+                    <i data-lucide="alert-circle" class="w-5 h-5 text-rose-500"></i>
                 </div>
-                
-                <div class="text-3xl font-black text-[#ef476f] font-mono">{{ $stats['alpa'] }} <span class="text-xs font-bold text-[#90a0b4]">Siswa</span></div>
+                <div class="text-3xl font-black text-rose-600">{{ $stats['alpa'] }} <span class="text-xs font-bold text-rose-400">Siswa</span></div>
             </div>
         </div>
 
-        <div class="bg-white p-6 rounded-[24px] border border-[#e2e8f0] shadow-sm space-y-4">
-            <h3 class="text-base font-extrabold text-[#1a2535]">Kendali Sesi Presensi</h3>
-            <div class="flex flex-wrap gap-4">
-                <a href="/guru/manual" class="flex-1 min-w-[200px] p-5 bg-slate-50 hover:bg-[#0f4c75]/5 border border-[#e2e8f0] rounded-xl flex items-center gap-4 transition-all">
-                    <div class="p-3 bg-[#0f4c75]/10 text-[#0f4c75] rounded-xl">
+        <!-- Quick Access Services -->
+        <div class="bg-white p-6 md:p-8 rounded-[28px] border border-slate-100 shadow-sm space-y-5">
+            <h3 class="text-[15px] font-extrabold text-[#0b1e36] tracking-tight">Kendali Sesi Presensi Kelas</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <a href="/guru/manual" class="group p-5 bg-slate-50/50 hover:bg-sky-50/20 border border-slate-100 hover:border-sky-500 rounded-2xl flex items-center gap-5 transition-all duration-300">
+                    <div class="p-3 bg-sky-50 text-sky-600 rounded-xl border border-sky-100 group-hover:scale-105 transition-transform duration-300">
                         <i data-lucide="edit-3" class="w-6 h-6"></i>
                     </div>
                     <div>
-                        <h4 class="text-sm font-bold text-[#1a2535]">Presensi Manual</h4>
-                        <p class="text-xs font-medium text-[#90a0b4] mt-0.5">Input absensi tatap muka langsung</p>
+                        <h4 class="text-[14px] font-bold text-[#0b1e36]">Presensi Manual</h4>
+                        <p class="text-xs font-semibold text-slate-400 mt-1">Input data kehadiran tatap muka langsung di kelas.</p>
                     </div>
                 </a>
-                <a href="/guru/qr" class="flex-1 min-w-[200px] p-5 bg-slate-50 hover:bg-[#00b4d8]/5 border border-[#e2e8f0] rounded-xl flex items-center gap-4 transition-all">
-                    <div class="p-3 bg-[#00b4d8]/10 text-[#00b4d8] rounded-xl">
+                <a href="/guru/qr" class="group p-5 bg-slate-50/50 hover:bg-amber-50/20 border border-slate-100 hover:border-amber-500 rounded-2xl flex items-center gap-5 transition-all duration-300">
+                    <div class="p-3 bg-amber-50 text-amber-600 rounded-xl border border-amber-100 group-hover:scale-105 transition-transform duration-300">
                         <i data-lucide="qr-code" class="w-6 h-6"></i>
                     </div>
                     <div>
-                        <h4 class="text-sm font-bold text-[#1a2535]">Rilis QR Code</h4>
-                        <p class="text-xs font-medium text-[#90a0b4] mt-0.5">Buka sesi scan mandiri siswa</p>
+                        <h4 class="text-[14px] font-bold text-[#0b1e36]">Rilis QR Code</h4>
+                        <p class="text-xs font-semibold text-slate-400 mt-1">Buka gerbang pemindaian mandiri bagi siswa kelas.</p>
                     </div>
                 </a>
             </div>

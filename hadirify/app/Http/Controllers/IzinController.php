@@ -12,17 +12,25 @@ use Carbon\CarbonPeriod;
 class IzinController extends Controller
 {
     /**
-     * GURU: Menampilkan daftar pengajuan izin yang masuk (Pending)
-     */
-    public function index()
-    {
-        $izins = PengajuanIzin::with('siswa')
+ * GURU: Menampilkan daftar pengajuan izin yang masuk (Pending) & Riwayat
+ */
+public function index()
+{
+    // 1. Data yang masih menunggu (Pending)
+    $izins = PengajuanIzin::with('siswa')
                 ->where('status', 'Pending')
                 ->orderBy('tanggal_pengajuan', 'desc')
                 ->get();
 
-        return view('guru.izin', compact('izins'));
-    }
+    // 2. DATA BARU: Data yang sudah diproses (Disetujui/Ditolak)
+    $riwayat = PengajuanIzin::with('siswa')
+                ->where('status', '!=', 'Pending')
+                ->orderBy('updated_at', 'desc')
+                ->get();
+
+    // 3. Kirim kedua variabel ke view
+    return view('guru.izin', compact('izins', 'riwayat'));
+}
 
     /**
      * SISWA: Menyimpan pengajuan izin baru (Sakit/Izin)

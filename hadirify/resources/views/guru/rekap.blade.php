@@ -1,106 +1,164 @@
 <x-guru-layout>
-    <style>
-        .page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
-        .page-header-left h2 { font-size: 20px; font-weight: 800; color: #1a2535; }
-        .page-header-left p { color: #5a6a80; font-size: 13px; margin-top: 3px; }
-        .card { background: white; border-radius: 14px; box-shadow: 0 2px 16px rgba(15,76,117,0.10); overflow: hidden; margin-bottom: 20px; }
-        .card-header { padding: 18px 22px; border-bottom: 1px solid #e2e8f0; }
-        .card-header h3 { font-size: 15px; font-weight: 700; color: #1a2535; }
-        .form-row { display: flex; gap: 16px; margin-bottom: 20px; }
-        .form-field { flex: 1; max-width: 200px; }
-        .form-field label { display: block; font-size: 12px; font-weight: 600; color: #5a6a80; text-transform: uppercase; margin-bottom: 6px; }
-        .form-field select { width: 100%; padding: 10px 14px; border: 1.5px solid #e2e8f0; border-radius: 9px; font-family: inherit; font-size: 13.5px; outline: none; background: white; }
-        .btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px; border-radius: 9px; font-family: inherit; font-size: 13px; font-weight: 600; border: none; cursor: pointer; }
-        .btn-primary { background: #0f4c75; color: white; }
-        .btn-success { background: #06d6a0; color: white; }
-        .btn-outline { background: white; border: 1.5px solid #e2e8f0; color: #5a6a80; }
-        table { width: 100%; border-collapse: collapse; }
-        th { text-align: left; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #90a0b4; padding: 10px 14px; border-bottom: 1px solid #e2e8f0; background: #f7f9fc; }
-        td { padding: 12px 14px; border-bottom: 1px solid #e2e8f0; font-size: 13.5px; color: #1a2535; }
-        tr:hover td { background: #f7faff; }
-    </style>
-
-    <div class="animate-in fade-in duration-300">
-        <div class="page-header">
-            <div class="page-header-left">
-                <h2>Rekap & Export Presensi</h2>
-                <p>Lihat rekap statistik dan unduh laporan berkas bulanan</p>
+    <div class="animate-in fade-in duration-300 space-y-8">
+        
+        <!-- Header Halaman -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm">
+            <div class="space-y-1">
+                <div class="flex items-center gap-2">
+                    <span class="p-1.5 bg-[#0b1e36]/10 text-[#0b1e36] rounded-lg">
+                        <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+                    </span>
+                    <h2 class="text-xl font-bold text-[#0b1e36]">Rekap & Laporan Presensi</h2>
+                </div>
+                <p class="text-sm text-slate-500 font-medium">Analisis kehadiran siswa dan ekspor data laporan bulanan</p>
             </div>
             
-            <!-- Tombol Export (Akan diarahkan ke route cetak nantinya) -->
-            <div style="display:flex; gap:10px;">
-                <a href="#" class="btn btn-outline">📄 Export PDF</a>
-                <a href="#" class="btn btn-success">📊 Export Excel</a>
+            <!-- Tombol Ekspor (Placeholder fungsional) -->
+            <div class="flex items-center gap-2">
+                <a href="#" onclick="alert('Fitur cetak PDF laporan sedang disiapkan.')" class="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 hover:border-slate-300 text-slate-700 text-xs font-bold rounded-xl shadow-sm transition-all">
+                    <i data-lucide="file-text" class="w-4 h-4 text-rose-500"></i>
+                    PDF Laporan
+                </a>
+                <a href="#" onclick="alert('Fitur ekspor excel sedang disiapkan.')" class="flex items-center gap-2 px-4 py-2.5 bg-[#10b981] hover:bg-[#0d9488] text-white text-xs font-bold rounded-xl shadow-sm transition-all">
+                    <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+                    Ekspor Excel
+                </a>
             </div>
         </div>
 
-        <!-- Form Filter Rekap -->
-        <form action="#" method="GET" class="form-row">
-            <div class="form-field">
-                <label>Pilih Kelas</label>
-                <select name="kelas_id">
-                    <option value="">Semua Kelas</option>
-                    <option value="1" {{ request('kelas_id') == '1' ? 'selected' : '' }}>X-A</option>
-                    <option value="2" {{ request('kelas_id') == '2' ? 'selected' : '' }}>X-B</option>
-                </select>
-            </div>
-            <div class="form-field">
-                <label>Bulan</label>
-                <select name="bulan">
-                    <option value="05" {{ request('bulan') == '05' ? 'selected' : '' }}>Mei 2026</option>
-                    <option value="04" {{ request('bulan') == '04' ? 'selected' : '' }}>April 2026</option>
-                </select>
-            </div>
-            <div class="form-field" style="display:flex; align-items:flex-end;">
-                <button type="submit" class="btn btn-primary" style="padding: 10px 18px;">
-                    <i data-lucide="filter" class="w-4 h-4"></i> Terapkan
-                </button>
-            </div>
-        </form>
+        <!-- Form Filter -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm">
+            <form action="{{ route('guru.rekap') }}" method="GET" class="grid grid-cols-1 md:grid-cols-3 gap-5 items-end">
+                <div class="space-y-2">
+                    <label class="block text-[11px] font-black text-slate-400 uppercase tracking-wider">Pilih Kelas</label>
+                    <div class="relative">
+                        <select name="kelas_id" required class="w-full pl-4 pr-10 py-3 rounded-xl border border-slate-200 focus:border-[#0b1e36] focus:ring-4 focus:ring-[#0b1e36]/10 outline-none text-[13.5px] font-semibold text-[#0b1e36] appearance-none bg-white transition-all duration-200">
+                            <option value="">-- Pilih Kelas --</option>
+                            @foreach($kelas as $k)
+                                <option value="{{ $k->id }}" {{ request('kelas_id') == $k->id ? 'selected' : '' }}>
+                                    {{ $k->nama_kelas }} ({{ $k->tahun_ajaran }})
+                                </option>
+                            @endforeach
+                        </select>
+                        <div class="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                            <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                </div>
 
-        <div class="card">
-            <div class="card-header"><h3>📊 Laporan Kehadiran Kelas</h3></div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>No</th>
-                        <th>Nama Siswa</th>
-                        <th>Hadir</th>
-                        <th>Sakit</th>
-                        <th>Izin</th>
-                        <th>Alpa</th>
-                        <th>Persentase</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- 🌟 BERUBAH DI SINI: Data asli dari Database 🌟 -->
-                    @forelse($rekaps ?? [] as $index => $rekap)
-                        @php
-                            // Menghitung persentase kehadiran
-                            $total_hari = $rekap->hadir + $rekap->sakit + $rekap->izin + $rekap->alpa;
-                            $persentase = $total_hari > 0 ? round(($rekap->hadir / $total_hari) * 100) : 0;
-                            
-                            // Menentukan warna persentase
-                            $warna = $persentase >= 90 ? '#0cb47a' : ($persentase >= 75 ? '#ffd166' : '#ef476f');
-                        @endphp
-                        <tr>
-                            <td>{{ $index + 1 }}</td>
-                            <td>{{ $rekap->siswa->name ?? 'Nama Siswa' }}</td>
-                            <td>{{ $rekap->hadir ?? 0 }} Hari</td>
-                            <td>{{ $rekap->sakit ?? 0 }} Hari</td>
-                            <td>{{ $rekap->izin ?? 0 }} Hari</td>
-                            <td>{{ $rekap->alpa ?? 0 }} Hari</td>
-                            <td><span style="color:{{ $warna }}; font-weight:700;">{{ $persentase }}%</span></td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="7" style="text-align:center; padding: 20px; color:#90a0b4;">
-                                Belum ada data rekap presensi untuk bulan dan kelas ini.
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
+                <div class="space-y-2">
+                    <label class="block text-[11px] font-black text-slate-400 uppercase tracking-wider">Pilih Bulan</label>
+                    <div class="relative">
+                        <select name="bulan" required class="w-full pl-4 pr-10 py-3 rounded-xl border border-slate-200 focus:border-[#0b1e36] focus:ring-4 focus:ring-[#0b1e36]/10 outline-none text-[13.5px] font-semibold text-[#0b1e36] appearance-none bg-white transition-all duration-200">
+                            @php
+                                $months = [
+                                    '1' => 'Januari', '2' => 'Februari', '3' => 'Maret', 
+                                    '4' => 'April', '5' => 'Mei', '6' => 'Juni', 
+                                    '7' => 'Juli', '8' => 'Agustus', '9' => 'September', 
+                                    '10' => 'Oktober', '11' => 'November', '12' => 'Desember'
+                                ];
+                                $currentMonth = request('bulan', now()->month);
+                            @endphp
+                            @foreach($months as $num => $name)
+                                <option value="{{ $num }}" {{ $currentMonth == $num ? 'selected' : '' }}>
+                                    {{ $name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <div class="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                            <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <button type="submit" class="w-full py-3 bg-[#0b1e36] hover:bg-[#112d52] text-white text-[13.5px] font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2">
+                        <i data-lucide="search" class="w-4 h-4"></i>
+                        Cari & Tampilkan
+                    </button>
+                </div>
+            </form>
         </div>
+
+        <!-- Tabel Hasil -->
+        <div class="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
+            <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
+                <h3 class="text-sm font-bold text-[#0b1e36] flex items-center gap-2">
+                    <i data-lucide="table" class="w-4 h-4 text-amber-500"></i>
+                    Tabel Rekapitulasi Presensi Siswa
+                </h3>
+                @if(request('kelas_id'))
+                    <span class="px-3 py-1 bg-amber-500/10 text-amber-600 text-[10px] font-bold rounded-full uppercase tracking-wider border border-amber-500/20">
+                        Bulan: {{ $months[request('bulan', now()->month)] }}
+                    </span>
+                @endif
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full border-collapse text-left">
+                    <thead>
+                        <tr class="bg-slate-50 border-b border-slate-200/60 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                            <th class="px-6 py-4 w-16 text-center">No</th>
+                            <th class="px-6 py-4">Nama Siswa</th>
+                            <th class="px-6 py-4 text-center">Hadir</th>
+                            <th class="px-6 py-4 text-center">Sakit</th>
+                            <th class="px-6 py-4 text-center">Izin</th>
+                            <th class="px-6 py-4 text-center">Alpa</th>
+                            <th class="px-6 py-4 text-center">Persentase Kehadiran</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 text-[13.5px]">
+                        @forelse($rekaps ?? [] as $index => $rekap)
+                            @php
+                                $total_hari = $rekap->hadir + $rekap->sakit + $rekap->izin + $rekap->alpa;
+                                $persentase = $total_hari > 0 ? round(($rekap->hadir / $total_hari) * 100) : 0;
+                                
+                                // Gradasi status warna
+                                if ($persentase >= 90) {
+                                    $bgClass = 'bg-emerald-50 text-emerald-600 border-emerald-100';
+                                } elseif ($persentase >= 75) {
+                                    $bgClass = 'bg-amber-50 text-amber-600 border-amber-100';
+                                } else {
+                                    $bgClass = 'bg-rose-50 text-rose-600 border-rose-100';
+                                }
+                            @endphp
+                            <tr class="hover:bg-slate-50/50 transition-colors">
+                                <td class="px-6 py-4.5 font-bold text-slate-400 text-center">{{ $index + 1 }}</td>
+                                <td class="px-6 py-4.5 font-bold text-[#0b1e36]">
+                                    <div class="flex flex-col">
+                                        <span>{{ $rekap->siswa->name }}</span>
+                                        <span class="text-[10px] text-slate-400 font-mono tracking-tight">{{ $rekap->siswa->nisn ?? '-' }}</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4.5 text-center font-semibold text-slate-600">{{ $rekap->hadir }} Hari</td>
+                                <td class="px-6 py-4.5 text-center font-semibold text-amber-600 bg-amber-50/20">{{ $rekap->sakit }} Hari</td>
+                                <td class="px-6 py-4.5 text-center font-semibold text-sky-600 bg-sky-50/20">{{ $rekap->izin }} Hari</td>
+                                <td class="px-6 py-4.5 text-center font-semibold text-rose-600 bg-rose-50/20">{{ $rekap->alpa }} Hari</td>
+                                <td class="px-6 py-4.5 text-center">
+                                    <span class="inline-block px-3 py-1 text-xs font-bold rounded-full border {{ $bgClass }} font-mono">
+                                        {{ $persentase }}%
+                                    </span>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="7" class="px-6 py-12 text-center text-slate-400">
+                                    <div class="flex flex-col items-center justify-center gap-3">
+                                        <div class="p-4 bg-slate-50 rounded-full border border-slate-100 text-slate-300">
+                                            <i data-lucide="folder-search" class="w-10 h-10"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-bold text-[#0b1e36] text-sm">Belum Ada Data Rekap</h4>
+                                            <p class="text-xs text-slate-400 mt-1 max-w-[280px]">Pilih kelas dan bulan di atas terlebih dahulu untuk memuat data presensi.</p>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
 </x-guru-layout>

@@ -120,4 +120,84 @@ class AdminUserController extends Controller
 
         return redirect()->back()->with('success', "Password {$user->name} berhasil direset!");
     }
+
+    /**
+     * Menampilkan data absensi untuk dikoreksi (pencarian)
+     */
+    public function koreksiAbsenList(Request $request)
+    {
+        $search = $request->input('search');
+        $absensis = [];
+
+        if ($search) {
+            $absensis = Absensi::with(['user', 'jadwal.mapel'])
+                ->whereHas('user', function ($query) use ($search) {
+                    $query->where('name', 'like', "%{$search}%")
+                          ->orWhere('nisn', 'like', "%{$search}%");
+                })
+                ->orderBy('tanggal', 'desc')
+                ->get();
+        }
+
+        return view('admin.koreksi', compact('absensis', 'search'));
+    }
+
+    /**
+     * Menampilkan laporan kehadiran seluruh sekolah/kelas secara dinamis
+     */
+    public function laporan(Request $request)
+    {
+        $kelas = Kelas::all();
+        $kelasId = $request->input('kelas_id');
+        $bulanInput = $request->input('bulan');
+
+        $bulan = $bulanInput ? intval($bulanInput) : now()->month;
+        $tahun = now()->year;
+
+        // Query Stats Kehadiran Sekolah
+        $totalHadir = Absensi::whereMonth('tanggal', $bulan)->whereYear('tanggal', $tahun)->where('status', 'H')->count();
+        $totalIzinSakit = Absensi::whereMonth('tanggal', $bulan)->whereYear('tanggal', $tahun)->whereIn('status', ['I', 'S'])->count();
+        $totalAlpa = Absensi::whereMonth('tanggal', $bulan)->whereYear('tanggal', $tahun)->where('status', 'A')->count();
+        
+        $totalSemua = $totalHadir + $totalIzinSakit + $totalAlpa;
+        $rataKehadiran = $totalSemua > 0 ? round(($totalHadir / $totalSemua) * 100) : 0;
+
+        $stats = [
+            'rata_kehadiran' => $rataKehadiran,
+            'total_hadir' => $totalHadir,
+            'total_izin_sakit' => $totalIzinSakit,
+            'total_alpa' => $totalAlpa,
+        ];
+
+        // Hitung rekap per kelas
+        $laporans = [];
+        foreach ($kelas as $k) {
+            $hadir = Absensi::whereHas('user', function($q) use ($k) {
+                $q->where('id_kelas', $k->id);
+            })->whereMonth('tanggal', $bulan)->whereYear('tanggal', $tahun)->where('status', 'H')->count();
+
+            $sakit = Absensi::whereHas('user', function($q) use ($k) {
+                $q->where('id_kelas', $k->id);
+            })->whereMonth('tanggal', $bulan)->whereYear('tanggal', $tahun)->where('status', 'S')->count();
+
+            $izin = Absensi::whereHas('user', function($q) use ($k) {
+                $q->where('id_kelas', $k->id);
+            })->whereMonth('tanggal', $bulan)->whereYear('tanggal', $tahun)->where('status', 'I')->count();
+
+            $alpa = Absensi::whereHas('user', function($q) use ($k) {
+                $q->where('id_kelas', $k->id);
+            })->whereMonth('tanggal', $bulan)->whereYear('tanggal', $tahun)->where('status', 'A')->count();
+
+            $laporanObj = new \stdClass();
+            $laporanObj->kelas = $k;
+            $laporanObj->hadir = $hadir;
+            $laporanObj->sakit = $sakit;
+            $laporanObj->izin = $izin;
+            $laporanObj->alpa = $alpa;
+
+            $laporans[] = $laporanObj;
+        }
+
+        return view('admin.laporan', compact('kelas', 'stats', 'laporans', 'kelasId', 'bulanInput'));
+    }
 }

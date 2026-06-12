@@ -14,6 +14,9 @@ class AdminKelasController extends Controller
     public function index()
     {
         $kelas = Kelas::with(['waliKelas', 'siswas'])->get();
+        if ($kelas->isEmpty()) {
+        dd("Tabel kelas kosong! Tambahkan data lewat form atau database.");
+    }
         $gurus = User::where('role', 'guru')->get(); // Untuk dropdown memilih wali kelas
         $jadwals = Jadwal::with(['kelas', 'mapel', 'guru'])->get(); // Mengisi tabel jadwal pelajaran
 

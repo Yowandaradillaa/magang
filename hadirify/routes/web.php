@@ -10,6 +10,8 @@ use App\Http\Controllers\QRController;
 use App\Http\Controllers\IzinController;
 use App\Http\Controllers\GuruController;
 use App\Http\Controllers\SiswaController;
+use App\Http\Controllers\LaporanController;
+ // <-- INI TAMBAHAN PENTING
 
 // Import Controller Admin
 use App\Http\Controllers\Admin\AdminUserController;
@@ -66,9 +68,9 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware('role:admin,guru')->group(function () {
-        Route::get('/laporan/rekap', [LaporanController::class, 'index'])->name('laporan.index');
-        Route::get('/laporan/export-csv', [LaporanController::class, 'exportCSV'])->name('laporan.export.csv');
-    });
+    Route::get('/laporan/rekap', [LaporanController::class, 'index'])->name('laporan.index');
+    Route::get('/laporan/export-csv', [LaporanController::class, 'exportCSV'])->name('laporan.export.csv');
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -77,12 +79,22 @@ Route::middleware('role:admin,guru')->group(function () {
 */
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminUserController::class, 'dashboardStats'])->name('admin.dashboard');
-    Route::get('/admin/akun', [AdminUserController::class, 'index'])->name('admin.akun');
+    
+
+// Tampil Halaman Akun
+Route::get('/admin/akun', [AdminUserController::class, 'index'])->name('admin.akun.index');
+
+// Proses Simpan Data Baru
+Route::post('/admin/akun', [AdminUserController::class, 'store'])->name('admin.akun.store');
+
+// Proses Hapus Data
+Route::delete('/admin/akun/{id}', [AdminUserController::class, 'destroy'])->name('admin.akun.destroy');
     Route::get('/admin/kelas', [AdminKelasController::class, 'index'])->name('admin.kelas');
     Route::get('/admin/mapel', [AdminMapelController::class, 'index'])->name('admin.mapel');
     Route::get('/admin/jadwal', [AdminJadwalController::class, 'index'])->name('admin.jadwal');
-    Route::get('/admin/koreksi', function () { return view('admin.koreksi'); })->name('admin.koreksi');
-    Route::get('/admin/laporan', function () { return view('admin.laporan'); })->name('admin.laporan');
+    Route::get('/admin/koreksi', [AdminUserController::class, 'koreksiAbsenList'])->name('admin.koreksi');
+    Route::get('/admin/laporan', [AdminUserController::class, 'laporan'])->name('admin.laporan');
+    Route::post('/admin/kelas/store', [AdminKelasController::class, 'store'])->name('admin.kelas.store');
 
     // Logic Admin
     Route::post('/admin/users/{id}/reset-password', [AdminUserController::class, 'resetPassword'])->name('admin.users.reset');
@@ -91,21 +103,24 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
 /*
 |--------------------------------------------------------------------------
-| Rute GURU
+| Rute GURU (Bersihkan bagian ini di web.php Anda)
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'role:guru'])->group(function () {
     Route::get('/guru/dashboard', [GuruController::class, 'dashboardStats'])->name('guru.dashboard');
-    Route::get('/guru/qr', function () { return view('guru.qr'); })->name('guru.qr');
-    Route::get('/guru/manual', function () { return view('guru.manual'); })->name('guru.manual');
+    
+    // RUTE QR YANG BENAR (Hapus yang duplikat)
+    Route::get('/guru/qr', [QRController::class, 'index'])->name('guru.qr');
+    Route::get('/guru/generate-qr/{jadwalId}', [QRController::class, 'generate'])->name('guru.generate-qr');
+
+    Route::get('/guru/manual', [GuruController::class, 'indexManual'])->name('guru.manual');
     Route::get('/guru/izin', [IzinController::class, 'index'])->name('guru.izin');
-    Route::get('/guru/rekap', function () { return view('guru.rekap'); })->name('guru.rekap');
-    Route::get('/guru/pengumuman', function () { return view('guru.pengumuman'); })->name('guru.pengumuman');
+    Route::get('/guru/rekap', [GuruController::class, 'rekap'])->name('guru.rekap');
+    Route::get('/guru/pengumuman', [GuruController::class, 'showPengumuman'])->name('guru.pengumuman');
     Route::post('/guru/tutup-absensi/{jadwalId}', [GuruController::class, 'tutupAbsensi'])->name('guru.tutup-absensi');
     Route::get('/guru/rekap-kelas', [LaporanController::class, 'index'])->name('guru.rekap.index');
 
     // Logic Guru
-    Route::get('/guru/generate-qr/{jadwal}', [QRController::class, 'generate'])->name('guru.generate-qr');
     Route::post('/guru/absensi-manual', [GuruController::class, 'storeManual'])->name('guru.absensi-manual');
     Route::post('/guru/izin/{id}/proses', [IzinController::class, 'proses'])->name('guru.izin.proses');
     Route::post('/guru/kirim-pengumuman', [GuruController::class, 'kirimPengumuman'])->name('guru.pengumuman.send');
@@ -117,7 +132,9 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'role:siswa'])->group(function () {
-    Route::get('/siswa/dashboard', [SiswaController::class, 'rekap'])->name('siswa.dashboard');
+    // 👇👇👇 INI YANG TADI SALAH, SUDAH AKU PERBAIKI JADI 'dashboard'
+    Route::get('/siswa/dashboard', [SiswaController::class, 'dashboard'])->name('siswa.dashboard');
+    
     Route::get('/siswa/scan-qr', function () { return view('siswa.scan-qr'); })->name('siswa.scan-qr');
     Route::get('/siswa/rekap', [SiswaController::class, 'rekap'])->name('siswa.rekap');
     Route::get('/siswa/notifikasi', [SiswaController::class, 'pengumuman'])->name('siswa.notifikasi');

@@ -90,6 +90,13 @@ Route::post('/admin/akun', [AdminUserController::class, 'store'])->name('admin.a
 // Proses Hapus Data
 Route::delete('/admin/akun/{id}', [AdminUserController::class, 'destroy'])->name('admin.akun.destroy');
     Route::get('/admin/kelas', [AdminKelasController::class, 'index'])->name('admin.kelas');
+    Route::get('/admin/kelas', [AdminKelasController::class, 'index'])->name('admin.kelas.index');
+    Route::post('/admin/kelas', [AdminKelasController::class, 'store'])->name('admin.kelas.store');
+    Route::delete('/admin/kelas/{id}', [AdminKelasController::class, 'destroy'])->name('admin.kelas.destroy');
+
+// TAMBAHKAN BARIS INI (Ini pintu untuk proses Update/Edit)
+    Route::put('/admin/kelas/{id}', [AdminKelasController::class, 'update'])->name('admin.kelas.update');
+
     Route::get('/admin/mapel', [AdminMapelController::class, 'index'])->name('admin.mapel');
     Route::get('/admin/jadwal', [AdminJadwalController::class, 'index'])->name('admin.jadwal');
     Route::get('/admin/koreksi', [AdminUserController::class, 'koreksiAbsenList'])->name('admin.koreksi');

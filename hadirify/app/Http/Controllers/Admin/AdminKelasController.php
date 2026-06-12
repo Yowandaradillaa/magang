@@ -10,20 +10,19 @@ use Illuminate\Http\Request;
 
 class AdminKelasController extends Controller
 {
-    // Daftar Kelas beserta Wali Kelas dan Jadwalnya sekaligus
     public function index()
     {
         $kelas = Kelas::with(['waliKelas', 'siswas'])->get();
-        if ($kelas->isEmpty()) {
-        dd("Tabel kelas kosong! Tambahkan data lewat form atau database.");
-    }
-        $gurus = User::where('role', 'guru')->get(); // Untuk dropdown memilih wali kelas
-        $jadwals = Jadwal::with(['kelas', 'mapel', 'guru'])->get(); // Mengisi tabel jadwal pelajaran
+        
+        // --- HAPUS BARIS dd() DI SINI ---
+        // Supaya kalau kelas kosong, halaman tetap kebuka dan kamu bisa klik "Tambah Kelas"
+        
+        $gurus = User::where('role', 'guru')->get(); 
+        $jadwals = Jadwal::with(['kelas', 'mapel', 'guru'])->get();
 
         return view('admin.kelas', compact('kelas', 'gurus', 'jadwals'));
     }
 
-    // Buat Kelas Baru
     public function store(Request $request)
     {
         $request->validate([
@@ -37,16 +36,21 @@ class AdminKelasController extends Controller
         return redirect()->back()->with('success', 'Kelas berhasil dibuat!');
     }
 
-    // Update Kelas / Wali Kelas
     public function update(Request $request, $id)
     {
         $kelas = Kelas::findOrFail($id);
+        
+        $request->validate([
+            'nama_kelas' => 'required|string',
+            'tahun_ajaran' => 'required',
+            'id_wali_kelas' => 'required|exists:users,id'
+        ]);
+
         $kelas->update($request->all());
 
         return redirect()->back()->with('success', 'Data kelas berhasil diperbarui!');
     }
 
-    // Hapus Kelas
     public function destroy($id)
     {
         $kelas = Kelas::findOrFail($id);

@@ -1,106 +1,152 @@
 <x-admin-layout>
-    <div class="animate-in fade-in duration-300 space-y-8">
+    <div class="animate-in fade-in duration-700 space-y-6 px-2">
         
-        <!-- Header Dashboard -->
-        <div class="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div class="space-y-1">
-                <div class="flex items-center gap-2">
-                    <span class="p-1.5 bg-rose-500/10 text-rose-600 rounded-lg">
-                        <i data-lucide="shield-check" class="w-5 h-5"></i>
-                    </span>
-                    <h2 class="text-xl font-bold text-[#0b1e36]">Dashboard Utama Admin</h2>
+        <!-- Header Dashboard (Enterprise Look with Realtime Clock) -->
+        <div class="bg-white border border-slate-200/50 rounded-xl shadow-[0_2px_4px_rgba(0,0,0,0.02)]">
+            <div class="p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="flex-shrink-0 w-11 h-11 bg-[#0b1e36] flex items-center justify-center rounded-lg shadow-lg shadow-[#0b1e36]/10">
+                        <i data-lucide="shield-check" class="w-6 h-6 text-white"></i>
+                    </div>
+                    <div class="space-y-0.5">
+                        <h2 class="text-lg font-extrabold text-[#0b1e36] tracking-tight">Console Utama Admin</h2>
+                        <p class="text-xs text-slate-500 font-medium">
+                            Status Sesi: <span class="text-emerald-600 font-bold inline-flex items-center gap-1"><span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span> Aktif</span> 
+                            • <span class="text-[#0b1e36] font-bold">{{ Auth::user()->name }}</span>
+                        </p>
+                    </div>
                 </div>
-                <p class="text-sm text-slate-500 font-medium">Selamat datang kembali, <span class="text-rose-500 font-bold">{{ Auth::user()->name }}</span>. Konsol kendali sistem presensi sekolah.</p>
-            </div>
-            <div class="text-[11px] font-mono font-bold text-slate-400 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-100 uppercase tracking-wider">
-                Hak Akses: Super Administrator
+
+                <!-- Bagian Tanggal & Jam Realtime -->
+                <div class="flex items-center gap-3 px-4 py-2 bg-slate-50/50 rounded-xl border border-slate-100">
+                    <div class="text-right">
+                        <p id="realtime-date" class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">
+                            {{ date('d F Y') }}
+                        </p>
+                        <p id="realtime-clock" class="text-sm font-bold text-[#0b1e36] font-mono leading-none">
+                            {{ date('H:i:s') }}
+                        </p>
+                    </div>
+                    <div class="w-[1px] h-6 bg-slate-200 mx-1"></div>
+                    <i data-lucide="calendar" class="w-5 h-5 text-slate-400"></i>
+                </div>
             </div>
         </div>
 
-        <!-- Kartu Statistik -->
+        <!-- Kartu Statistik (Modern & Sleek) -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <!-- Total Siswa -->
-            <div class="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm relative overflow-hidden group hover:shadow-md transition-all duration-300 transform hover:-translate-y-[1px]">
-                <div class="absolute top-0 left-0 right-0 h-[4px] bg-[#0b1e36]"></div>
-                <div class="flex items-center justify-between">
-                    <div class="text-2xl font-black text-[#0b1e36] font-mono">{{ $stats['total_siswa'] }}</div>
-                    <div class="p-2 bg-[#0b1e36]/5 text-[#0b1e36] rounded-xl group-hover:scale-110 transition-transform">
-                        <i data-lucide="users" class="w-5 h-5"></i>
+            <div class="bg-white p-5 rounded-xl border border-slate-200/60 shadow-sm relative overflow-hidden group hover:shadow-md transition-all">
+                <div class="absolute left-0 top-0 bottom-0 w-[3px] bg-[#0b1e36]"></div>
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Siswa</p>
+                        <div class="text-2xl font-bold text-[#0b1e36] tracking-tighter">{{ $stats['total_siswa'] }}</div>
+                    </div>
+                    <div class="p-2 bg-slate-50 text-slate-400 rounded-lg group-hover:bg-[#0b1e36] group-hover:text-white transition-colors">
+                        <i data-lucide="users" class="w-4 h-4"></i>
                     </div>
                 </div>
-                <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mt-3">Total Siswa Terdaftar</div>
             </div>
 
-            <!-- Total Guru -->
-            <div class="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm relative overflow-hidden group hover:shadow-md transition-all duration-300 transform hover:-translate-y-[1px]">
-                <div class="absolute top-0 left-0 right-0 h-[4px] bg-amber-500"></div>
-                <div class="flex items-center justify-between">
-                    <div class="text-2xl font-black text-amber-500 font-mono">{{ $stats['total_guru'] }}</div>
-                    <div class="p-2 bg-amber-500/10 text-amber-600 rounded-xl group-hover:scale-110 transition-transform">
-                        <i data-lucide="graduation-cap" class="w-5 h-5"></i>
+            <div class="bg-white p-5 rounded-xl border border-slate-200/60 shadow-sm relative overflow-hidden group hover:shadow-md transition-all">
+                <div class="absolute left-0 top-0 bottom-0 w-[3px] bg-amber-500"></div>
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Guru</p>
+                        <div class="text-2xl font-bold text-slate-900 tracking-tighter">{{ $stats['total_guru'] }}</div>
+                    </div>
+                    <div class="p-2 bg-slate-50 text-slate-400 rounded-lg group-hover:bg-amber-500 group-hover:text-white transition-colors">
+                        <i data-lucide="graduation-cap" class="w-4 h-4"></i>
                     </div>
                 </div>
-                <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mt-3">Total Guru Terdaftar</div>
             </div>
 
-            <!-- Hadir Hari Ini -->
-            <div class="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm relative overflow-hidden group hover:shadow-md transition-all duration-300 transform hover:-translate-y-[1px]">
-                <div class="absolute top-0 left-0 right-0 h-[4px] bg-emerald-500"></div>
-                <div class="flex items-center justify-between">
-                    <div class="text-2xl font-black text-emerald-500 font-mono">{{ $stats['hadir_hari_ini'] }}</div>
-                    <div class="p-2 bg-emerald-500/10 text-emerald-600 rounded-xl group-hover:scale-110 transition-transform">
-                        <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+            <div class="bg-white p-5 rounded-xl border border-slate-200/60 shadow-sm relative overflow-hidden group hover:shadow-md transition-all">
+                <div class="absolute left-0 top-0 bottom-0 w-[3px] bg-emerald-500"></div>
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Hadir Hari Ini</p>
+                        <div class="text-2xl font-bold text-emerald-600 tracking-tighter">{{ $stats['hadir_hari_ini'] }}</div>
+                    </div>
+                    <div class="p-2 bg-emerald-50 text-emerald-400 rounded-lg group-hover:bg-emerald-500 group-hover:text-white transition-colors">
+                        <i data-lucide="check-circle-2" class="w-4 h-4"></i>
                     </div>
                 </div>
-                <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mt-3">Siswa Hadir Hari Ini</div>
             </div>
 
-            <!-- Alpa Hari Ini -->
-            <div class="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm relative overflow-hidden group hover:shadow-md transition-all duration-300 transform hover:-translate-y-[1px]">
-                <div class="absolute top-0 left-0 right-0 h-[4px] bg-rose-500"></div>
-                <div class="flex items-center justify-between">
-                    <div class="text-2xl font-black text-rose-500 font-mono">{{ $stats['alpa_hari_ini'] }}</div>
-                    <div class="p-2 bg-rose-500/10 text-rose-600 rounded-xl group-hover:scale-110 transition-transform">
-                        <i data-lucide="alert-circle" class="w-5 h-5"></i>
+            <div class="bg-white p-5 rounded-xl border border-slate-200/60 shadow-sm relative overflow-hidden group hover:shadow-md transition-all">
+                <div class="absolute left-0 top-0 bottom-0 w-[3px] bg-rose-500"></div>
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Alpa Hari Ini</p>
+                        <div class="text-2xl font-bold text-rose-600 tracking-tighter">{{ $stats['alpa_hari_ini'] }}</div>
+                    </div>
+                    <div class="p-2 bg-rose-50 text-rose-400 rounded-lg group-hover:bg-rose-500 group-hover:text-white transition-colors">
+                        <i data-lucide="alert-circle" class="w-4 h-4"></i>
                     </div>
                 </div>
-                <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mt-3">Siswa Alpa Hari Ini</div>
             </div>
         </div>
 
-        <!-- Akses Cepat Layanan -->
-        <div class="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm">
-            <h3 class="text-sm font-bold text-[#0b1e36] mb-5 flex items-center gap-2">
-                <i data-lucide="key" class="w-4.5 h-4.5 text-rose-500"></i>
-                Akses Cepat Layanan Admin
+        <!-- Modul Navigasi Utama -->
+        <div class="space-y-4">
+            <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-3">
+                <span class="w-8 h-[1px] bg-slate-200"></span>
+                Modul Navigasi Utama
             </h3>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-5">
-                <a href="/admin/akun" class="p-5 bg-slate-50 hover:bg-[#0b1e36]/5 hover:border-[#0b1e36]/20 border border-slate-200/60 rounded-xl flex flex-col items-center justify-center text-center transition-all group">
-                    <div class="p-3 bg-white rounded-xl shadow-sm group-hover:shadow group-hover:-translate-y-0.5 transition-all mb-3 text-[#0b1e36]">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <a href="/admin/akun" class="group p-4 bg-white border border-slate-200/70 rounded-xl transition-all hover:shadow-lg hover:shadow-slate-200/50 flex flex-col items-center text-center">
+                    <div class="w-12 h-12 bg-slate-50 text-[#0b1e36] rounded-lg flex items-center justify-center mb-3 group-hover:bg-[#0b1e36] group-hover:text-white transition-all">
                         <i data-lucide="user-cog" class="w-6 h-6"></i>
                     </div>
-                    <span class="text-[13px] font-bold text-[#0b1e36]">Kelola Akun</span>
+                    <span class="text-xs font-bold text-slate-800 tracking-tight">Kelola Akun</span>
                 </a>
-                <a href="/admin/kelas" class="p-5 bg-slate-50 hover:bg-amber-500/5 hover:border-amber-500/20 border border-slate-200/60 rounded-xl flex flex-col items-center justify-center text-center transition-all group">
-                    <div class="p-3 bg-white rounded-xl shadow-sm group-hover:shadow group-hover:-translate-y-0.5 transition-all mb-3 text-amber-500">
+
+                <a href="/admin/kelas" class="group p-4 bg-white border border-slate-200/70 rounded-xl transition-all hover:shadow-lg hover:shadow-slate-200/50 flex flex-col items-center text-center">
+                    <div class="w-12 h-12 bg-slate-50 text-amber-500 rounded-lg flex items-center justify-center mb-3 group-hover:bg-amber-500 group-hover:text-white transition-all">
                         <i data-lucide="building" class="w-6 h-6"></i>
                     </div>
-                    <span class="text-[13px] font-bold text-amber-600">Kelas & Jadwal</span>
+                    <span class="text-xs font-bold text-slate-800 tracking-tight">Kelas & Jadwal</span>
                 </a>
-                <a href="/admin/koreksi" class="p-5 bg-slate-50 hover:bg-rose-500/5 hover:border-rose-500/20 border border-slate-200/60 rounded-xl flex flex-col items-center justify-center text-center transition-all group">
-                    <div class="p-3 bg-white rounded-xl shadow-sm group-hover:shadow group-hover:-translate-y-0.5 transition-all mb-3 text-rose-500">
+
+                <a href="/admin/koreksi" class="group p-4 bg-white border border-slate-200/70 rounded-xl transition-all hover:shadow-lg hover:shadow-slate-200/50 flex flex-col items-center text-center">
+                    <div class="w-12 h-12 bg-slate-50 text-rose-500 rounded-lg flex items-center justify-center mb-3 group-hover:bg-rose-500 group-hover:text-white transition-all">
                         <i data-lucide="edit-3" class="w-6 h-6"></i>
                     </div>
-                    <span class="text-[13px] font-bold text-rose-600">Koreksi Absen</span>
+                    <span class="text-xs font-bold text-slate-800 tracking-tight">Koreksi Absen</span>
                 </a>
-                <a href="/admin/laporan" class="p-5 bg-slate-50 hover:bg-sky-500/5 hover:border-sky-500/20 border border-slate-200/60 rounded-xl flex flex-col items-center justify-center text-center transition-all group">
-                    <div class="p-3 bg-white rounded-xl shadow-sm group-hover:shadow group-hover:-translate-y-0.5 transition-all mb-3 text-sky-500">
+
+                <a href="/admin/laporan" class="group p-4 bg-white border border-slate-200/70 rounded-xl transition-all hover:shadow-lg hover:shadow-slate-200/50 flex flex-col items-center text-center">
+                    <div class="w-12 h-12 bg-slate-50 text-sky-500 rounded-lg flex items-center justify-center mb-3 group-hover:bg-sky-500 group-hover:text-white transition-all">
                         <i data-lucide="bar-chart-3" class="w-6 h-6"></i>
                     </div>
-                    <span class="text-[13px] font-bold text-sky-600">Laporan Sekolah</span>
+                    <span class="text-xs font-bold text-slate-800 tracking-tight">Laporan Sekolah</span>
                 </a>
             </div>
         </div>
-
     </div>
+
+    <!-- Script Jam Realtime -->
+    <script>
+        function updateClock() {
+            const now = new Date();
+            
+            // Format Tanggal (Contoh: 15 Juni 2026)
+            const options = { day: '2-digit', month: 'long', year: 'numeric' };
+            const dateStr = now.toLocaleDateString('id-ID', options);
+            
+            // Format Jam (Contoh: 14:05:01)
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const timeStr = `${hours}:${minutes}:${seconds}`;
+
+            document.getElementById('realtime-date').textContent = dateStr;
+            document.getElementById('realtime-clock').textContent = timeStr;
+        }
+
+        // Jalankan setiap detik
+        setInterval(updateClock, 1000);
+        updateClock(); // Jalankan langsung saat load
+    </script>
 </x-admin-layout>

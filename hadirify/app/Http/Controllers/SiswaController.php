@@ -5,12 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Absensi;
 use App\Models\Pengumuman;
 use App\Models\PengajuanIzin;
+use App\Models\Jadwal; // Pastikan Model Jadwal di-import
 use Illuminate\Http\Request;
 
 class SiswaController extends Controller
 {
     /**
-     * 1. Menampilkan Dashboard Siswa (Berisi Statistik, Riwayat Izin, Pengumuman)
+     * 1. Menampilkan Dashboard Siswa
      */
     public function dashboard(Request $request)
     {
@@ -24,45 +25,63 @@ class SiswaController extends Controller
             'alpa'  => Absensi::where('siswa_id', $siswaId)->where('status', 'A')->count(),
         ];
 
-        // Ambil riwayat izin & pengumuman untuk dashboard
         $riwayatIzin = PengajuanIzin::where('siswa_id', $siswaId)->orderBy('created_at', 'desc')->take(5)->get();
         $pengumuman = Pengumuman::with('guru')->where('kelas_id', $user->id_kelas)->orderBy('created_at', 'desc')->take(5)->get();
 
-        // TAMBAHAN: Data untuk Kalender Dinamis (Jika ada)
         $dataAbsenBulanIni = Absensi::where('siswa_id', $siswaId)
                                     ->whereMonth('tanggal', now()->month)
                                     ->whereYear('tanggal', now()->year)
                                     ->get()
                                     ->pluck('status', 'tanggal');
 
-        // BUKA FILE DASHBOARD
         return view('siswa.dashboard', compact('statistik', 'pengumuman', 'riwayatIzin', 'dataAbsenBulanIni'));
     }
 
     /**
-     * 2. Menampilkan Halaman Tabel Rekap Kehadiran
+     * BARU: Menampilkan Halaman Scan QR dengan Jadwal Dinamis
+     */
+    public function scanQR()
+    {
+        $user = auth()->user();
+        
+        // Ambil nama hari ini dalam Bahasa Indonesia (Misal: Senin)
+        // Jika di database kamu kolom 'hari' isinya bahasa Inggris, ganti format('l')
+        $hariIni = now()->translatedFormat('l'); 
+
+        // Ambil Jadwal khusus hari ini untuk kelas siswa tersebut
+        $jadwalHariIni = Jadwal::with(['mapel', 'guru', 'absensis' => function($q) {
+            // Kita juga ambil data absen siswa tersebut hari ini untuk memunculkan badge "Hadir"
+            $q->where('siswa_id', auth()->id())
+              ->where('tanggal', now()->toDateString());
+        }])
+        ->where('id_kelas', $user->id_kelas)
+        ->where('hari', $hariIni)
+        ->orderBy('jam_mulai', 'asc')
+        ->get();
+
+        return view('siswa.scan-qr', compact('jadwalHariIni'));
+    }
+
+    /**
+     * 3. Menampilkan Halaman Tabel Rekap Kehadiran
      */
     public function rekap(Request $request)
     {
         $siswaId = auth()->id();
-        
-        // Ambil SEMUA Riwayat Absensi untuk ditampilkan di tabel rekap
         $history = Absensi::with('jadwal.mapel')
                           ->where('siswa_id', $siswaId)
                           ->orderBy('tanggal', 'desc')
                           ->get();
 
-        // BUKA FILE REKAP
         return view('siswa.rekap', compact('history'));
     }
 
     /**
-     * 3. Menampilkan daftar semua notifikasi/pengumuman untuk siswa
+     * 4. Menampilkan daftar semua notifikasi/pengumuman
      */
     public function pengumuman()
     {
         $user = auth()->user();
-
         $notifikasi = Pengumuman::with('guru')
                                 ->where('kelas_id', $user->id_kelas)
                                 ->orderBy('created_at', 'desc')

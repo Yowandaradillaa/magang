@@ -11,30 +11,22 @@ use Carbon\CarbonPeriod;
 
 class IzinController extends Controller
 {
-    /**
- * GURU: Menampilkan daftar pengajuan izin yang masuk (Pending) & Riwayat
- */
-public function index()
-{
-    // 1. Data yang masih menunggu (Pending)
-    $izins = PengajuanIzin::with('siswa')
-                ->where('status', 'Pending')
-                ->orderBy('tanggal_pengajuan', 'desc')
-                ->get();
+    public function index()
+    {
+        // Gunakan .with('siswa.kelas') agar data kelas siswa juga ikut terbawa (N+1 protection)
+        $izins = PengajuanIzin::with(['siswa.kelas'])
+                    ->where('status', 'Pending')
+                    ->orderBy('tanggal_pengajuan', 'desc')
+                    ->get();
 
-    // 2. DATA BARU: Data yang sudah diproses (Disetujui/Ditolak)
-    $riwayat = PengajuanIzin::with('siswa')
-                ->where('status', '!=', 'Pending')
-                ->orderBy('updated_at', 'desc')
-                ->get();
+        $riwayat = PengajuanIzin::with(['siswa.kelas'])
+                    ->where('status', '!=', 'Pending')
+                    ->orderBy('updated_at', 'desc')
+                    ->get();
 
-    // 3. Kirim kedua variabel ke view
-    return view('guru.izin', compact('izins', 'riwayat'));
-}
+        return view('guru.izin', compact('izins', 'riwayat'));
+    }
 
-    /**
-     * SISWA: Menyimpan pengajuan izin baru (Sakit/Izin)
-     */
     public function ajukan(Request $request)
     {
         $request->validate([
@@ -64,9 +56,6 @@ public function index()
         return redirect()->route('siswa.dashboard')->with('success', 'Pengajuan izin berhasil dikirim!');
     }
 
-    /**
-     * GURU: Menyetujui atau Menolak Izin
-     */
     public function proses(Request $request, $id)
     {
         $request->validate([
@@ -74,33 +63,37 @@ public function index()
             'catatan_guru' => 'nullable|string'
         ]);
 
-        $izin = PengajuanIzin::findOrFail($id);
+        $izin = PengajuanIzin::with('siswa')->findOrFail($id);
+        
         $izin->update([
             'status'            => $request->status,
             'id_guru_approver'  => Auth::id(),
             'catatan_guru'      => $request->catatan_guru,
         ]);
 
-        // REVISI: Jika disetujui, buat baris absen otomatis untuk tiap tanggal yang diajukan
         if ($request->status === 'Disetujui') {
+            // Logika Absensi Otomatis
             $period = CarbonPeriod::create($izin->tanggal_mulai, $izin->tanggal_selesai);
             
-            // Cari jadwal hari ini untuk siswa tsb atau jadwal default
-            $jadwal = Jadwal::where('id_kelas', $izin->siswa->id_kelas)->first();
+            // Ambil semua jadwal untuk kelas siswa tersebut
+            $jadwals = Jadwal::where('id_kelas', $izin->siswa->id_kelas)->get();
 
             foreach ($period as $date) {
-                Absensi::updateOrCreate(
-                    [
-                        'siswa_id' => $izin->siswa_id,
-                        'tanggal'  => $date->toDateString(),
-                        'jadwal_id' => $jadwal->id ?? 1 // Gunakan ID jadwal yang relevan
-                    ],
-                    [
-                        'status'      => ($izin->jenis == 'Sakit') ? 'S' : 'I',
-                        'metode'      => 'Manual',
-                        'waktu_absen' => now(),
-                    ]
-                );
+                // Untuk setiap hari dalam rentang izin, buat record absen untuk SEMUA jadwal di hari itu
+                foreach ($jadwals as $j) {
+                    Absensi::updateOrCreate(
+                        [
+                            'siswa_id'  => $izin->siswa_id,
+                            'tanggal'   => $date->toDateString(),
+                            'jadwal_id' => $j->id
+                        ],
+                        [
+                            'status'      => ($izin->jenis == 'Sakit') ? 'S' : 'I',
+                            'metode'      => 'Sistem (Izin)',
+                            'waktu_absen' => now(),
+                        ]
+                    );
+                }
             }
         }
 

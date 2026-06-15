@@ -21,6 +21,11 @@ class PengajuanIzin extends Model
         'catatan_guru', 
         'tanggal_pengajuan'
     ];
+    protected $casts = [
+        'tanggal_mulai' => 'date',
+        'tanggal_selesai' => 'date',
+        'tanggal_pengajuan' => 'datetime'
+    ];
 
     public function siswa(): BelongsTo
     {

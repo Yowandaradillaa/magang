@@ -1,238 +1,281 @@
 <x-admin-layout>
-    <!-- State Utama: Tab, Modal, dan Role Pilihan di Form -->
-    <div x-data="{ tab: 'siswa', showModal: false, rolePilihan: 'siswa' }" class="animate-in fade-in duration-500 space-y-8 pb-20">
+    <!-- State Utama: Mengontrol Tab, Modal Tambah, Modal Edit, dan Modal Hapus -->
+    <div x-data="{ 
+        tab: 'siswa', 
+        showModal: false, 
+        showEditModal: false,
+        showDeleteModal: false,
+        deleteUrl: '',
+        rolePilihan: 'siswa',
+        editData: { id: '', name: '', role: '', email: '', nisn: '', nuptk: '', id_kelas: '' }
+    }" class="animate-in fade-in duration-500 flex flex-col space-y-4 px-2 h-[calc(100vh-140px)]">
         
-        <!-- Pesan Sukses (Muncul setelah simpan data) -->
+        <!-- Notifikasi Berhasil -->
         @if(session('success'))
-            <div class="bg-emerald-50 border border-emerald-200 text-emerald-700 px-6 py-4 rounded-2xl flex items-center gap-3 shadow-sm">
-                <i data-lucide="check-circle" class="w-5 h-5"></i>
-                <span class="font-bold text-sm">{{ session('success') }}</span>
+            <div class="flex-none p-3 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl font-bold text-xs flex items-center gap-3 shadow-sm">
+                <i data-lucide="check-circle" class="w-4 h-4 text-emerald-500"></i>
+                {{ session('success') }}
             </div>
         @endif
 
-        <!-- ================= HEADER ================= -->
-        <div class="bg-white p-8 rounded-3xl border border-slate-200/60 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-            <div class="space-y-1">
-                <div class="flex items-center gap-3">
-                    <span class="p-2.5 bg-rose-500/10 text-rose-600 rounded-2xl">
-                        <i data-lucide="users" class="w-6 h-6"></i>
-                    </span>
-                    <h2 class="text-2xl font-black text-[#0b1e36]">Kelola Akun</h2>
+        <!-- ================= SECTION 1: HEADER (FIXED/DIAM) ================= -->
+        <div class="flex-none bg-white p-5 rounded-xl border border-slate-200/50 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+                <div class="w-10 h-10 bg-[#0b1e36] text-white rounded-lg flex items-center justify-center shadow-lg">
+                    <i data-lucide="users" class="w-5 h-5"></i>
                 </div>
-                <p class="text-sm text-slate-500 font-medium">Database kredensial akun Siswa dan Guru.</p>
+                <div class="space-y-0.5">
+                    <h2 class="text-lg font-extrabold text-[#0b1e36] tracking-tight">Manajemen Akun</h2>
+                    <p class="text-[11px] text-slate-500 font-medium">Database Siswa & Tenaga Pendidik</p>
+                </div>
             </div>
             
-            <div class="flex items-center gap-4">
-                <button type="button" @click="showModal = true" 
-                        class="flex items-center gap-2.5 px-7 py-3.5 bg-[#0b1e36] hover:bg-[#112d52] text-white text-sm font-bold rounded-2xl shadow-xl transition-all active:scale-95 cursor-pointer">
-                    <i data-lucide="plus-circle" class="w-5 h-5"></i>
-                    Tambah Akun Baru
-                </button>
-            </div>
+            <button @click="showModal = true" class="w-full md:w-auto flex items-center justify-center gap-2 px-5 py-2.5 bg-[#0b1e36] text-white text-[11px] font-bold rounded-lg shadow-lg hover:bg-slate-800 transition-all active:scale-95 cursor-pointer">
+                <i data-lucide="plus" class="w-4 h-4"></i>
+                Tambah Akun Baru
+            </button>
         </div>
 
-        <!-- ================= MODAL POP-UP (TAMBAH AKUN) ================= -->
-        <template x-teleport="body">
-            <div x-show="showModal" class="fixed inset-0 z-[9999] flex items-center justify-center p-4" x-cloak>
-                <!-- Backdrop -->
-                <div x-show="showModal" x-transition @click="showModal = false" class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
-
-                <!-- Konten Modal -->
-                <div x-show="showModal" x-transition class="relative bg-white w-full max-w-xl rounded-3xl shadow-2xl p-10 overflow-y-auto max-h-[90vh]">
-                    <div class="flex items-center justify-between mb-8">
-                        <h3 class="text-2xl font-black text-[#0b1e36]">Tambah Akun</h3>
-                        <button @click="showModal = false" class="p-2 text-slate-400 hover:text-rose-500 transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button>
-                    </div>
-
-                    <!-- Tampilkan Error Validasi (PENTING: Biar tahu kenapa data ga masuk) -->
-                    @if ($errors->any())
-                        <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 text-xs rounded-xl">
-                            <p class="font-bold mb-1 uppercase">Gagal Menyimpan:</p>
-                            <ul class="list-disc pl-5 space-y-1">
-                                @foreach ($errors->all() as $error) <li>{{ $error }}</li> @endforeach
-                            </ul>
-                        </div>
-                    @endif
-
-                    <form action="{{ route('admin.akun.store') }}" method="POST" class="space-y-5">
-                        @csrf
-                        <!-- Nama Lengkap -->
-                        <div class="space-y-1.5">
-                            <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Nama Lengkap</label>
-                            <input type="text" name="name" required placeholder="Masukkan nama..." 
-                                   class="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm focus:border-rose-500 outline-none transition-all">
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-5">
-                            <!-- Role Dropdown -->
-                            <div class="space-y-1.5">
-                                <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Role / Jabatan</label>
-                                <select name="role" x-model="rolePilihan" required class="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm outline-none">
-                                    <option value="siswa">Siswa</option>
-                                    <option value="guru">Guru</option>
-                                    <option value="admin">Administrator</option>
-                                </select>
-                            </div>
-                            <!-- Kelas (Hanya muncul jika Siswa) -->
-                            <div class="space-y-1.5" x-show="rolePilihan === 'siswa'">
-                                <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Kelas</label>
-                                <select name="id_kelas" class="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm outline-none">
-                                    <option value="">Pilih Kelas</option>
-                                    @foreach($kelas as $k) <option value="{{ $k->id }}">{{ $k->nama_kelas }}</option> @endforeach
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 gap-5">
-                            <!-- NISN (Hanya Siswa) -->
-                            <div class="space-y-1.5" x-show="rolePilihan === 'siswa'">
-                                <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Nomor Induk Siswa (NISN)</label>
-                                <input type="text" name="nisn" :required="rolePilihan === 'siswa'" placeholder="10 Digit NISN"
-                                       class="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm focus:border-rose-500 outline-none transition-all">
-                            </div>
-                            <!-- NUPTK (Hanya Guru) -->
-                            <div class="space-y-1.5" x-show="rolePilihan === 'guru'">
-                                <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Nomor Induk Guru (NUPTK)</label>
-                                <input type="text" name="nuptk" :required="rolePilihan === 'guru'" placeholder="Masukkan NUPTK"
-                                       class="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm focus:border-rose-500 outline-none transition-all">
-                            </div>
-                        </div>
-
-                        <div class="space-y-1.5">
-                            <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Email Sekolah (Opsional)</label>
-                            <input type="email" name="email" placeholder="nama@sekolah.id" 
-                                   class="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm focus:border-rose-500 outline-none transition-all">
-                        </div>
-
-                        <div class="flex gap-4 pt-6">
-                            <button type="button" @click="showModal = false" class="flex-1 py-4 bg-slate-50 text-slate-400 font-bold rounded-2xl hover:bg-slate-100 transition-all">Batal</button>
-                            <button type="submit" class="flex-[2] py-4 bg-rose-500 hover:bg-rose-600 text-white font-bold rounded-2xl shadow-xl shadow-rose-200 transition-all flex items-center justify-center gap-2">
-                                <i data-lucide="check-circle" class="w-5 h-5"></i> Simpan Akun
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </template>
-
-        <!-- ================= NAVIGASI TAB ================= -->
-        <div class="flex items-center gap-2 bg-slate-100/50 p-2 rounded-2xl w-fit border border-slate-200/60 shadow-inner">
-            <button @click="tab = 'siswa'" :class="tab === 'siswa' ? 'bg-white text-rose-600 shadow-sm font-bold' : 'text-slate-400 hover:text-slate-600'"
-                    class="px-8 py-3 rounded-xl text-sm transition-all focus:outline-none flex items-center gap-2">
+        <!-- ================= SECTION 2: TAB NAVIGASI (FIXED/DIAM) ================= -->
+        <div class="flex-none flex items-center gap-1 bg-slate-200/50 p-1 rounded-xl w-full md:w-fit border border-slate-200/60 shadow-inner">
+            <button @click="tab = 'siswa'" 
+                    :class="tab === 'siswa' ? 'bg-white text-sky-600 shadow-sm font-bold border-slate-200' : 'text-slate-400 border-transparent'"
+                    class="flex-1 md:flex-none px-6 py-2 rounded-lg text-[11px] transition-all border flex items-center justify-center gap-2">
                 <i data-lucide="graduation-cap" class="w-4 h-4"></i> Data Siswa
             </button>
-            <button @click="tab = 'guru'" :class="tab === 'guru' ? 'bg-white text-rose-600 shadow-sm font-bold' : 'text-slate-400 hover:text-slate-600'"
-                    class="px-8 py-3 rounded-xl text-sm transition-all focus:outline-none flex items-center gap-2">
+            <button @click="tab = 'guru'" 
+                    :class="tab === 'guru' ? 'bg-white text-indigo-600 shadow-sm font-bold border-slate-200' : 'text-slate-400 border-transparent'"
+                    class="flex-1 md:flex-none px-6 py-2 rounded-lg text-[11px] transition-all border flex items-center justify-center gap-2">
                 <i data-lucide="briefcase" class="w-4 h-4"></i> Data Guru
             </button>
         </div>
 
-        <!-- ================= TABEL DATA ================= -->
-        <div class="bg-white rounded-[2.5rem] border border-slate-200/60 shadow-sm overflow-hidden min-h-[500px]">
-            
-            <!-- Tab Konten Siswa -->
-            <div x-show="tab === 'siswa'" class="animate-in fade-in duration-500">
-                <table class="w-full text-left">
-                    <thead>
-                        <tr class="bg-slate-50/50 border-b border-slate-100 text-[11px] font-bold text-slate-400 uppercase tracking-widest">
-                            <th class="px-10 py-6">Informasi Siswa</th>
-                            <th class="px-10 py-6">Kelas & Identitas</th>
-                            <th class="px-10 py-6 text-center">Status</th>
-                            <th class="px-10 py-6 text-right">Manajemen</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-50 text-sm">
-                        @forelse($users->where('role', 'siswa') as $siswa)
-                        <tr class="hover:bg-slate-50/40 transition-colors">
-                            <td class="px-10 py-6">
-                                <div class="flex items-center gap-4">
-                                    <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center font-black text-sm shadow-inner">
-                                        {{ strtoupper(substr($siswa->name, 0, 2)) }}
+        <!-- ================= SECTION 3: AREA TABEL (BISA DI-SCROLL) ================= -->
+        <div class="flex-1 min-h-0 bg-white rounded-xl border border-slate-200/60 shadow-sm overflow-hidden flex flex-col">
+            <div class="flex-1 overflow-y-auto no-scrollbar relative">
+                
+                <!-- TABEL DATA SISWA -->
+                <div x-show="tab === 'siswa'" class="animate-in fade-in duration-300">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="sticky top-0 bg-white z-10 border-b border-slate-100">
+                            <tr class="bg-slate-50 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                <th class="px-6 py-4">Informasi Siswa</th>
+                                <th class="px-6 py-4">Kelas & NISN</th>
+                                <th class="px-6 py-4 text-center">Status</th>
+                                <th class="px-6 py-4 text-right">Manajemen</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-50 text-sm">
+                            @forelse($users->where('role', 'siswa') as $siswa)
+                            <tr class="hover:bg-slate-50/50 transition-colors">
+                                <td class="px-6 py-3">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded bg-sky-50 text-sky-600 flex items-center justify-center font-bold text-[10px] border border-sky-100 uppercase">{{ substr($siswa->name, 0, 2) }}</div>
+                                        <div class="flex flex-col">
+                                            <span class="font-bold text-slate-800 text-xs tracking-tight">{{ $siswa->name }}</span>
+                                            <span class="text-[9px] text-slate-400 italic leading-none">{{ $siswa->email ?? 'no-email@sch.id' }}</span>
+                                        </div>
                                     </div>
+                                </td>
+                                <td class="px-6 py-3">
                                     <div class="flex flex-col">
-                                        <span class="font-bold text-[#0b1e36] text-base">{{ $siswa->name }}</span>
-                                        <span class="text-xs text-slate-400 italic">{{ $siswa->email ?? 'no-email@sch.id' }}</span>
+                                        <span class="text-[10px] font-black text-slate-700 leading-none">{{ $siswa->kelas->nama_kelas ?? 'N/A' }}</span>
+                                        <span class="text-[9px] text-slate-400 font-mono mt-1 italic tracking-tighter">NISN: {{ $siswa->nisn ?? '---' }}</span>
                                     </div>
-                                </div>
-                            </td>
-                            <td class="px-10 py-6">
-                                <div class="flex flex-col">
-                                    <span class="font-bold text-slate-600 uppercase">{{ $siswa->kelas->nama_kelas ?? 'Tanpa Kelas' }}</span>
-                                    <span class="text-[10px] text-slate-400 font-mono italic tracking-tighter">NISN: {{ $siswa->nisn ?? '---' }}</span>
-                                </div>
-                            </td>
-                            <td class="px-10 py-6 text-center">
-                                <span class="px-3 py-1 bg-emerald-50 text-emerald-600 text-[10px] font-black rounded-full border border-emerald-100 uppercase">Aktif</span>
-                            </td>
-                            <td class="px-10 py-6 text-right">
-                                <div class="flex justify-end gap-2">
-                                    <button class="p-2.5 bg-white border border-slate-100 text-slate-400 hover:text-[#0b1e36] rounded-xl shadow-sm transition-all"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
-                                    
-                                    <form action="{{ route('admin.akun.destroy', $siswa->id) }}" method="POST" onsubmit="return confirm('Hapus akun siswa ini?')">
-                                        @csrf @method('DELETE')
-                                        <button type="submit" class="p-2.5 bg-white border border-slate-100 text-slate-400 hover:text-rose-600 rounded-xl shadow-sm transition-all"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr><td colspan="4" class="py-40 text-center text-slate-300 font-bold uppercase text-xs italic tracking-widest">Belum ada data siswa terdaftar</td></tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+                                </td>
+                                <td class="px-6 py-3 text-center">
+                                    <span class="px-2 py-0.5 bg-emerald-50 text-emerald-600 text-[8px] font-black rounded border border-emerald-100 uppercase">Aktif</span>
+                                </td>
+                                <td class="px-6 py-3 text-right">
+                                    <div class="flex justify-end gap-1">
+                                        <!-- Tombol Edit -->
+                                        <button @click="editData = { id: '{{ $siswa->id }}', name: '{{ $siswa->name }}', role: 'siswa', email: '{{ $siswa->email }}', nisn: '{{ $siswa->nisn }}', id_kelas: '{{ $siswa->id_kelas }}' }; showEditModal = true" 
+                                                class="p-1.5 text-slate-400 hover:text-sky-600 transition-all cursor-pointer"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
+                                        
+                                        <!-- Tombol Hapus -->
+                                        <button @click="deleteUrl = '{{ route('admin.akun.destroy', $siswa->id) }}'; showDeleteModal = true" 
+                                                class="p-1.5 text-slate-400 hover:text-rose-600 transition-all cursor-pointer"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr><td colspan="4" class="py-20 text-center opacity-30 text-[10px] font-black uppercase tracking-widest italic leading-relaxed">Belum ada data siswa</td></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
 
-            <!-- Tab Konten Guru -->
-            <div x-show="tab === 'guru'" style="display: none;" class="animate-in fade-in duration-500">
-                <table class="w-full text-left">
-                    <thead>
-                        <tr class="bg-slate-50/50 border-b border-slate-100 text-[11px] font-bold text-slate-400 uppercase tracking-widest">
-                            <th class="px-10 py-6">Detail Pendidik</th>
-                            <th class="px-10 py-6">NUPTK</th>
-                            <th class="px-10 py-6 text-center">Akses</th>
-                            <th class="px-10 py-6 text-right">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-50 text-sm">
-                        @forelse($users->where('role', 'guru') as $guru)
-                        <tr class="hover:bg-slate-50/40 transition-colors">
-                            <td class="px-10 py-6">
-                                <div class="flex items-center gap-4">
-                                    <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center font-black text-sm shadow-inner">
-                                        {{ strtoupper(substr($guru->name, 0, 2)) }}
+                <!-- TABEL DATA GURU -->
+                <div x-show="tab === 'guru'" style="display: none;" class="animate-in fade-in duration-300">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="sticky top-0 bg-white z-10 border-b border-slate-100">
+                            <tr class="bg-slate-50 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                <th class="px-6 py-4">Nama Pendidik</th>
+                                <th class="px-6 py-4 text-center">Identitas NUPTK</th>
+                                <th class="px-6 py-4 text-right">Manajemen</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-50 text-sm">
+                            @forelse($users->where('role', 'guru') as $guru)
+                            <tr class="hover:bg-slate-50/50 transition-colors">
+                                <td class="px-6 py-3">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-[10px] border border-indigo-100 uppercase">{{ substr($guru->name, 0, 2) }}</div>
+                                        <div class="flex flex-col">
+                                            <span class="font-bold text-slate-800 text-xs tracking-tight">{{ $guru->name }}</span>
+                                            <span class="text-[9px] text-slate-400 leading-none">{{ $guru->email }}</span>
+                                        </div>
                                     </div>
-                                    <div class="flex flex-col">
-                                        <span class="font-bold text-[#0b1e36] text-base">{{ $guru->name }}</span>
-                                        <span class="text-xs text-slate-400 italic">{{ $guru->email }}</span>
+                                </td>
+                                <td class="px-6 py-3 text-center text-slate-600 font-mono text-[10px] font-bold">{{ $guru->nuptk ?? 'NUPTK KOSONG' }}</td>
+                                <td class="px-6 py-3 text-right">
+                                    <div class="flex justify-end gap-1">
+                                        <button @click="editData = { id: '{{ $guru->id }}', name: '{{ $guru->name }}', role: 'guru', email: '{{ $guru->email }}', nuptk: '{{ $guru->nuptk }}' }; showEditModal = true" 
+                                                class="p-1.5 text-slate-400 hover:text-indigo-600 transition-all cursor-pointer"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
+                                        <button @click="deleteUrl = '{{ route('admin.akun.destroy', $guru->id) }}'; showDeleteModal = true" 
+                                                class="p-1.5 text-slate-400 hover:text-rose-600 transition-all cursor-pointer"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                                     </div>
-                                </div>
-                            </td>
-                            <td class="px-10 py-6 text-slate-600 font-mono font-bold">{{ $guru->nuptk ?? 'NUPTK_KOSONG' }}</td>
-                            <td class="px-10 py-6 text-center">
-                                <span class="px-4 py-1 bg-blue-50 text-blue-600 text-[10px] font-black rounded-full border border-blue-100 uppercase">Teacher</span>
-                            </td>
-                            <td class="px-10 py-6 text-right">
-                                <div class="flex justify-end gap-2">
-                                    <button class="p-2.5 bg-white border border-slate-100 text-slate-400 hover:text-blue-600 rounded-xl shadow-sm transition-all"><i data-lucide="edit" class="w-4 h-4"></i></button>
-                                    
-                                    <form action="{{ route('admin.akun.destroy', $guru->id) }}" method="POST" onsubmit="return confirm('Hapus akun guru ini?')">
-                                        @csrf @method('DELETE')
-                                        <button type="submit" class="p-2.5 bg-white border border-slate-100 text-slate-400 hover:text-rose-600 rounded-xl shadow-sm transition-all"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr><td colspan="4" class="py-40 text-center text-slate-300 font-bold uppercase text-xs italic tracking-widest">Belum ada data guru terdaftar</td></tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr><td colspan="3" class="py-20 text-center opacity-30 text-[10px] font-black uppercase tracking-widest italic leading-relaxed">Belum ada data guru</td></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
             </div>
-
         </div>
+
+        <!-- ================= MODAL TAMBAH AKUN ================= -->
+        <template x-teleport="body">
+            <div x-show="showModal" class="fixed inset-0 z-[9999] flex items-center justify-center p-4" x-cloak>
+                <div x-show="showModal" x-transition @click="showModal = false" class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm"></div>
+                <div x-show="showModal" x-transition class="relative bg-white w-full max-w-lg rounded-xl shadow-2xl overflow-hidden">
+                    <div class="h-1.5 w-full bg-[#0b1e36]"></div>
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-lg font-extrabold text-[#0b1e36] tracking-tight leading-none">Registrasi Akun Baru</h3>
+                            <button @click="showModal = false" class="text-slate-300 hover:text-rose-500 cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
+                        </div>
+                        <form action="{{ route('admin.akun.store') }}" method="POST" class="space-y-4">
+                            @csrf
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Nama Lengkap</label>
+                                <input type="text" name="name" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none focus:border-[#0b1e36]">
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="space-y-1">
+                                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Role</label>
+                                    <select name="role" x-model="rolePilihan" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none">
+                                        <option value="siswa">Siswa</option>
+                                        <option value="guru">Guru</option>
+                                    </select>
+                                </div>
+                                <div class="space-y-1" x-show="rolePilihan === 'siswa'">
+                                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Kelas</label>
+                                    <select name="id_kelas" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none">
+                                        <option value="">Pilih Kelas</option>
+                                        @foreach($kelas as $k) <option value="{{ $k->id }}">{{ $k->nama_kelas }}</option> @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div x-show="rolePilihan === 'siswa'" class="space-y-1 animate-in fade-in zoom-in">
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Nomor NISN</label>
+                                <input type="text" name="nisn" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none">
+                            </div>
+                            <div x-show="rolePilihan === 'guru'" class="space-y-1 animate-in fade-in zoom-in">
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Nomor NUPTK</label>
+                                <input type="text" name="nuptk" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none">
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Email</label>
+                                <input type="email" name="email" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none">
+                            </div>
+                            <div class="flex gap-3 pt-4 border-t border-slate-100">
+                                <button type="button" @click="showModal = false" class="flex-1 py-3 text-slate-400 text-[10px] font-bold uppercase tracking-widest">Batal</button>
+                                <button type="submit" class="flex-[2] py-3 bg-[#0b1e36] text-white text-[10px] font-bold rounded-lg shadow-lg uppercase tracking-widest">Simpan Akun</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- ================= MODAL EDIT AKUN ================= -->
+        <template x-teleport="body">
+            <div x-show="showEditModal" class="fixed inset-0 z-[9999] flex items-center justify-center p-4" x-cloak>
+                <div x-show="showEditModal" x-transition @click="showEditModal = false" class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm"></div>
+                <div x-show="showEditModal" x-transition class="relative bg-white w-full max-w-lg rounded-xl shadow-2xl overflow-hidden">
+                    <div class="h-1.5 w-full transition-all" :class="editData.role === 'siswa' ? 'bg-sky-500' : 'bg-indigo-500'"></div>
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-lg font-extrabold text-[#0b1e36] tracking-tight leading-none">Perbarui Akun</h3>
+                            <button @click="showEditModal = false" class="text-slate-300 hover:text-rose-500 cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
+                        </div>
+                        <form :action="'/admin/akun/' + editData.id" method="POST" class="space-y-4">
+                            @csrf @method('PUT')
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Nama Lengkap</label>
+                                <input type="text" name="name" x-model="editData.name" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none">
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="space-y-1">
+                                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Email</label>
+                                    <input type="email" name="email" x-model="editData.email" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none">
+                                </div>
+                                <div class="space-y-1" x-show="editData.role === 'siswa'">
+                                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Kelas</label>
+                                    <select name="id_kelas" x-model="editData.id_kelas" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none">
+                                        @foreach($kelas as $k) <option value="{{ $k->id }}">{{ $k->nama_kelas }}</option> @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div x-show="editData.role === 'siswa'" class="space-y-1">
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">NISN</label>
+                                <input type="text" name="nisn" x-model="editData.nisn" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none">
+                            </div>
+                            <div x-show="editData.role === 'guru'" class="space-y-1">
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">NUPTK</label>
+                                <input type="text" name="nuptk" x-model="editData.nuptk" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none">
+                            </div>
+                            <div class="flex gap-3 pt-4 border-t border-slate-100">
+                                <button type="button" @click="showEditModal = false" class="flex-1 py-3 text-slate-400 text-[10px] font-bold uppercase tracking-widest">Batal</button>
+                                <button type="submit" class="flex-[2] py-3 bg-[#0b1e36] text-white text-[10px] font-bold rounded-lg shadow-lg uppercase tracking-widest">Simpan Perubahan</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- ================= MODAL KONFIRMASI HAPUS ================= -->
+        <template x-teleport="body">
+            <div x-show="showDeleteModal" class="fixed inset-0 z-[10000] flex items-center justify-center p-4" x-cloak>
+                <div x-show="showDeleteModal" x-transition @click="showDeleteModal = false" class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm"></div>
+                <div x-show="showDeleteModal" x-transition class="relative bg-white w-full max-w-sm rounded-xl shadow-2xl overflow-hidden">
+                    <div class="p-6 text-center">
+                        <div class="w-16 h-16 bg-rose-50 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i data-lucide="alert-triangle" class="w-8 h-8"></i>
+                        </div>
+                        <h3 class="text-lg font-extrabold text-slate-900 leading-tight">Konfirmasi Hapus</h3>
+                        <p class="text-[11px] text-slate-500 mt-2">Apakah Anda yakin ingin menghapus akun ini secara permanen? Data tidak dapat dipulihkan kembali.</p>
+                        <div class="flex gap-3 mt-6">
+                            <button @click="showDeleteModal = false" class="flex-1 py-2.5 bg-slate-100 text-slate-600 text-[10px] font-bold rounded-lg transition-all cursor-pointer">Batal</button>
+                            <form :action="deleteUrl" method="POST" class="flex-1">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="w-full py-2.5 bg-rose-600 text-white text-[10px] font-bold rounded-lg shadow-lg shadow-rose-200 transition-all uppercase tracking-widest cursor-pointer">Hapus Akun</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+
     </div>
 
-    <!-- Script & Style Tambahan -->
-    <style> [x-cloak] { display: none !important; } </style>
-    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <style> 
+        [x-cloak] { display: none !important; } 
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
 </x-admin-layout>

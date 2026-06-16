@@ -80,13 +80,18 @@ class SiswaController extends Controller
      * 4. Menampilkan daftar semua notifikasi/pengumuman
      */
     public function pengumuman()
-    {
-        $user = auth()->user();
-        $notifikasi = Pengumuman::with('guru')
-                                ->where('kelas_id', $user->id_kelas)
-                                ->orderBy('created_at', 'desc')
-                                ->get();
+{
+    $user = \App\Models\User::find(auth()->id()); // Ambil data user dari DB
+    
+    // Update waktu lihat terakhir ke detik ini
+    $user->notification_last_viewed_at = now();
+    $user->save(); // Simpan paksa ke database
 
-        return view('siswa.notifikasi', compact('notifikasi'));
-    }
+    $notifikasi = Pengumuman::with('guru')
+                            ->where('kelas_id', $user->id_kelas)
+                            ->orderBy('created_at', 'desc')
+                            ->get();
+
+    return view('siswa.notifikasi', compact('notifikasi'));
+}
 }

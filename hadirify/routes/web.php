@@ -116,7 +116,7 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
 */
 Route::middleware(['auth', 'role:siswa'])->group(function () {
     Route::get('/siswa/dashboard', [SiswaController::class, 'dashboard'])->name('siswa.dashboard');
-    Route::get('/siswa/scan-qr', function () { return view('siswa.scan-qr'); })->name('siswa.scan-qr');
+   
     // Ganti yang lama (yang return view direct) menjadi ini:
 Route::get('/siswa/scan-qr', [SiswaController::class, 'scanQR'])->name('siswa.scan-qr');
     Route::get('/siswa/rekap', [SiswaController::class, 'rekap'])->name('siswa.rekap');

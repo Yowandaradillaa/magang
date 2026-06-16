@@ -1,91 +1,113 @@
 <x-app-layout>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-
-    <style>
-        .custom-shadow { box-shadow: 0 4px 20px -2px rgba(0, 97, 150, 0.08); }
-        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-    </style>
-
-    <div class="max-w-[1200px] mx-auto space-y-6 font-['Inter'] animate-in fade-in duration-500">
+    <!-- Container Utama: Fixed Height agar Header diam & Tabel bisa di-scroll -->
+    <div class="animate-in fade-in duration-700 flex flex-col space-y-4 px-2 h-[calc(100vh-140px)]">
         
-        <div class="bg-white p-6 md:p-8 rounded-[28px] custom-shadow border border-[#bfc7d2] relative overflow-hidden">
-            <div class="absolute top-0 right-0 w-64 h-64 bg-[#cde5ff]/60 blur-[100px] rounded-full -mr-20 -mt-20 pointer-events-none"></div>
-            
-            <div class="relative z-10">
-                <span class="bg-[#007abc] text-white px-3 py-1 rounded-full text-[11px] font-bold mb-3 inline-block uppercase tracking-wider">Riwayat</span>
-                <h1 class="text-[32px] font-bold text-[#0b1c30] mb-2 leading-tight">Rekap Kehadiran Siswa</h1>
-                <p class="text-[14px] text-[#3f4851]">Pantau seluruh catatan kehadiran dan log absensi digital Anda secara transparan.</p>
+        <!-- ================= SECTION 1: HEADER (FIXED) ================= -->
+        <div class="flex-none bg-white border border-slate-200/50 rounded-xl shadow-[0_2px_4px_rgba(0,0,0,0.02)]">
+            <div class="p-5 sm:px-6 sm:py-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <!-- Icon History (Navy Theme) -->
+                    <div class="flex-shrink-0 w-11 h-11 bg-[#0b1e36] flex items-center justify-center rounded-lg shadow-lg">
+                        <i data-lucide="history" class="w-6 h-6 text-white"></i>
+                    </div>
+                    <div class="space-y-0.5">
+                        <h2 class="text-lg font-extrabold text-[#0b1e36] tracking-tight">Rekap Kehadiran</h2>
+                        <p class="text-[11px] text-slate-500 font-medium italic">Log absensi digital transparan & akurat</p>
+                    </div>
+                </div>
+
+                <!-- Clock & Date (Konsisten dengan Dashboard) -->
+                <div class="flex items-center gap-3 px-4 py-2 bg-slate-50/80 rounded-xl border border-slate-100">
+                    <div class="text-right">
+                        <p id="realtime-date" class="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">
+                            {{ now()->translatedFormat('d F Y') }}
+                        </p>
+                        <p id="realtime-clock" class="text-sm font-bold text-[#0b1e36] font-mono leading-none">
+                            00:00:00
+                        </p>
+                    </div>
+                    <div class="w-[1px] h-6 bg-slate-200 mx-1"></div>
+                    <i data-lucide="calendar-days" class="w-5 h-5 text-slate-400"></i>
+                </div>
             </div>
         </div>
 
-        <div class="bg-white rounded-[28px] custom-shadow border border-[#bfc7d2] overflow-hidden">
-            <div class="border-b border-[#bfc7d2] p-6 bg-[#eff4ff]/40 flex justify-between items-center flex-wrap gap-4">
-                <div class="flex items-center gap-3">
-                    <div class="p-2 bg-[#006196]/10 rounded-lg">
-                        <span class="material-symbols-outlined text-[#006196]">history</span>
-                    </div>
-                    <h3 class="text-[20px] font-bold text-[#0b1c30]">Log Absensi Sekolah</h3>
-                </div>
-                <span class="text-[11px] font-bold text-[#006196] bg-[#cde5ff] px-3 py-1.5 rounded-full uppercase tracking-wider border border-[#95ccff]">Menampilkan {{ $history->count() }} Entri Absensi</span>
+        <!-- ================= SECTION 2: AREA TABEL (SCROLLABLE) ================= -->
+        <div class="flex-1 min-h-0 bg-white rounded-xl border border-slate-200/60 shadow-sm overflow-hidden flex flex-col">
+            
+            <!-- Table Info Bar -->
+            <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/30">
+                <h3 class="text-[11px] font-black text-[#0b1e36] uppercase tracking-widest flex items-center gap-2">
+                    <i data-lucide="database" class="w-4 h-4 text-sky-600"></i>
+                    Dataset Absensi Anda
+                </h3>
+                <span class="px-2.5 py-1 bg-white border border-slate-200 text-slate-400 text-[9px] font-black rounded uppercase">
+                    Total: {{ $history->count() }} Entri
+                </span>
             </div>
 
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-[13.5px] border-collapse">
-                    <thead class="bg-[#eff4ff]/40 text-[11px] font-bold uppercase text-[#707882] tracking-widest border-b border-[#bfc7d2]">
-                        <tr>
-                            <th class="p-4 pl-8">Tanggal</th>
-                            <th class="p-4">Mata Pelajaran</th>
-                            <th class="p-4">Jam Absen</th>
-                            <th class="p-4">Metode</th>
-                            <th class="p-4 text-center pr-8">Status</th>
+            <!-- Scrollable Table Body -->
+            <div class="flex-1 overflow-y-auto no-scrollbar relative">
+                <table class="w-full text-left border-collapse">
+                    <thead class="sticky top-0 bg-white z-10 border-b border-slate-100 shadow-sm">
+                        <tr class="bg-slate-50 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            <th class="px-6 py-4">Tanggal</th>
+                            <th class="px-6 py-4">Mata Pelajaran</th>
+                            <th class="px-6 py-4 text-center">Waktu</th>
+                            <th class="px-6 py-4 text-center">Metode</th>
+                            <th class="px-6 py-4 text-right">Status</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-[#bfc7d2]/40 font-medium text-[#3f4851]">
+                    <tbody class="divide-y divide-slate-50 text-sm">
                         @forelse($history as $item)
-                        <tr class="hover:bg-[#f8f9ff] transition-colors">
-                            <td class="p-4 pl-8 font-mono text-[13px] text-[#0b1c30] font-bold">
-                                {{ \Carbon\Carbon::parse($item->tanggal)->translatedFormat('d F Y') }}
+                        <tr class="hover:bg-slate-50/50 transition-colors">
+                            <td class="px-6 py-4">
+                                <span class="font-bold text-slate-800 text-xs tracking-tight">
+                                    {{ \Carbon\Carbon::parse($item->tanggal)->translatedFormat('d M Y') }}
+                                </span>
                             </td>
-                            <td class="p-4 font-bold text-[#0b1c30]">
-                                {{ $item->jadwal->mapel->nama_mapel ?? 'Mata Pelajaran' }}
+                            <td class="px-6 py-4">
+                                <div class="flex flex-col">
+                                    <span class="font-extrabold text-[#0b1e36] text-xs uppercase tracking-tight">
+                                        {{ $item->jadwal->mapel->nama_mapel ?? 'Mata Pelajaran' }}
+                                    </span>
+                                    <span class="text-[10px] text-slate-400 font-medium italic">
+                                        Oleh: {{ $item->jadwal->guru->name ?? 'Pengajar' }}
+                                    </span>
+                                </div>
                             </td>
-                            <td class="p-4 font-mono text-[13px]">
-                                {{ $item->waktu_absen ? \Carbon\Carbon::parse($item->waktu_absen)->format('H:i:s') . ' WIB' : '—' }}
+                            <td class="px-6 py-4 text-center">
+                                <span class="font-mono text-[11px] font-bold text-slate-600">
+                                    {{ $item->waktu_absen ? \Carbon\Carbon::parse($item->waktu_absen)->format('H:i') : '--:--' }}
+                                </span>
                             </td>
-                            <td class="p-4">
-                                <span class="px-3 py-1 bg-[#eff4ff] border border-[#bfc7d2] text-[#3f4851] rounded-lg text-[11px] font-bold">
+                            <td class="px-6 py-4 text-center">
+                                <span class="px-2 py-0.5 bg-slate-100 text-slate-500 text-[9px] font-black rounded border border-slate-200 uppercase">
                                     {{ $item->metode ?? 'Sistem' }}
                                 </span>
                             </td>
-                            <td class="p-4 text-center pr-8">
+                            <td class="px-6 py-4 text-right">
                                 @php
-                                    $statusName = 'Hadir';
-                                    $statusClass = 'bg-emerald-50 text-emerald-700 border-emerald-200';
-                                    if ($item->status == 'I') {
-                                        $statusName = 'Izin';
-                                        $statusClass = 'bg-amber-50 text-amber-700 border-amber-200';
-                                    } elseif ($item->status == 'S') {
-                                        $statusName = 'Sakit';
-                                        $statusClass = 'bg-[#cde5ff] text-[#004a75] border-[#95ccff]';
-                                    } elseif ($item->status == 'A') {
-                                        $statusName = 'Alpa';
-                                        $statusClass = 'bg-red-50 text-red-700 border-red-200';
-                                    }
+                                    $statusConfig = [
+                                        'H' => ['label' => 'Hadir', 'class' => 'bg-emerald-50 text-emerald-600 border-emerald-100'],
+                                        'I' => ['label' => 'Izin', 'class' => 'bg-amber-50 text-amber-600 border-amber-100'],
+                                        'S' => ['label' => 'Sakit', 'class' => 'bg-sky-50 text-sky-600 border-sky-100'],
+                                        'A' => ['label' => 'Alpa', 'class' => 'bg-rose-50 text-rose-600 border-rose-100'],
+                                    ];
+                                    $config = $statusConfig[$item->status] ?? ['label' => 'N/A', 'class' => 'bg-slate-50 text-slate-400 border-slate-200'];
                                 @endphp
-                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold border {{ $statusClass }}">
-                                    {{ $statusName }}
+                                <span class="inline-block px-3 py-1 text-[10px] font-black rounded border {{ $config['class'] }} uppercase tracking-tighter">
+                                    {{ $config['label'] }}
                                 </span>
                             </td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="5" class="py-16 text-center text-[#707882] font-medium italic">
-                                <div class="flex flex-col items-center justify-center gap-3">
-                                    <div class="w-16 h-16 bg-[#eff4ff] rounded-full flex items-center justify-center mb-2">
-                                        <span class="material-symbols-outlined text-[#bfc7d2] text-4xl">folder_open</span>
-                                    </div>
-                                    <span>Belum ada riwayat kehadiran yang tercatat.</span>
+                            <td colspan="5" class="py-24 text-center opacity-30">
+                                <div class="flex flex-col items-center">
+                                    <i data-lucide="inbox" class="w-12 h-12 mb-3 text-slate-300"></i>
+                                    <p class="text-[10px] font-black uppercase tracking-[0.2em]">Data Absensi Kosong</p>
+                                    <p class="text-[11px] mt-1 italic">Anda belum memiliki riwayat kehadiran di sistem</p>
                                 </div>
                             </td>
                         </tr>
@@ -94,6 +116,23 @@
                 </table>
             </div>
         </div>
-
     </div>
+
+    <!-- Script Jam Realtime -->
+    <script>
+        function updateClock() {
+            const now = new Date();
+            const timeStr = now.getHours().toString().padStart(2, '0') + ':' + 
+                          now.getMinutes().toString().padStart(2, '0') + ':' + 
+                          now.getSeconds().toString().padStart(2, '0');
+            const el = document.getElementById('realtime-clock');
+            if(el) el.textContent = timeStr;
+        }
+        setInterval(updateClock, 1000); updateClock();
+    </script>
+
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
 </x-app-layout>

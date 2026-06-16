@@ -82,12 +82,15 @@
                             <span class="text-[13.5px]">Notifikasi</span>
                         </div>
                         @php
-    // Menghitung jumlah pengumuman berdasarkan kelas siswa yang login
-    $notifCount = \App\Models\Pengumuman::where('kelas_id', Auth::user()->id_kelas)->count();
+    $user = Auth::user();
+    // Logika baru: Hitung hanya pengumuman yang dibuat SETELAH terakhir kali user membuka menu Notifikasi
+    $notifCount = \App\Models\Pengumuman::where('kelas_id', $user->id_kelas)
+        ->where('created_at', '>', $user->notification_last_viewed_at ?? '2000-01-01')
+        ->count();
 @endphp
 
 @if($notifCount > 0)
-    <span class="bg-amber-500 text-[#0b1e36] text-[10px] font-black px-2 py-0.5 rounded-full shadow-sm">
+    <span class="bg-amber-50 text-amber-600 border border-amber-200 text-[10px] font-black px-2 py-0.5 rounded-full shadow-sm animate-pulse">
         {{ $notifCount }}
     </span>
 @endif

@@ -24,7 +24,8 @@ class User extends Authenticatable
         'role',
         'nisn',     // Untuk Siswa
         'nuptk',    // Untuk Guru/Admin
-        'id_kelas', // Foreign Key ke tabel kelas (untuk Siswa)
+        'id_kelas', 
+        'notification_last_viewed_at',// Foreign Key ke tabel kelas (untuk Siswa)
     ];
 
     /**

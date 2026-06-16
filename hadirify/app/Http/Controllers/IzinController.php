@@ -53,7 +53,7 @@ class IzinController extends Controller
             'tanggal_pengajuan' => now(),
         ]);
 
-        return redirect()->route('siswa.dashboard')->with('success', 'Pengajuan izin berhasil dikirim!');
+        return redirect()->route('siswa.izin')->with('success', 'Pengajuan izin berhasil dikirim!');
     }
 
     public function proses(Request $request, $id)

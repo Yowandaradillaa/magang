@@ -1,60 +1,159 @@
 <x-app-layout>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-
-    <style>
-        .custom-shadow { box-shadow: 0 4px 20px -2px rgba(0, 97, 150, 0.08); }
-        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-    </style>
-
-    <div class="max-w-[900px] mx-auto space-y-6 font-['Inter'] animate-in fade-in duration-500">
+    <!-- Container Utama: Alpine.js untuk kontrol Modal -->
+    <div x-data="{ 
+            selectedNotif: null, 
+            showDetail: false,
+            openDetail(notif) {
+                this.selectedNotif = notif;
+                this.showDetail = true;
+            }
+         }" 
+         class="animate-in fade-in duration-700 flex flex-col space-y-4 px-2 h-[calc(100vh-140px)] max-w-4xl mx-auto">
         
-        <div class="bg-white p-6 md:p-8 rounded-[28px] custom-shadow border border-[#bfc7d2] relative overflow-hidden flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div class="absolute top-0 right-0 w-64 h-64 bg-[#cde5ff]/60 blur-[100px] rounded-full -mr-20 -mt-20 pointer-events-none"></div>
-            
-            <div class="relative z-10">
-                <span class="bg-[#007abc] text-white px-3 py-1 rounded-full text-[11px] font-bold mb-3 inline-block uppercase tracking-wider">Pemberitahuan</span>
-                <h1 class="text-[32px] font-bold text-[#0b1c30] mb-2 leading-tight">Pusat Notifikasi</h1>
-                <p class="text-[14px] text-[#3f4851]">Semua pengumuman dan informasi penting dari guru kelas Anda.</p>
+        <!-- ================= SECTION 1: HEADER (FIXED) ================= -->
+        <div class="flex-none bg-white border border-slate-200/50 rounded-xl shadow-sm">
+            <div class="p-5 sm:px-6 sm:py-4 flex items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="flex-shrink-0 w-10 h-10 bg-sky-600 flex items-center justify-center rounded-lg shadow-lg shadow-sky-100">
+                        <i data-lucide="megaphone" class="w-5 h-5 text-white"></i>
+                    </div>
+                    <div class="space-y-0.5">
+                        <h2 class="text-lg font-extrabold text-[#0b1e36] tracking-tight">Pusat Notifikasi</h2>
+                        <p class="text-[11px] text-slate-500 font-medium italic">Informasi & pengumuman akademik terbaru</p>
+                    </div>
+                </div>
+
+                <!-- Clock -->
+                <p id="realtime-clock" class="hidden sm:block text-sm font-bold text-[#0b1e36] font-mono bg-slate-50 px-3 py-1 rounded-lg border border-slate-100">
+                    00:00:00
+                </p>
             </div>
         </div>
 
-        <div class="space-y-4">
+        <!-- ================= SECTION 2: LIST (SCROLLABLE) ================= -->
+        <div class="flex-1 min-h-0 overflow-y-auto no-scrollbar pb-10 space-y-3">
             @forelse($notifikasi as $n)
-            <div class="group flex gap-4 bg-white p-5 rounded-[24px] border border-[#bfc7d2] custom-shadow hover:-translate-y-1 transition-all duration-300">
-                <div class="p-3 bg-[#eff4ff] text-[#006196] rounded-xl border border-[#cde5ff] h-fit">
-                    <span class="material-symbols-outlined text-[24px]">campaign</span>
-                </div>
-                <div class="flex-1">
-                    <div class="flex justify-between items-start gap-4">
-                        <h3 class="text-[16px] font-bold text-[#0b1c30] group-hover:text-[#006196] transition-colors">{{ $n->judul }}</h3>
-                        @if($n->created_at->isToday())
-                        <span class="flex h-2.5 w-2.5 relative mt-1 shrink-0">
-                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-500 opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-500"></span>
-                        </span>
-                        @endif
+            <!-- Card Klik-able -->
+            <div @click="openDetail({ 
+                    judul: '{{ $n->judul }}', 
+                    isi: '{{ addslashes(str_replace(["\r", "\n"], ' ', $n->isi)) }}', 
+                    guru: '{{ $n->guru->name }}', 
+                    waktu: '{{ $n->created_at->diffForHumans() }}',
+                    tanggal: '{{ $n->created_at->translatedFormat('d F Y, H:i') }}'
+                 })"
+                 class="bg-white rounded-xl border border-slate-200/60 shadow-sm relative overflow-hidden group hover:border-sky-400 hover:shadow-md transition-all cursor-pointer">
+                
+                <!-- Left Accent Line -->
+                <div class="absolute left-0 top-0 bottom-0 w-[3px] bg-sky-600 group-hover:w-[5px] transition-all"></div>
+                
+                <div class="p-5 flex gap-5">
+                    <div class="hidden sm:flex shrink-0 w-10 h-10 bg-slate-50 text-slate-400 rounded-lg items-center justify-center group-hover:bg-sky-50 group-hover:text-sky-600 transition-colors">
+                        <i data-lucide="mail-open" class="w-5 h-5"></i>
                     </div>
-                    <p class="text-[13.5px] text-[#3f4851] mt-1.5 leading-relaxed">{{ $n->isi }}</p>
-                    
-                    <div class="mt-4 flex items-center gap-3">
-                        <span class="text-[11px] font-bold text-[#707882] flex items-center gap-1">
-                            <span class="material-symbols-outlined text-[14px]">person</span> {{ $n->guru->name }}
-                        </span>
-                        <span class="text-[11px] font-bold text-[#006196] bg-[#eff4ff] px-2.5 py-1 rounded border border-[#bfc7d2]">
-                            {{ $n->created_at->diffForHumans() }}
-                        </span>
+
+                    <div class="flex-1">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-sm font-extrabold text-[#0b1e36] group-hover:text-sky-600 transition-colors leading-tight">
+                                {{ $n->judul }}
+                            </h3>
+                            @if($n->created_at->isToday())
+                            <span class="px-2 py-0.5 bg-rose-50 text-rose-600 text-[8px] font-black rounded border border-rose-100 uppercase animate-pulse">Baru</span>
+                            @endif
+                        </div>
+                        
+                        <!-- Snippet / Cuplikan Teks -->
+                        <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed">
+                            {{ $n->isi }}
+                        </p>
+                        
+                        <div class="mt-4 pt-3 border-t border-slate-50 flex items-center justify-between">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter flex items-center gap-1">
+                                <i data-lucide="user" class="w-3 h-3"></i> {{ $n->guru->name }}
+                            </span>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[10px] font-mono text-slate-300">{{ $n->created_at->diffForHumans() }}</span>
+                                <i data-lucide="chevron-right" class="w-3 h-3 text-slate-300 group-hover:translate-x-1 transition-transform"></i>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
             @empty
-            <div class="py-12 text-center flex flex-col items-center justify-center gap-4 bg-white rounded-[24px] border border-[#bfc7d2]">
-                <div class="w-16 h-16 bg-[#eff4ff] rounded-full flex items-center justify-center mb-2">
-                    <span class="material-symbols-outlined text-[#bfc7d2] text-3xl">notifications_off</span>
-                </div>
-                <p class="text-[#707882] text-[14px] italic font-medium">Belum ada pengumuman baru untuk kelas ini.</p>
+            <div class="py-24 text-center opacity-30">
+                <i data-lucide="bell-off" class="w-12 h-12 mx-auto mb-3 text-slate-300"></i>
+                <p class="text-[10px] font-black uppercase tracking-widest italic">Belum ada pengumuman</p>
             </div>
             @endforelse
         </div>
+
+        <!-- ================= SECTION 3: MODAL DETAIL (MODERN) ================= -->
+        <template x-teleport="body">
+            <div x-show="showDetail" x-cloak
+                 class="fixed inset-0 z-[10000] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm px-4"
+                 x-transition:enter="ease-out duration-300"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:leave="ease-in duration-200"
+                 x-transition:leave-end="opacity-0">
+                
+                <div @click.away="showDetail = false"
+                     x-show="showDetail"
+                     x-transition:enter="ease-out duration-300"
+                     x-transition:enter-start="opacity-0 scale-95"
+                     class="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden border border-white/20">
+                    
+                    <!-- Header Modal -->
+                    <div class="bg-slate-50 p-6 border-b border-slate-100 flex justify-between items-start">
+                        <div class="flex gap-4">
+                            <div class="w-12 h-12 bg-sky-600 text-white rounded-xl flex items-center justify-center shadow-lg shadow-sky-100">
+                                <i data-lucide="megaphone" class="w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-black text-slate-900 leading-tight" x-text="selectedNotif?.judul"></h3>
+                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1" x-text="selectedNotif?.tanggal"></p>
+                            </div>
+                        </div>
+                        <button @click="showDetail = false" class="text-slate-300 hover:text-rose-500 transition-colors">
+                            <i data-lucide="x" class="w-6 h-6"></i>
+                        </button>
+                    </div>
+
+                    <!-- Body Modal -->
+                    <div class="p-8">
+                        <div class="prose prose-slate max-w-none text-sm text-slate-600 leading-relaxed italic border-l-4 border-slate-100 pl-4 py-1 mb-8" x-text="selectedNotif?.isi"></div>
+                        
+                        <div class="flex items-center justify-between pt-6 border-t border-slate-50">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center">
+                                    <i data-lucide="user" class="w-4 h-4 text-slate-400"></i>
+                                </div>
+                                <div>
+                                    <p class="text-[10px] font-black text-slate-400 uppercase leading-none">Pengirim</p>
+                                    <p class="text-xs font-bold text-slate-800" x-text="selectedNotif?.guru"></p>
+                                </div>
+                            </div>
+                            <button @click="showDetail = false" class="px-5 py-2 bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-black transition-all">
+                                Mengerti
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
     </div>
+
+    <!-- Script Jam & Icons -->
+    <script>
+        setInterval(() => {
+            const now = new Date();
+            const el = document.getElementById('realtime-clock');
+            if(el) el.textContent = now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0')+':'+now.getSeconds().toString().padStart(2,'0');
+        }, 1000);
+        lucide.createIcons();
+    </script>
+
+    <style>
+        [x-cloak] { display: none !important; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
 </x-app-layout>

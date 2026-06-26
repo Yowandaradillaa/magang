@@ -18,17 +18,23 @@ use App\Http\Controllers\Admin\AdminMapelController;
 
 /*
 |--------------------------------------------------------------------------
-| Guest Routes (Belum Login)
+| Guest Routes (Login Satu Pintu)
 |--------------------------------------------------------------------------
 */
 Route::get('/', function () {
-    return redirect('/siswa/login');
+    return redirect('/login');
 });
 
+// PENGALIH (Agar tidak 404 jika akses URL lama)
+Route::get('/siswa/login', function() { return redirect('/login'); });
+Route::get('/guru/login', function() { return redirect('/login'); });
+Route::get('/admin/login', function() { return redirect('/login'); });
+
 Route::middleware('guest')->group(function () {
-    Route::get('/siswa/login', function () { return view('auth.login'); })->name('login');
-    Route::get('/guru/login', function () { return view('auth.login'); });
-    Route::get('/admin/login', function () { return view('auth.login'); });
+    Route::get('/login', function () { 
+        return view('auth.login'); 
+    })->name('login');
+
     Route::post('/login-proses', [AuthController::class, 'login'])->name('login.proses');
 });
 
@@ -52,7 +58,6 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::post('/profile/update-password', [AuthController::class, 'updatePassword'])->name('profile.password.update');
 
-    // Akses list absen (Guru & Admin)
     Route::get('/absensi-list/{jadwal}', [AbsensiController::class, 'getAttendanceList'])->name('absensi.list');
 });
 
@@ -62,7 +67,6 @@ Route::middleware('auth')->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'role:admin'])->group(function () {
-    // Dashboard
     Route::get('/admin/dashboard', [AdminUserController::class, 'dashboardStats'])->name('admin.dashboard');
 
     // Manajemen Akun
@@ -95,6 +99,7 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
     Route::get('/guru/dashboard', [GuruController::class, 'dashboardStats'])->name('guru.dashboard');
     Route::get('/guru/qr', [QRController::class, 'index'])->name('guru.qr');
     Route::get('/guru/generate-qr/{jadwalId}', [QRController::class, 'generate'])->name('guru.generate-qr');
+    Route::post('/guru/stop-qr/{id}', [QRController::class, 'stopSession'])->name('guru.stop-qr');
     Route::get('/guru/manual', [GuruController::class, 'indexManual'])->name('guru.manual');
     Route::get('/guru/izin', [IzinController::class, 'index'])->name('guru.izin');
     Route::get('/guru/rekap', [GuruController::class, 'rekap'])->name('guru.rekap');
@@ -102,8 +107,6 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
     Route::post('/guru/tutup-absensi/{jadwalId}', [GuruController::class, 'tutupAbsensi'])->name('guru.tutup-absensi');
     Route::get('/guru/rekap-kelas', [LaporanController::class, 'index'])->name('guru.rekap.index');
 
-    
-    Route::post('/guru/stop-qr/{id}', [QRController::class, 'stopSession'])->name('guru.stop-qr');
     Route::post('/guru/absensi-manual', [GuruController::class, 'storeManual'])->name('guru.absensi-manual');
     Route::post('/guru/izin/{id}/proses', [IzinController::class, 'proses'])->name('guru.izin.proses');
     Route::post('/guru/kirim-pengumuman', [GuruController::class, 'kirimPengumuman'])->name('guru.pengumuman.send');
@@ -116,9 +119,7 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
 */
 Route::middleware(['auth', 'role:siswa'])->group(function () {
     Route::get('/siswa/dashboard', [SiswaController::class, 'dashboard'])->name('siswa.dashboard');
-   
-    // Ganti yang lama (yang return view direct) menjadi ini:
-Route::get('/siswa/scan-qr', [SiswaController::class, 'scanQR'])->name('siswa.scan-qr');
+    Route::get('/siswa/scan-qr', [SiswaController::class, 'scanQR'])->name('siswa.scan-qr');
     Route::get('/siswa/rekap', [SiswaController::class, 'rekap'])->name('siswa.rekap');
     Route::get('/siswa/notifikasi', [SiswaController::class, 'pengumuman'])->name('siswa.notifikasi');
     Route::get('/siswa/izin', function () { return view('siswa.izin'); })->name('siswa.izin');

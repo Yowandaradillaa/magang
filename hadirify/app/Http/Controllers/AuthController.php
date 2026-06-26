@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers; // Namespace diperbarui (hapus \API)
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -11,42 +11,40 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-    /**
-     * Menangani proses Login untuk Web & Postman (Fullstack).
-     */
     public function login(Request $request)
     {
-        // 1. Validasi Input
+        // 1. Validasi Input (Gunakan login_id agar tidak rancu dengan email)
         $request->validate([
-            'email'    => 'required|string', 
+            'login_id' => 'required|string', 
             'password' => 'required',
         ]);
 
-        $loginValue = $request->email;
+        $loginValue = $request->login_id;
 
-        // 2. Deteksi otomatis kolom (NISN, NUPTK, atau Email)
+        // 2. Deteksi otomatis kolom di database
         if (filter_var($loginValue, FILTER_VALIDATE_EMAIL)) {
             $field = 'email';
         } elseif (is_numeric($loginValue)) {
-            // NISN (Siswa) <= 10 digit, sisanya NUPTK (Guru/Admin)
+            // NISN (Siswa) biasanya 10 digit, NUPTK (Guru) biasanya 16 digit
             $field = strlen($loginValue) <= 10 ? 'nisn' : 'nuptk';
         } else {
+            // Jika bukan email dan bukan angka, anggap email (untuk username admin jika ada)
             $field = 'email';
         }
 
-        // 3. Coba Login menggunakan Session (Auth::attempt)
+        // 3. Proses Login
         if (!Auth::attempt([$field => $loginValue, 'password' => $request->password], $request->boolean('remember'))) {
             throw ValidationException::withMessages([
-                'email' => 'Kredensial salah. NISN/NUPTK atau password tidak cocok.',
+                'login_id' => 'Kredensial salah. ID Pengguna atau Password tidak cocok.',
             ]);
         }
 
-        // 4. Jika sukses, buat ulang session (keamanan)
+        // 4. Sukses: Regenerate Session
         $request->session()->regenerate();
 
         $user = Auth::user();
 
-        // 5. Tentukan URL Redirect berdasarkan Role
+        // 5. URL Redirect berdasarkan Role
         $url = match ($user->role) {
             'admin' => '/admin/dashboard',
             'guru'  => '/guru/dashboard',
@@ -54,9 +52,10 @@ class AuthController extends Controller
             default => '/',
         };
 
-        // 6. Respon JSON jika lewat Postman, Redirect jika lewat Browser
+        // Respon JSON untuk API/Postman
         if ($request->wantsJson()) {
             return response()->json([
+                'status'  => 'success',
                 'message' => 'Login Berhasil!',
                 'user'    => $user,
                 'redirect_to' => $url
@@ -66,21 +65,14 @@ class AuthController extends Controller
         return redirect()->intended($url);
     }
 
-    /**
-     * Logout untuk sistem Fullstack.
-     */
     public function logout(Request $request)
     {
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-
         return redirect('/login');
     }
 
-    /**
-     * Fitur Ganti Password (sesuai Use Case).
-     */
     public function updatePassword(Request $request)
     {
         $request->validate([
@@ -94,9 +86,7 @@ class AuthController extends Controller
             return back()->withErrors(['current_password' => 'Password lama salah!']);
         }
 
-        $user->update([
-            'password' => Hash::make($request->new_password)
-        ]);
+        $user->update(['password' => Hash::make($request->new_password)]);
 
         return back()->with('success', 'Password berhasil diperbarui!');
     }

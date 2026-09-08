@@ -9,12 +9,14 @@ use App\Http\Controllers\IzinController;
 use App\Http\Controllers\GuruController;
 use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\Admin\AdminJadwalController;
+
 
 // Import Controller Admin
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\AdminKelasController;
-use App\Http\Controllers\Admin\AdminJadwalController;
 use App\Http\Controllers\Admin\AdminMapelController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -61,11 +63,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/absensi-list/{jadwal}', [AbsensiController::class, 'getAttendanceList'])->name('absensi.list');
 });
 
-/*
-|--------------------------------------------------------------------------
-| ADMIN ROUTES
-|--------------------------------------------------------------------------
-*/
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminUserController::class, 'dashboardStats'])->name('admin.dashboard');
 
@@ -83,11 +80,18 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::delete('/admin/kelas/{id}', [AdminKelasController::class, 'destroy'])->name('admin.kelas.destroy');
 
     // Lain-lain
-    Route::get('/admin/mapel', [AdminMapelController::class, 'index'])->name('admin.mapel');
+    Route::resource('/admin/mapel', AdminMapelController::class)->names('admin.mapel');
     Route::get('/admin/jadwal', [AdminJadwalController::class, 'index'])->name('admin.jadwal');
-    Route::get('/admin/koreksi', [AdminUserController::class, 'koreksiAbsenList'])->name('admin.koreksi');
-    Route::put('/admin/koreksi-absen/{id}', [AdminJadwalController::class, 'koreksiAbsen'])->name('admin.koreksi.update');
+    
+    // Koreksi Absensi (Menggunakan AdminJadwalController)
+    Route::get('/admin/koreksi', [AdminJadwalController::class, 'koreksiIndex'])->name('admin.koreksi');
+    Route::put('/admin/koreksi/{id}', [AdminJadwalController::class, 'koreksiAbsen'])->name('admin.koreksi.update');
+    
     Route::get('/admin/laporan', [AdminUserController::class, 'laporan'])->name('admin.laporan');
+
+    Route::get('/admin/jadwal', [AdminJadwalController::class, 'index'])->name('admin.jadwal');
+Route::post('/admin/jadwal', [AdminJadwalController::class, 'store'])->name('admin.jadwal.store');
+Route::delete('/admin/jadwal/{id}', [AdminJadwalController::class, 'destroy'])->name('admin.jadwal.destroy');
 });
 
 /*
@@ -96,7 +100,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'role:guru'])->group(function () {
-    Route::get('/guru/dashboard', [GuruController::class, 'dashboardStats'])->name('guru.dashboard');
+    Route::get('/guru/dashboard', [GuruController::class, 'dashboard'])->name('guru.dashboard');
     Route::get('/guru/qr', [QRController::class, 'index'])->name('guru.qr');
     Route::get('/guru/generate-qr/{jadwalId}', [QRController::class, 'generate'])->name('guru.generate-qr');
     Route::post('/guru/stop-qr/{id}', [QRController::class, 'stopSession'])->name('guru.stop-qr');
@@ -107,9 +111,13 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
     Route::post('/guru/tutup-absensi/{jadwalId}', [GuruController::class, 'tutupAbsensi'])->name('guru.tutup-absensi');
     Route::get('/guru/rekap-kelas', [LaporanController::class, 'index'])->name('guru.rekap.index');
 
+    Route::get('/guru/manual', [GuruController::class, 'manual'])->name('guru.manual');
     Route::post('/guru/absensi-manual', [GuruController::class, 'storeManual'])->name('guru.absensi-manual');
     Route::post('/guru/izin/{id}/proses', [IzinController::class, 'proses'])->name('guru.izin.proses');
     Route::post('/guru/kirim-pengumuman', [GuruController::class, 'kirimPengumuman'])->name('guru.pengumuman.send');
+    Route::get('/guru/rekap/cetak', [GuruController::class, 'cetakPdf'])->name('guru.rekap.cetak');
+Route::get('/guru/rekap/excel', [GuruController::class, 'exportExcel'])->name('guru.rekap.excel');
+    
 });
 
 /*

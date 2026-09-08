@@ -62,6 +62,10 @@
                     <a href="/admin/laporan" class="flex items-center gap-3.5 px-4 py-3 rounded-xl font-bold text-[13.5px] transition-all duration-200 {{ request()->is('admin/laporan*') ? 'bg-white/10 text-white shadow-md border-l-4 border-rose-500 pl-3' : 'text-slate-400 hover:bg-white/5 hover:text-white' }}">
                         <i data-lucide="bar-chart-2" class="w-4.5 h-4.5 {{ request()->is('admin/laporan*') ? 'text-rose-500' : '' }}"></i> Laporan Sekolah
                     </a>
+
+                    <a href="/admin/mapel" class="flex items-center gap-3.5 px-4 py-3 rounded-xl font-bold text-[13.5px] transition-all duration-200 {{ request()->is('admin/mapel*') ? 'bg-white/10 text-white shadow-md border-l-4 border-rose-500 pl-3' : 'text-slate-400 hover:bg-white/5 hover:text-white' }}">
+                        <i data-lucide="book-open" class="w-4.5 h-4.5 {{ request()->is('admin/mapel*') ? 'text-rose-500' : '' }}"></i> Mata Pelajaran
+                    </a>
                 </nav>
             </div>
 

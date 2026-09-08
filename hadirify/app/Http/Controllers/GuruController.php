@@ -12,12 +12,23 @@ use Illuminate\Support\Facades\Auth;
 class GuruController extends Controller
 {
     /**
-     * Dashboard Guru: Menampilkan statistik singkat kehadiran hari ini (Global)
+     * Dashboard Utama Guru: Menampilkan statistik dan jadwal mengajar hari ini
      */
-    public function dashboardStats()
+    public function dashboard()
     {
+        $guruId = auth()->id();
         $today = now()->toDateString();
         
+        // Sesuaikan nama hari dengan database (contoh: 'Jumat' atau otomatis bahasa Indonesia)
+        $hariIni = 'Jumat'; 
+
+        // 1. Ambil jadwal mengajar guru khusus hari ini
+        $jadwalHariIni = Jadwal::with(['kelas', 'mapel'])
+                            ->where('id_guru', $guruId)
+                            ->where('hari', $hariIni)
+                            ->get();
+
+        // 2. Hitung statistik kehadiran hari ini
         $stats = [
             'hadir' => Absensi::where('tanggal', $today)->where('status', 'H')->count(),
             'izin'  => Absensi::where('tanggal', $today)->where('status', 'I')->count(),
@@ -25,16 +36,15 @@ class GuruController extends Controller
             'alpa'  => Absensi::where('tanggal', $today)->where('status', 'A')->count(),
         ];
 
-        return view('guru.dashboard', compact('stats'));
+        return view('guru.dashboard', compact('jadwalHariIni', 'stats'));
     }
 
     /**
-     * BARU: Menampilkan daftar jadwal mengajar guru hari ini.
-     * Digunakan agar guru bisa memilih rute ke "Generate QR" atau "Manual"
+     * Menampilkan daftar jadwal mengajar guru hari ini.
      */
     public function indexJadwal()
     {
-        $hariIni = now()->locale('id')->dayName; // Mengambil nama hari (Senin, Selasa, dst)
+        $hariIni = now()->locale('id')->dayName; 
         $jadwals = Jadwal::with(['mapel', 'kelas'])
                          ->where('id_guru', Auth::id())
                          ->where('hari', $hariIni)
@@ -46,15 +56,24 @@ class GuruController extends Controller
     /**
      * Menampilkan halaman daftar siswa untuk absen manual berdasarkan jadwal.
      */
-    public function manual() 
-{
-    $jadwals = \App\Models\Jadwal::with(['kelas', 'mapel'])->where('id_guru', auth()->id())->get();
-    
-    // Default: siswa kosong sebelum jadwal dipilih
-    $siswa = collect([]); 
-    
-    return view('guru.manual', compact('jadwals', 'siswa'));
-}
+    public function manual(Request $request) 
+    {
+        $jadwals = Jadwal::with(['kelas', 'mapel'])->where('id_guru', auth()->id())->get();
+        
+        $selectedJadwalId = $request->input('jadwal_id');
+        $siswa = collect([]); 
+
+        if ($selectedJadwalId) {
+            $selectedJadwal = Jadwal::with('kelas')->find($selectedJadwalId);
+            if ($selectedJadwal) {
+                $siswa = User::where('role', 'siswa')
+                             ->orderBy('name', 'asc')
+                             ->get();
+            }
+        }
+        
+        return view('guru.manual', compact('jadwals', 'siswa', 'selectedJadwalId'));
+    }
 
     /**
      * Simpan Absensi Manual (Dari Form Blade)
@@ -74,7 +93,7 @@ class GuruController extends Controller
                     'tanggal' => now()->toDateString(),
                 ],
                 [
-                    'status' => $status, // H, A, S, I
+                    'status' => $status, 
                     'metode' => 'Manual',
                     'waktu_absen' => now(),
                 ]
@@ -85,28 +104,24 @@ class GuruController extends Controller
     }
 
     public function indexManual()
-{
-    // Ambil semua jadwal milik guru yang sedang login
-    $jadwals = \App\Models\Jadwal::with(['mapel', 'kelas'])
-                ->where('id_guru', Auth::id())
-                ->get();
+    {
+        $jadwals = Jadwal::with(['mapel', 'kelas'])
+                    ->where('id_guru', Auth::id())
+                    ->get();
 
-    // Kirim variabel $jadwals ke view
-    // Kita kirim $siswa sebagai koleksi kosong agar tidak error saat pertama kali buka
-    $siswa = collect([]); 
-    
-    return view('guru.manual', compact('jadwals', 'siswa'));
-}
+        $siswa = collect([]); 
+        
+        return view('guru.manual', compact('jadwals', 'siswa'));
+    }
+
     /**
-     * BARU: Fitur Tutup Absensi (Logika Auto-Alpa)
-     * Siswa yang belum absen (kosong) otomatis dibuatkan record status 'A' (Alpa)
+     * Fitur Tutup Absensi (Logika Auto-Alpa)
      */
     public function tutupAbsensi($jadwalId)
     {
         $jadwal = Jadwal::findOrFail($jadwalId);
         $today = now()->toDateString();
 
-        // 1. Ambil semua siswa yang ada di kelas jadwal tersebut
         $semuaSiswa = User::where('id_kelas', $jadwal->id_kelas)
                           ->where('role', 'siswa')
                           ->get();
@@ -114,20 +129,18 @@ class GuruController extends Controller
         $countAlpa = 0;
 
         foreach ($semuaSiswa as $siswa) {
-            // 2. Cek apakah siswa ini sudah punya data absen (Hadir/Izin/Sakit)
             $exists = Absensi::where('siswa_id', $siswa->id)
-                             ->where('jadwal_id', $jadwalId)
-                             ->where('tanggal', $today)
-                             ->exists();
+                           ->where('jadwal_id', $jadwalId)
+                           ->where('tanggal', $today)
+                           ->exists();
 
-            // 3. Jika belum ada data sama sekali, masukkan sebagai Alpa
             if (!$exists) {
                 Absensi::create([
                     'siswa_id'    => $siswa->id,
                     'jadwal_id'   => $jadwalId,
                     'tanggal'     => $today,
                     'waktu_absen' => now(),
-                    'status'      => 'A', // Alpa
+                    'status'      => 'A', 
                     'metode'      => 'Manual',
                 ]);
                 $countAlpa++;
@@ -207,5 +220,93 @@ class GuruController extends Controller
             ->get();
 
         return view('guru.pengumuman', compact('kelas', 'pengumumans'));
+    }
+
+    // 1. Method untuk Cetak / View PDF
+    public function cetakPdf(Request $request)
+    {
+        $kelasId = $request->input('kelas_id');
+        $bulanInput = $request->input('bulan', now()->month);
+        
+        $kelasDipilih = \App\Models\Kelas::find($kelasId);
+        $rekaps = [];
+
+        if ($kelasId) {
+            $siswas = User::where('id_kelas', $kelasId)->where('role', 'siswa')->orderBy('name', 'asc')->get();
+            $bulan = intval($bulanInput);
+            $tahun = now()->year;
+
+            foreach ($siswas as $siswa) {
+                $hadir = Absensi::where('siswa_id', $siswa->id)->whereMonth('tanggal', $bulan)->whereYear('tanggal', $tahun)->where('status', 'H')->count();
+                $sakit = Absensi::where('siswa_id', $siswa->id)->whereMonth('tanggal', $bulan)->whereYear('tanggal', $tahun)->where('status', 'S')->count();
+                $izin = Absensi::where('siswa_id', $siswa->id)->whereMonth('tanggal', $bulan)->whereYear('tanggal', $tahun)->where('status', 'I')->count();
+                $alpa = Absensi::where('siswa_id', $siswa->id)->whereMonth('tanggal', $bulan)->whereYear('tanggal', $tahun)->where('status', 'A')->count();
+
+                $rekapObj = new \stdClass();
+                $rekapObj->siswa = $siswa;
+                $rekapObj->hadir = $hadir;
+                $rekapObj->sakit = $sakit;
+                $rekapObj->izin = $izin;
+                $rekapObj->alpa = $alpa;
+
+                $rekaps[] = $rekapObj;
+            }
+        }
+
+        return view('guru.cetak-pdf', compact('kelasDipilih', 'rekaps', 'bulanInput'));
+    }
+
+    // 2. Method untuk Download Excel (.xls / CSV)
+    public function exportExcel(Request $request)
+    {
+        $kelasId = $request->input('kelas_id');
+        $bulanInput = $request->input('bulan', now()->month);
+        
+        $kelasDipilih = \App\Models\Kelas::find($kelasId);
+        $namaKelas = $kelasDipilih ? $kelasDipilih->nama_kelas : 'Semua-Kelas';
+        $filename = "Rekap-Absensi-{$namaKelas}-Bulan-{$bulanInput}.xls";
+
+        $siswas = User::where('id_kelas', $kelasId)->where('role', 'siswa')->orderBy('name', 'asc')->get();
+        $bulan = intval($bulanInput);
+        $tahun = now()->year;
+
+        $rekaps = [];
+        foreach ($siswas as $siswa) {
+            $hadir = Absensi::where('siswa_id', $siswa->id)->whereMonth('tanggal', $bulan)->whereYear('tanggal', $tahun)->where('status', 'H')->count();
+            $sakit = Absensi::where('siswa_id', $siswa->id)->whereMonth('tanggal', $bulan)->whereYear('tanggal', $tahun)->where('status', 'S')->count();
+            $izin = Absensi::where('siswa_id', $siswa->id)->whereMonth('tanggal', $bulan)->whereYear('tanggal', $tahun)->where('status', 'I')->count();
+            $alpa = Absensi::where('siswa_id', $siswa->id)->whereMonth('tanggal', $bulan)->whereYear('tanggal', $tahun)->where('status', 'A')->count();
+
+            $rekaps[] = [
+                'nama' => $siswa->name,
+                'hadir' => $hadir,
+                'sakit' => $sakit,
+                'izin' => $izin,
+                'alpa' => $alpa
+            ];
+        }
+
+        $headers = [
+            "Content-type" => "application/vnd.ms-excel",
+            "Content-Disposition" => "attachment; filename=$filename",
+            "Pragma" => "no-cache",
+            "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
+            "Expires" => "0"
+        ];
+
+        $callback = function() use ($rekaps, $namaKelas, $bulanInput) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, ["Laporan Rekapitulasi Kehadiran Siswa"]);
+            fputcsv($file, ["Kelas: $namaKelas", "Bulan: $bulanInput"]);
+            fputcsv($file, []); 
+            fputcsv($file, ['No', 'Nama Siswa', 'Hadir (H)', 'Sakit (S)', 'Izin (I)', 'Alpa (A)']);
+            
+            foreach ($rekaps as $index => $r) {
+                fputcsv($file, [$index + 1, $r['nama'], $r['hadir'], $r['sakit'], $r['izin'], $r['alpa']]);
+            }
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 }

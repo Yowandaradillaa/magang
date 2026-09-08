@@ -7,6 +7,7 @@ use App\Models\Kelas;
 use App\Models\User;
 use App\Models\Jadwal;
 use Illuminate\Http\Request;
+use App\Models\MataPelajaran;
 
 class AdminKelasController extends Controller
 {
@@ -14,13 +15,11 @@ class AdminKelasController extends Controller
     {
         $kelas = Kelas::with(['waliKelas', 'siswas'])->get();
         
-        // --- HAPUS BARIS dd() DI SINI ---
-        // Supaya kalau kelas kosong, halaman tetap kebuka dan kamu bisa klik "Tambah Kelas"
-        
         $gurus = User::where('role', 'guru')->get(); 
         $jadwals = Jadwal::with(['kelas', 'mapel', 'guru'])->get();
+        $mapels = \App\Models\MataPelajaran::all(); // Tambahkan baris ini untuk mengambil data mapel
 
-        return view('admin.kelas', compact('kelas', 'gurus', 'jadwals'));
+        return view('admin.kelas', compact('kelas', 'gurus', 'jadwals', 'mapels'));
     }
 
     public function store(Request $request)

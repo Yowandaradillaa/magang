@@ -10,8 +10,8 @@ class Absensi extends Model
     protected $table = 'absensis'; 
 
     protected $fillable = [
-        'siswa_id',    // Pastikan ini sesuai database
-        'jadwal_id',   // Pastikan ini sesuai database
+        'siswa_id',    
+        'jadwal_id',   
         'tanggal',
         'status',
         'metode',
@@ -26,7 +26,12 @@ class Absensi extends Model
         return $this->belongsTo(User::class, 'siswa_id');
     }
 
-    // Tambahkan relasi ini untuk memperbaiki error "undefined relationship [jadwal]"
+    // Tambahkan alias relasi 'siswa' agar cocok dengan controller dan view
+    public function siswa(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'siswa_id');
+    }
+
     public function jadwal(): BelongsTo
     {
         return $this->belongsTo(Jadwal::class, 'jadwal_id');

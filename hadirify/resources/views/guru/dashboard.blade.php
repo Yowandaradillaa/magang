@@ -113,6 +113,25 @@
                     </a>
                 </div>
             </div>
+            <div class="bg-white p-6 rounded-xl border border-slate-200/60 shadow-sm mt-6">
+    <h3 class="text-sm font-black uppercase tracking-wider text-[#0b1e36] mb-4">Jadwal Mengajar Hari Ini</h3>
+    
+    <div class="space-y-3">
+        @forelse($jadwalHariIni as $j)
+            <div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100">
+                <div>
+                    <h4 class="font-bold text-slate-800 text-xs">{{ $j->mapel->nama_mapel }} — {{ $j->kelas->nama_kelas }}</h4>
+                    <p class="text-[10px] text-slate-400 font-mono mt-0.5">Jam: {{ $j->jam_mulai }} - {{ $j->jam_selesai }}</p>
+                </div>
+                <a href="{{ route('guru.manual') }}?jadwal_id={{ $j->id }}" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white text-[10px] font-black uppercase tracking-widest rounded-lg shadow-sm transition-all">
+                    Buka Absensi
+                </a>
+            </div>
+        @empty
+            <p class="text-xs text-slate-400 italic text-center py-4">Tidak ada jadwal mengajar untuk hari ini.</p>
+        @endforelse
+    </div>
+</div>
 
         </div>
     </div>

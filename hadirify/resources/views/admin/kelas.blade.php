@@ -1,11 +1,12 @@
 <x-admin-layout>
-    <!-- State Alpine.js: Mengontrol Tab, Modal Tambah, Edit, dan Hapus -->
+    <!-- State Alpine.js: Mengontrol Tab, Modal Tambah, Edit, Hapus, dan Modal Jadwal -->
     <div x-data="{ 
         showModal: false, 
         showEditModal: false,
         showDeleteModal: false,
+        showJadwalModal: false,
         deleteUrl: '',
-        editData: { id: '', nama_kelas: '', tahun_ajaran: '', id_wali_kelas: '' }
+        editData: { id: '', nama_kelas: '', mata_pelajaran: '', tahun_ajaran: '', id_wali_kelas: '' }
     }" class="animate-in fade-in duration-500 flex flex-col space-y-4 px-2 h-[calc(100vh-140px)]">
         
         <!-- Notifikasi Berhasil -->
@@ -36,7 +37,7 @@
             </button>
         </div>
 
-        <!-- ================= SECTION 2: TABEL (SCROLLABLE) ================= -->
+        <!-- ================= SECTION 2: TABEL KELAS (SCROLLABLE) ================= -->
         <div class="flex-1 min-h-0 bg-white rounded-xl border border-slate-200/60 shadow-sm overflow-hidden flex flex-col">
             <div class="flex-1 overflow-y-auto no-scrollbar relative">
                 <table class="w-full text-left border-collapse">
@@ -52,6 +53,7 @@
                         @forelse($kelas as $k)
                         <tr class="hover:bg-slate-50/50 transition-colors">
                             <td class="px-6 py-3 font-bold text-slate-800 text-xs">{{ $k->nama_kelas }}</td>
+                            
                             <td class="px-6 py-3">
                                 <span class="px-2.5 py-1 bg-slate-100 text-slate-600 font-mono text-[10px] font-bold rounded border border-slate-200">
                                     {{ $k->tahun_ajaran }}
@@ -67,6 +69,7 @@
                                         editData = { 
                                             id: '{{ $k->id }}', 
                                             nama_kelas: '{{ $k->nama_kelas }}', 
+                                            mata_pelajaran: '{{ $k->mata_pelajaran ?? '' }}',
                                             tahun_ajaran: '{{ $k->tahun_ajaran }}', 
                                             id_wali_kelas: '{{ $k->id_wali_kelas }}' 
                                         }; 
@@ -75,7 +78,7 @@
                                         <i data-lucide="edit-3" class="w-4 h-4"></i>
                                     </button>
 
-                                    <!-- Tombol Hapus: Mengatur deleteUrl dan membuka Modal Konfirmasi -->
+                                    <!-- Tombol Hapus -->
                                     <button @click="deleteUrl = '{{ route('admin.kelas.destroy', $k->id) }}'; showDeleteModal = true" 
                                             class="p-1.5 text-slate-400 hover:text-rose-600 transition-all cursor-pointer">
                                         <i data-lucide="trash-2" class="w-4 h-4"></i>
@@ -84,7 +87,58 @@
                             </td>
                         </tr>
                         @empty
-                        <tr><td colspan="4" class="py-20 text-center opacity-30 text-[10px] font-black uppercase tracking-widest italic leading-relaxed">Belum ada data kelas</td></tr>
+                        <tr><td colspan="5" class="py-20 text-center opacity-30 text-[10px] font-black uppercase tracking-widest italic leading-relaxed">Belum ada data kelas</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ================= SECTION 3: MANAJEMEN JADWAL MENGAJAR ================= -->
+        <div class="bg-white rounded-xl border border-slate-200/60 shadow-sm overflow-hidden flex flex-col mt-6">
+            <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/30">
+                <h3 class="text-[11px] font-black text-[#0b1e36] uppercase tracking-widest flex items-center gap-2">
+                    <i data-lucide="calendar" class="w-4 h-4 text-blue-500"></i>
+                    Jadwal Mengajar Guru & Kelas
+                </h3>
+                <!-- Tombol Trigger Modal Tambah Jadwal -->
+                <button @click="showJadwalModal = true" class="px-4 py-2 bg-[#0b1e36] hover:bg-slate-800 text-white text-[10px] font-bold rounded-lg shadow uppercase tracking-wider cursor-pointer transition-all active:scale-95">
+                    + Tambah Jadwal
+                </button>
+            </div>
+
+            <div class="overflow-y-auto no-scrollbar">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-slate-50 border-b border-slate-100">
+                        <tr class="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            <th class="px-6 py-3">Hari & Jam</th>
+                            <th class="px-6 py-3">Kelas</th>
+                            <th class="px-6 py-3">Mata Pelajaran</th>
+                            <th class="px-6 py-3">Guru Pengampu</th>
+                            <th class="px-6 py-3 text-right">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-50 text-xs font-semibold text-slate-700">
+                        @forelse($jadwals ?? [] as $jadwal)
+                        <tr class="hover:bg-slate-50/50">
+                            <td class="px-6 py-3">
+                                <span class="font-bold text-[#0b1e36]">{{ $jadwal->hari }}</span>
+                                <span class="text-[10px] text-slate-400 block">{{ $jadwal->jam_mulai }} - {{ $jadwal->jam_selesai }}</span>
+                            </td>
+                            <td class="px-6 py-3">{{ $jadwal->kelas->nama_kelas ?? '---' }}</td>
+                            <td class="px-6 py-3">{{ $jadwal->mapel->nama_mapel ?? '---' }}</td>
+                            <td class="px-6 py-3">{{ $jadwal->guru->name ?? '---' }}</td>
+                            <td class="px-6 py-3 text-right">
+                                <form action="{{ route('admin.jadwal.destroy', $jadwal->id) }}" method="POST" class="inline">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="text-slate-400 hover:text-rose-600 text-xs cursor-pointer">Hapus</button>
+                                </form>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="5" class="py-10 text-center text-slate-400 italic text-[11px]">Belum ada jadwal yang diatur. Silakan tambahkan jadwal baru.</td>
+                        </tr>
                         @endforelse
                     </tbody>
                 </table>
@@ -108,6 +162,10 @@
                                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Nama Kelas</label>
                                 <input type="text" name="nama_kelas" required placeholder="Contoh: XII PPLG 1" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:border-[#0b1e36] outline-none">
                             </div>
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Mata Pelajaran</label>
+                                <input type="text" name="mata_pelajaran" required placeholder="Contoh: Pemrograman Web" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:border-[#0b1e36] outline-none">
+                            </div>
                             <div class="grid grid-cols-2 gap-4">
                                 <div class="space-y-1">
                                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Tahun Ajaran</label>
@@ -125,8 +183,79 @@
                                 </div>
                             </div>
                             <div class="flex gap-3 pt-4 border-t border-slate-100">
-                                <button type="button" @click="showModal = false" class="flex-1 py-3 text-slate-400 text-[10px] font-bold uppercase tracking-widest">Batal</button>
-                                <button type="submit" class="flex-[2] py-3 bg-[#0b1e36] text-white text-[10px] font-bold rounded-lg shadow-lg uppercase tracking-widest">Simpan Kelas</button>
+                                <button type="button" @click="showModal = false" class="flex-1 py-3 text-slate-400 text-[10px] font-bold uppercase tracking-widest cursor-pointer">Batal</button>
+                                <button type="submit" class="flex-[2] py-3 bg-[#0b1e36] text-white text-[10px] font-bold rounded-lg shadow-lg uppercase tracking-widest cursor-pointer">Simpan Kelas</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- ================= MODAL TAMBAH JADWAL ================= -->
+        <template x-teleport="body">
+            <div x-show="showJadwalModal" class="fixed inset-0 z-[9999] flex items-center justify-center p-4" x-cloak>
+                <div x-show="showJadwalModal" x-transition @click="showJadwalModal = false" class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm"></div>
+                <div x-show="showJadwalModal" x-transition class="relative bg-white w-full max-w-md rounded-xl shadow-2xl overflow-hidden">
+                    <div class="h-1.5 w-full bg-[#0b1e36]"></div>
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-lg font-extrabold text-[#0b1e36] tracking-tight">Tambah Jadwal Mengajar</h3>
+                            <button @click="showJadwalModal = false" class="text-slate-300 hover:text-rose-500 cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
+                        </div>
+                        <form action="{{ route('admin.jadwal.store') }}" method="POST" class="space-y-4">
+                            @csrf
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Pilih Kelas</label>
+                                <select name="id_kelas" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none">
+                                    <option value="">-- Pilih Kelas --</option>
+                                    @foreach($kelas as $k)
+                                        <option value="{{ $k->id }}">{{ $k->nama_kelas }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Mata Pelajaran</label>
+                                <select name="id_mapel" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none">
+                                    <option value="">-- Pilih Mapel --</option>
+                                    @foreach($mapels as $m)
+                                        <option value="{{ $m->id }}">{{ $m->nama_mapel }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Guru Pengampu</label>
+                                <select name="id_guru" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none">
+                                    <option value="">-- Pilih Guru --</option>
+                                    @foreach($gurus as $guru)
+                                        <option value="{{ $guru->id }}">{{ $guru->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="grid grid-cols-3 gap-2">
+                                <div class="space-y-1">
+                                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Hari</label>
+                                    <select name="hari" required class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs outline-none">
+                                        <option value="Senin">Senin</option>
+                                        <option value="Selasa">Selasa</option>
+                                        <option value="Rabu">Rabu</option>
+                                        <option value="Kamis">Kamis</option>
+                                        <option value="Jumat">Jumat</option>
+                                        <option value="Sabtu">Sabtu</option>
+                                    </select>
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Jam Mulai</label>
+                                    <input type="time" name="jam_mulai" required class="w-full px-2 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs outline-none">
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Jam Selesai</label>
+                                    <input type="time" name="jam_selesai" required class="w-full px-2 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs outline-none">
+                                </div>
+                            </div>
+                            <div class="flex gap-3 pt-4 border-t border-slate-100">
+                                <button type="button" @click="showJadwalModal = false" class="flex-1 py-3 text-slate-400 text-[10px] font-bold uppercase tracking-widest cursor-pointer">Batal</button>
+                                <button type="submit" class="flex-[2] py-3 bg-[#0b1e36] text-white text-[10px] font-bold rounded-lg shadow-lg uppercase tracking-widest cursor-pointer">Simpan Jadwal</button>
                             </div>
                         </form>
                     </div>
@@ -151,6 +280,10 @@
                                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Nama Identitas Kelas</label>
                                 <input type="text" name="nama_kelas" x-model="editData.nama_kelas" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:border-blue-600 outline-none transition-all">
                             </div>
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Mata Pelajaran</label>
+                                <input type="text" name="mata_pelajaran" x-model="editData.mata_pelajaran" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:border-blue-600 outline-none transition-all">
+                            </div>
                             <div class="grid grid-cols-2 gap-4">
                                 <div class="space-y-1">
                                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Tahun Ajaran</label>
@@ -166,8 +299,8 @@
                                 </div>
                             </div>
                             <div class="flex gap-3 pt-4 border-t border-slate-100">
-                                <button type="button" @click="showEditModal = false" class="flex-1 py-3 text-slate-400 text-[10px] font-bold uppercase tracking-widest">Batal</button>
-                                <button type="submit" class="flex-[2] py-3 bg-blue-600 text-white text-[10px] font-bold rounded-lg shadow-lg uppercase tracking-widest">Update Data</button>
+                                <button type="button" @click="showEditModal = false" class="flex-1 py-3 text-slate-400 text-[10px] font-bold uppercase tracking-widest cursor-pointer">Batal</button>
+                                <button type="submit" class="flex-[2] py-3 bg-blue-600 text-white text-[10px] font-bold rounded-lg shadow-lg uppercase tracking-widest cursor-pointer">Update Data</button>
                             </div>
                         </form>
                     </div>

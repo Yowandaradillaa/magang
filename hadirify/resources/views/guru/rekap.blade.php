@@ -13,13 +13,13 @@
                 <p class="text-sm text-slate-500 font-medium">Analisis kehadiran siswa dan ekspor data laporan bulanan</p>
             </div>
             
-            <!-- Tombol Ekspor (Placeholder fungsional) -->
+            <!-- Tombol Ekspor Fungsional -->
             <div class="flex items-center gap-2">
-                <a href="#" onclick="alert('Fitur cetak PDF laporan sedang disiapkan.')" class="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 hover:border-slate-300 text-slate-700 text-xs font-bold rounded-xl shadow-sm transition-all">
+                <a href="{{ route('guru.rekap.cetak', ['kelas_id' => request('kelas_id'), 'bulan' => request('bulan', now()->month)]) }}" target="_blank" class="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 hover:border-slate-300 text-slate-700 text-xs font-bold rounded-xl shadow-sm transition-all">
                     <i data-lucide="file-text" class="w-4 h-4 text-rose-500"></i>
                     PDF Laporan
                 </a>
-                <a href="#" onclick="alert('Fitur ekspor excel sedang disiapkan.')" class="flex items-center gap-2 px-4 py-2.5 bg-[#10b981] hover:bg-[#0d9488] text-white text-xs font-bold rounded-xl shadow-sm transition-all">
+                <a href="{{ route('guru.rekap.excel', ['kelas_id' => request('kelas_id'), 'bulan' => request('bulan', now()->month)]) }}" class="flex items-center gap-2 px-4 py-2.5 bg-[#10b981] hover:bg-[#0d9488] text-white text-xs font-bold rounded-xl shadow-sm transition-all">
                     <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
                     Ekspor Excel
                 </a>

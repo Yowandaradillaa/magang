@@ -19,11 +19,15 @@
 
 <body class="bg-[#f8fafc] text-[#0b1e36] antialiased [font-family:'Plus_Jakarta_Sans',sans-serif]">
 
-    <div class="min-h-screen flex">
+    <div class="relative min-h-screen flex">
         
-        <aside class="fixed left-0 top-0 z-50 flex h-screen w-64 flex-col bg-gradient-to-b from-[#0b1e36] to-[#0f172a] text-white shadow-2xl border-r border-white/5">
+        <aside id="sidebar" class="fixed left-0 top-0 z-50 flex h-screen w-64 flex-col bg-gradient-to-b from-[#0b1e36] to-[#0f172a] text-white shadow-2xl border-r border-white/5 transition-transform duration-300 transform -translate-x-full md:translate-x-0">
             
-            <div class="flex flex-col border-b border-white/10 p-6 gap-2">
+            <div class="flex flex-col border-b border-white/10 p-6 gap-2 relative">
+                <button id="close-sidebar" class="absolute top-4 right-4 text-white/50 hover:text-white md:hidden">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+
                 <div class="flex items-center gap-3">
                     <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 text-white shadow-lg">
                         <i data-lucide="clipboard-check" class="w-6 h-6" stroke-width="2.5"></i>
@@ -82,18 +86,17 @@
                             <span class="text-[13.5px]">Notifikasi</span>
                         </div>
                         @php
-    $user = Auth::user();
-    // Logika baru: Hitung hanya pengumuman yang dibuat SETELAH terakhir kali user membuka menu Notifikasi
-    $notifCount = \App\Models\Pengumuman::where('kelas_id', $user->id_kelas)
-        ->where('created_at', '>', $user->notification_last_viewed_at ?? '2000-01-01')
-        ->count();
-@endphp
+                            $user = Auth::user();
+                            $notifCount = \App\Models\Pengumuman::where('kelas_id', $user->id_kelas)
+                                ->where('created_at', '>', $user->notification_last_viewed_at ?? '2000-01-01')
+                                ->count();
+                        @endphp
 
-@if($notifCount > 0)
-    <span class="bg-amber-50 text-amber-600 border border-amber-200 text-[10px] font-black px-2 py-0.5 rounded-full shadow-sm animate-pulse">
-        {{ $notifCount }}
-    </span>
-@endif
+                        @if($notifCount > 0)
+                            <span class="bg-amber-50 text-amber-600 border border-amber-200 text-[10px] font-black px-2 py-0.5 rounded-full shadow-sm animate-pulse">
+                                {{ $notifCount }}
+                            </span>
+                        @endif
                     </a>
                 @endif
             </nav>
@@ -108,20 +111,27 @@
             </div>
         </aside>
 
-        <main class="flex-1 pl-64 min-h-screen bg-[#f8fafc]">
-            <header class="h-20 border-b border-slate-200 bg-white/70 backdrop-blur-xl sticky top-0 z-30 flex items-center justify-between px-8">
-                <div></div>
+        <div id="sidebar-overlay" class="fixed inset-0 bg-[#0b1e36]/60 backdrop-blur-sm z-40 hidden md:hidden transition-opacity"></div>
+
+        <main class="flex-1 w-full pl-0 md:pl-64 min-h-screen bg-[#f8fafc] transition-all duration-300">
+            <header class="h-20 border-b border-slate-200 bg-white/70 backdrop-blur-xl sticky top-0 z-30 flex items-center justify-between px-4 md:px-8">
+                
+                <div>
+                    <button id="open-sidebar" class="p-2 -ml-2 text-slate-800 rounded-lg hover:bg-slate-100 md:hidden focus:outline-none focus:ring-2 focus:ring-amber-400/50">
+                        <i data-lucide="menu" class="w-6 h-6"></i>
+                    </button>
+                </div>
                 
                 <div class="flex items-center gap-3 bg-white px-4 py-2 rounded-full border border-slate-200 shadow-sm">
                     <span class="relative flex h-3 w-3">
                         <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                         <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
                     </span>
-                    <span class="text-[12px] font-extrabold text-slate-600 uppercase tracking-widest">Sesi Aktif</span>
+                    <span class="text-[12px] font-extrabold text-slate-600 uppercase tracking-widest hidden sm:inline-block">Sesi Aktif</span>
                 </div>
             </header>
             
-            <div class="p-8 max-w-[1400px] mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500 ease-out">
+            <div class="p-4 sm:p-6 md:p-8 max-w-[1400px] mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500 ease-out">
                 {{ $slot }}
             </div>
         </main>
@@ -129,8 +139,31 @@
     </div>
 
     <script>
-        // Render semua icon Lucide
         lucide.createIcons();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const sidebar = document.getElementById('sidebar');
+            const openBtn = document.getElementById('open-sidebar');
+            const closeBtn = document.getElementById('close-sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+
+            // Buka Sidebar
+            if (openBtn) {
+                openBtn.addEventListener('click', () => {
+                    sidebar.classList.remove('-translate-x-full');
+                    overlay.classList.remove('hidden');
+                });
+            }
+
+            // Tutup Sidebar
+            const closeSidebar = () => {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            };
+
+            if (closeBtn) closeBtn.addEventListener('click', closeSidebar);
+            if (overlay) overlay.addEventListener('click', closeSidebar);
+        });
     </script>
 </body>
 </html>

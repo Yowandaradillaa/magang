@@ -1,142 +1,112 @@
 <x-guru-layout>
-    <!-- Container Utama: Selaras dengan Admin (Fixed Header, Scrollable Content) -->
-    <div x-data="{ qrMembuka: false, kelasAktif: '' }" 
-         class="animate-in fade-in duration-700 flex flex-col space-y-4 px-2 h-[calc(100vh-140px)]">
+    <div x-data="{ qrMembuka: false, kelasAktif: '' }" class="animate-in fade-in duration-500 space-y-8 pb-12 text-slate-800">
         
-        <!-- ================= SECTION 1: WELCOME HEADER (FIXED) ================= -->
-        <div class="flex-none bg-white border border-slate-200/50 rounded-xl shadow-[0_2px_4px_rgba(0,0,0,0.02)]">
-            <div class="p-5 sm:px-6 sm:py-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div class="flex items-center gap-4">
-                    <!-- Icon Pendidik (Amber Theme) -->
-                    <div class="flex-shrink-0 w-11 h-11 bg-amber-500 flex items-center justify-center rounded-lg shadow-lg shadow-amber-200/50">
-                        <i data-lucide="graduation-cap" class="w-6 h-6 text-white"></i>
-                    </div>
-                    <div class="space-y-0.5">
-                        <h2 class="text-lg font-extrabold text-[#0b1e36] tracking-tight">Selamat Datang, {{ Auth::user()->name }}</h2>
-                        <p class="text-xs text-slate-500 font-medium">
-                            <span class="text-emerald-600 font-bold inline-flex items-center gap-1">
-                                <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span> Sistem Optimal
-                            </span> 
-                            • Ruang Kendali Pendidik Hadirify
-                        </p>
-                    </div>
+        <!-- Header Banner (Clean White dengan Garis Vertikal Navy #0b1e36 di Kiri) -->
+        <!-- Header Banner (Dengan Warna Soft Blue-Grey yang Hidup & Elegan) -->
+<div class="bg-gradient-to-r from-slate-100 via-sky-50/40 to-white p-6 md:p-8 rounded-2xl border border-slate-200/80 border-l-4 border-l-[#0b1e36] flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-sm">
+            <div class="space-y-1.5">
+                <div class="text-xs font-semibold text-slate-500 flex items-center gap-1.5">
+                    <i data-lucide="school" class="w-4 h-4 text-[#0b1e36]"></i>
+                    <span>SMA Muhammadiyah 7 Yogyakarta</span>
                 </div>
+                <h1 class="text-2xl font-extrabold text-[#0b1e36] tracking-tight">
+                    Selamat Datang, {{ Auth::user()->name }}
+                </h1>
+                <p class="text-sm text-slate-500 font-normal">
+                    Ruang Kendali Pendidik — Pemantauan presensi dan pengelolaan kelas harian.
+                </p>
+            </div>
 
-                <!-- Realtime Clock & Date (Seragam dengan Admin) -->
-                <div class="flex items-center gap-3 px-4 py-2 bg-slate-50/80 rounded-xl border border-slate-100">
-                    <div class="text-right">
-                        <p id="realtime-date" class="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">
-                            {{ now()->translatedFormat('d F Y') }}
-                        </p>
-                        <p id="realtime-clock" class="text-sm font-bold text-[#0b1e36] font-mono leading-none">
-                            {{ date('H:i:s') }}
-                        </p>
-                    </div>
-                    <div class="w-[1px] h-6 bg-slate-200 mx-1"></div>
-                    <i data-lucide="calendar-range" class="w-5 h-5 text-slate-400"></i>
-                </div>
+            <!-- Jam & Tanggal Real-time -->
+            <div class="text-left md:text-right shrink-0">
+                <p id="realtime-date" class="text-xs font-medium text-slate-400 mb-0.5">
+                    {{ now()->translatedFormat('d F Y') }}
+                </p>
+                <p id="realtime-clock" class="text-xl font-bold text-[#0b1e36] font-mono">
+                    {{ date('H:i:s') }} WIB
+                </p>
             </div>
         </div>
 
-        <!-- ================= SECTION 2: SCROLLABLE CONTENT ================= -->
-        <div class="flex-1 min-h-0 space-y-6 overflow-y-auto no-scrollbar pb-10">
+        <!-- Kartu Statistik Presensi (Minimalis & Proporsional) -->
+        <!-- Kartu Statistik Presensi (Dengan Warna Lembut & Hidup) -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-5">
+            @php
+                $guruStats = [
+                    ['label' => 'Siswa Hadir', 'val' => $stats['hadir'], 'color' => 'bg-emerald-50/70 border-emerald-200 text-emerald-900', 'sub' => 'text-emerald-700'],
+                    ['label' => 'Izin Siswa', 'val' => $stats['izin'], 'color' => 'bg-sky-50/70 border-sky-200 text-sky-900', 'sub' => 'text-sky-700'],
+                    ['label' => 'Sakit', 'val' => $stats['sakit'], 'color' => 'bg-indigo-50/70 border-indigo-200 text-indigo-900', 'sub' => 'text-indigo-700'],
+                    ['label' => 'Alpa', 'val' => $stats['alpa'], 'color' => 'bg-rose-50/70 border-rose-200 text-rose-900', 'sub' => 'text-rose-700'],
+                ];
+            @endphp
             
-            <!-- Attendance Stats (Left Accent Line Style) -->
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                @php
-                    $guruStats = [
-                        ['label' => 'Siswa Hadir', 'val' => $stats['hadir'], 'icon' => 'check-circle', 'color' => 'bg-emerald-500'],
-                        ['label' => 'Izin', 'val' => $stats['izin'], 'icon' => 'user-check', 'color' => 'bg-sky-500'],
-                        ['label' => 'Sakit', 'val' => $stats['sakit'], 'icon' => 'clipboard-list', 'color' => 'bg-amber-500'],
-                        ['label' => 'Alpa', 'val' => $stats['alpa'], 'icon' => 'alert-circle', 'color' => 'bg-rose-500'],
-                    ];
-                @endphp
-                
-                @foreach($guruStats as $s)
-                <div class="bg-white p-5 rounded-xl border border-slate-200/60 shadow-sm relative overflow-hidden group hover:border-slate-300 transition-all">
-                    <div class="absolute left-0 top-0 bottom-0 w-[3px] {{ $s['color'] }}"></div>
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{{ $s['label'] }}</p>
-                            <div class="text-2xl font-bold text-[#0b1e36] tracking-tighter leading-none">{{ $s['val'] }} <span class="text-[10px] text-slate-300 font-medium">Siswa</span></div>
-                        </div>
-                        <div class="p-1.5 bg-slate-50 text-slate-300 group-hover:text-slate-900 transition-colors">
-                            <i data-lucide="{{ $s['icon'] }}" class="w-4 h-4"></i>
-                        </div>
+            @foreach($guruStats as $s)
+                <div class="{{ $s['color'] }} p-5 rounded-2xl border shadow-xs space-y-1.5 transition-all">
+                    <p class="text-xs font-semibold opacity-80">{{ $s['label'] }}</p>
+                    <div class="text-3xl font-extrabold tracking-tight">
+                        {{ number_format($s['val']) }}
+                        <span class="text-xs font-normal opacity-70">siswa</span>
                     </div>
                 </div>
-                @endforeach
-            </div>
+            @endforeach
+        </div>
 
-            <!-- Quick Access (Professional Module Style) -->
-            <div class="space-y-4">
-                <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-3">
-                    <span class="w-8 h-[1px] bg-slate-200"></span>
-                    Kendali Presensi Kelas
-                </h3>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- Presensi Manual -->
-                    <a href="/guru/manual" class="group p-5 bg-white border border-slate-200/70 rounded-xl hover:shadow-xl hover:shadow-slate-200/30 hover:border-slate-300 transition-all flex items-center gap-5">
-                        <div class="w-14 h-14 bg-sky-50 text-sky-600 rounded-lg flex items-center justify-center group-hover:bg-sky-600 group-hover:text-white transition-all duration-300">
-                            <i data-lucide="edit-3" class="w-7 h-7"></i>
-                        </div>
-                        <div>
-                            <h4 class="text-sm font-extrabold text-slate-800 tracking-tight leading-none mb-1.5">Presensi Manual</h4>
-                            <p class="text-[11px] text-slate-400 font-medium leading-relaxed">Input data kehadiran tatap muka langsung di kelas.</p>
-                        </div>
-                    </a>
+        <!-- Kendali Presensi Kelas (Quick Access Cards) -->
+        <div class="space-y-4">
+            <h2 class="text-sm font-bold text-[#0b1e36]">Kendali Presensi Kelas</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <!-- Presensi Manual -->
+                <a href="/guru/manual" class="group p-6 bg-white border border-slate-200/70 rounded-2xl hover:border-slate-300 hover:shadow-md transition-all flex items-center gap-5">
+                    <div class="w-12 h-12 bg-sky-50 text-sky-600 rounded-xl flex items-center justify-center group-hover:bg-[#0b1e36] group-hover:text-white transition-colors duration-200 shrink-0">
+                        <i data-lucide="edit-3" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-extrabold text-slate-800 group-hover:text-[#0b1e36] transition-colors mb-1">Input Presensi Manual</h3>
+                        <p class="text-xs text-slate-500 font-normal">Catat status kehadiran siswa secara langsung per mata pelajaran.</p>
+                    </div>
+                </a>
 
-                    <!-- QR Code -->
-                    <a href="/guru/qr" class="group p-5 bg-white border border-slate-200/70 rounded-xl hover:shadow-xl hover:shadow-slate-200/30 hover:border-slate-300 transition-all flex items-center gap-5">
-                        <div class="w-14 h-14 bg-amber-50 text-amber-600 rounded-lg flex items-center justify-center group-hover:bg-amber-600 group-hover:text-white transition-all duration-300">
-                            <i data-lucide="qr-code" class="w-7 h-7"></i>
-                        </div>
-                        <div>
-                            <h4 class="text-sm font-extrabold text-slate-800 tracking-tight leading-none mb-1.5">Rilis QR Code</h4>
-                            <p class="text-[11px] text-slate-400 font-medium leading-relaxed">Buka gerbang pemindaian mandiri bagi siswa kelas.</p>
-                        </div>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Tambahan Modul Laporan (Opsi) -->
-            <div class="space-y-4">
-                <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-3">
-                    <span class="w-8 h-[1px] bg-slate-200"></span>
-                    Analitik & Laporan
-                </h3>
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <a href="/guru/rekap" class="p-4 bg-white border border-slate-200/60 rounded-xl hover:bg-slate-50 transition-all flex items-center gap-3 group">
-                        <i data-lucide="file-text" class="w-4 h-4 text-slate-400 group-hover:text-amber-500"></i>
-                        <span class="text-xs font-bold text-slate-600">Rekap Presensi</span>
-                    </a>
-                </div>
-            </div>
-            <div class="bg-white p-6 rounded-xl border border-slate-200/60 shadow-sm mt-6">
-    <h3 class="text-sm font-black uppercase tracking-wider text-[#0b1e36] mb-4">Jadwal Mengajar Hari Ini</h3>
-    
-    <div class="space-y-3">
-        @forelse($jadwalHariIni as $j)
-            <div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100">
-                <div>
-                    <h4 class="font-bold text-slate-800 text-xs">{{ $j->mapel->nama_mapel }} — {{ $j->kelas->nama_kelas }}</h4>
-                    <p class="text-[10px] text-slate-400 font-mono mt-0.5">Jam: {{ $j->jam_mulai }} - {{ $j->jam_selesai }}</p>
-                </div>
-                <a href="{{ route('guru.manual') }}?jadwal_id={{ $j->id }}" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white text-[10px] font-black uppercase tracking-widest rounded-lg shadow-sm transition-all">
-                    Buka Absensi
+                <!-- QR Code -->
+                <a href="/guru/qr" class="group p-6 bg-white border border-slate-200/70 rounded-2xl hover:border-slate-300 hover:shadow-md transition-all flex items-center gap-5">
+                    <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center group-hover:bg-amber-500 group-hover:text-white transition-colors duration-200 shrink-0">
+                        <i data-lucide="qr-code" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-extrabold text-slate-800 group-hover:text-amber-600 transition-colors mb-1">Rilis QR Code Presensi</h3>
+                        <p class="text-xs text-slate-500 font-normal">Tampilkan kode QR dinamis di layar untuk dipindai oleh siswa.</p>
+                    </div>
                 </a>
             </div>
-        @empty
-            <p class="text-xs text-slate-400 italic text-center py-4">Tidak ada jadwal mengajar untuk hari ini.</p>
-        @endforelse
-    </div>
-</div>
-
         </div>
+
+        <!-- Jadwal Mengajar Hari Ini -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200/70 shadow-xs space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 class="text-sm font-bold text-[#0b1e36]">Jadwal Mengajar Hari Ini</h3>
+                <span class="text-xs text-slate-400 font-normal">{{ count($jadwalHariIni) }} Sesi Terjadwal</span>
+            </div>
+            
+            <div class="space-y-3">
+                @forelse($jadwalHariIni as $j)
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-slate-50/70 rounded-xl border border-slate-200/60">
+                        <div>
+                            <h4 class="font-bold text-slate-800 text-sm">{{ $j->mapel->nama_mapel }} — Kelas {{ $j->kelas->nama_kelas }}</h4>
+                            <p class="text-xs text-slate-500 font-mono mt-0.5">Jam: {{ $j->jam_mulai }} - {{ $j->jam_selesai }} WIB</p>
+                        </div>
+                        <a href="{{ route('guru.manual') }}?jadwal_id={{ $j->id }}" class="px-4 py-2 bg-[#0b1e36] hover:bg-slate-800 text-white text-xs font-semibold rounded-xl shadow-xs transition-all text-center shrink-0">
+                            Buka Absensi
+                        </a>
+                    </div>
+                @empty
+                    <p class="text-xs text-slate-400 italic text-center py-6">Tidak ada jadwal mengajar untuk hari ini.</p>
+                @endforelse
+            </div>
+        </div>
+
     </div>
 
-    <!-- Script Jam Realtime (Copy dari Admin) -->
+    <!-- Script Jam Realtime -->
     <script>
         function updateClock() {
             const now = new Date();
@@ -146,14 +116,9 @@
             const timeStr = `${hours}:${minutes}:${seconds}`;
             
             const clockElement = document.getElementById('realtime-clock');
-            if(clockElement) clockElement.textContent = timeStr;
+            if(clockElement) clockElement.textContent = `${timeStr} WIB`;
         }
         setInterval(updateClock, 1000);
         updateClock();
     </script>
-
-    <style>
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    </style>
 </x-guru-layout>

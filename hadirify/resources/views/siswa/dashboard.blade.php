@@ -1,155 +1,137 @@
 <x-app-layout>
-    <!-- Container Utama: Selaras dengan Admin/Guru (Fixed Header, Scrollable Content) -->
-    <div class="animate-in fade-in duration-700 flex flex-col space-y-4 px-2 h-[calc(100vh-140px)]">
+    <div class="animate-in fade-in duration-500 space-y-8 pb-12 text-slate-800">
         
-        <!-- ================= SECTION 1: HEADER (FIXED) ================= -->
-        <div class="flex-none bg-white border border-slate-200/50 rounded-xl shadow-[0_2px_4px_rgba(0,0,0,0.02)]">
-            <div class="p-5 sm:px-6 sm:py-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div class="flex items-center gap-4">
-                    <!-- Icon Profile (Sky Blue Theme) -->
-                    <div class="flex-shrink-0 w-11 h-11 bg-sky-600 flex items-center justify-center rounded-lg shadow-lg shadow-sky-200/50">
-                        <i data-lucide="user" class="w-6 h-6 text-white"></i>
-                    </div>
-                    <div class="space-y-0.5">
-                        <h2 class="text-lg font-extrabold text-[#0b1e36] tracking-tight">Halo, {{ Auth::user()->name }}!</h2>
-                        <p class="text-xs text-slate-500 font-medium flex items-center gap-1.5">
-                            <span class="px-1.5 py-0.5 bg-sky-50 text-sky-600 text-[10px] font-black rounded border border-sky-100 uppercase">Siswa</span>
-                            • Portal Akademik Hadirify
-                        </p>
-                    </div>
+        <!-- Header Banner (Clean White dengan Garis Vertikal Navy #0b1e36 di Kiri) -->
+        <div class="bg-white p-6 md:p-8 rounded-2xl border border-slate-200/60 border-l-4 border-l-[#0b1e36] flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-xs">
+            <div class="space-y-1.5">
+                <div class="text-xs font-semibold text-slate-500 flex items-center gap-1.5">
+                    <i data-lucide="school" class="w-4 h-4 text-[#0b1e36]"></i>
+                    <span>SMA Muhammadiyah 7 Yogyakarta</span>
+                </div>
+                <h1 class="text-2xl font-extrabold text-[#0b1e36] tracking-tight">
+                    Halo, {{ Auth::user()->name }}!
+                </h1>
+                <p class="text-sm text-slate-500 font-normal">
+                    Selamat datang di Portal Akademik Siswa. Pantau kehadiran dan informasi kelas Anda.
+                </p>
+            </div>
+
+            <div class="flex flex-col sm:flex-row items-center gap-4 shrink-0">
+                <!-- Jam & Tanggal Real-time -->
+                <div class="text-left sm:text-right">
+                    <p id="realtime-date" class="text-xs font-medium text-slate-400 mb-0.5">
+                        {{ now()->translatedFormat('d F Y') }}
+                    </p>
+                    <p id="realtime-clock" class="text-xl font-bold text-[#0b1e36] font-mono">
+                        00:00:00 WIB
+                    </p>
                 </div>
 
-                <div class="flex flex-col sm:flex-row items-center gap-4">
-                    <!-- Realtime Clock & Date -->
-                    <div class="flex items-center gap-3 px-4 py-2 bg-slate-50/80 rounded-xl border border-slate-100">
-                        <div class="text-right">
-                            <p id="realtime-date" class="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">
-                                {{ now()->translatedFormat('d F Y') }}
-                            </p>
-                            <p id="realtime-clock" class="text-sm font-bold text-[#0b1e36] font-mono leading-none">
-                                00:00:00
-                            </p>
-                        </div>
-                        <div class="w-[1px] h-6 bg-slate-200 mx-1"></div>
-                        <i data-lucide="calendar" class="w-5 h-5 text-slate-400"></i>
-                    </div>
-
-                    <!-- Quick Scan Button -->
-                    <a href="/siswa/scan-qr" class="flex items-center gap-2 px-5 py-2.5 bg-slate-900 hover:bg-black text-white text-[11px] font-black uppercase tracking-widest rounded-lg shadow-lg transition-all active:scale-95">
-                        <i data-lucide="camera" class="w-4 h-4"></i>
-                        Scan Absensi
-                    </a>
-                </div>
+                <!-- Quick Scan Button -->
+                <a href="/siswa/scan-qr" class="w-full sm:w-auto px-5 py-2.5 bg-[#0b1e36] hover:bg-slate-800 text-white text-xs font-semibold rounded-xl shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98]">
+                    <i data-lucide="camera" class="w-4 h-4"></i>
+                    <span>Scan QR Absensi</span>
+                </a>
             </div>
         </div>
 
-        <!-- ================= SECTION 2: SCROLLABLE CONTENT ================= -->
-        <div class="flex-1 min-h-0 space-y-6 overflow-y-auto no-scrollbar pb-10">
+        <!-- Kartu Statistik Siswa (Minimalis & Proporsional) -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-5">
+            @php
+                $total = array_sum($statistik);
+                $rasio = $total > 0 ? round(($statistik['hadir'] / $total) * 100) : 0;
+                
+                $siswaStats = [
+                    ['label' => 'Rasio Kehadiran', 'val' => $rasio.'%', 'sub' => 'Tingkat Kehadiran'],
+                    ['label' => 'Total Hadir', 'val' => $statistik['hadir'], 'sub' => 'Hari Presensi'],
+                    ['label' => 'Izin & Sakit', 'val' => ($statistik['izin'] + $statistik['sakit']), 'sub' => 'Hari Keterangan'],
+                    ['label' => 'Alpa', 'val' => $statistik['alpa'], 'sub' => 'Hari Tanpa Keterangan'],
+                ];
+            @endphp
             
-            <!-- STATS GRID (Aksen Garis Kiri) -->
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                @php
-                    $total = array_sum($statistik);
-                    $rasio = $total > 0 ? round(($statistik['hadir'] / $total) * 100) : 0;
-                    
-                    $siswaStats = [
-                        ['label' => 'Rasio Hadir', 'val' => $rasio.'%', 'icon' => 'trending-up', 'color' => 'bg-slate-900'],
-                        ['label' => 'Total Hadir', 'val' => $statistik['hadir'].' Hari', 'icon' => 'check-circle-2', 'color' => 'bg-emerald-500'],
-                        ['label' => 'Izin / Sakit', 'val' => ($statistik['izin'] + $statistik['sakit']).' Hari', 'icon' => 'file-text', 'color' => 'bg-amber-500'],
-                        ['label' => 'Alpa', 'val' => $statistik['alpa'].' Hari', 'icon' => 'alert-triangle', 'color' => 'bg-rose-500'],
-                    ];
-                @endphp
-                
-                @foreach($siswaStats as $s)
-                <div class="bg-white p-5 rounded-xl border border-slate-200/60 shadow-sm relative overflow-hidden group hover:border-slate-300 transition-all">
-                    <div class="absolute left-0 top-0 bottom-0 w-[3px] {{ $s['color'] }}"></div>
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{{ $s['label'] }}</p>
-                            <div class="text-2xl font-bold text-[#0b1e36] tracking-tighter leading-none">{{ $s['val'] }}</div>
-                        </div>
-                        <div class="p-1.5 bg-slate-50 text-slate-300 group-hover:text-slate-900 transition-colors">
-                            <i data-lucide="{{ $s['icon'] }}" class="w-4 h-4"></i>
-                        </div>
+            @foreach($siswaStats as $s)
+                <div class="bg-white p-5 rounded-2xl border border-slate-200/70 shadow-xs space-y-1.5">
+                    <p class="text-xs font-semibold text-slate-500">{{ $s['label'] }}</p>
+                    <div class="text-3xl font-extrabold text-[#0b1e36] tracking-tight">
+                        {{ $s['val'] }}
                     </div>
+                    <p class="text-xs text-slate-400 font-normal">{{ $s['sub'] }}</p>
                 </div>
-                @endforeach
-            </div>
+            @endforeach
+        </div>
 
-            <!-- SPLIT GRID: IZIN & PENGUMUMAN -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-                
-                <!-- KOLOM KIRI: STATUS IZIN (Accent Amber) -->
-                <div class="lg:col-span-7 bg-white rounded-xl border border-slate-200/60 shadow-sm relative overflow-hidden">
-                    <div class="absolute left-0 top-0 bottom-0 w-[3px] bg-amber-500"></div>
-                    
-                    <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
-                        <div class="flex items-center gap-2">
-                            <i data-lucide="mail-warning" class="w-4 h-4 text-amber-500"></i>
-                            <h3 class="text-[11px] font-black text-slate-800 uppercase tracking-widest">Status Pengajuan Izin</h3>
-                        </div>
-                        <a href="/siswa/izin" class="text-[10px] font-black text-sky-600 hover:underline uppercase">Ajukan Baru</a>
+        <!-- SPLIT GRID: STATUS IZIN & WARTA KELAS -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            
+            <!-- KOLOM KIRI: STATUS PENGAJUAN IZIN -->
+            <div class="lg:col-span-7 bg-white rounded-2xl border border-slate-200/70 shadow-xs overflow-hidden">
+                <div class="p-6 border-b border-slate-100 flex items-center justify-between">
+                    <div>
+                        <h3 class="text-sm font-bold text-[#0b1e36]">Status Pengajuan Izin</h3>
+                        <p class="text-xs text-slate-500 mt-0.5">Riwayat permohonan izin dan sakit</p>
                     </div>
+                    <a href="/siswa/izin" class="inline-flex items-center gap-1 text-xs font-semibold text-[#0b1e36] hover:underline">
+                        Ajukan Izin Baru <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                    </a>
+                </div>
 
-                    <div class="divide-y divide-slate-50">
-                        @forelse($riwayatIzin as $izin)
-                        <div class="p-5 hover:bg-slate-50/50 transition-colors flex items-center justify-between group">
+                <div class="divide-y divide-slate-100 text-xs">
+                    @forelse($riwayatIzin as $izin)
+                        <div class="p-5 hover:bg-slate-50/50 transition-colors flex items-center justify-between">
                             <div class="space-y-1">
                                 <div class="flex items-center gap-2">
-                                    <span class="px-1.5 py-0.5 rounded text-[8px] font-black uppercase border {{ $izin->jenis == 'Sakit' ? 'bg-sky-50 text-sky-600 border-sky-100' : 'bg-amber-50 text-amber-600 border-amber-100' }}">
+                                    <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold border {{ $izin->jenis == 'Sakit' ? 'bg-sky-50 text-sky-700 border-sky-200/60' : 'bg-amber-50 text-amber-700 border-amber-200/60' }}">
                                         {{ $izin->jenis }}
                                     </span>
-                                    <h4 class="text-xs font-bold text-slate-700 tracking-tight">{{ Str::limit($izin->alasan, 35) }}</h4>
+                                    <h4 class="font-bold text-slate-800">{{ Str::limit($izin->alasan, 35) }}</h4>
                                 </div>
-                                <p class="text-[10px] text-slate-400 font-medium flex items-center gap-1">
-                                    <i data-lucide="calendar" class="w-3 h-3"></i>
+                                <p class="text-xs text-slate-400 font-normal flex items-center gap-1">
+                                    <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
                                     {{ \Carbon\Carbon::parse($izin->tanggal_mulai)->translatedFormat('d M') }} — {{ \Carbon\Carbon::parse($izin->tanggal_selesai)->translatedFormat('d M Y') }}
                                 </p>
                             </div>
-                            <span class="px-2.5 py-1 rounded text-[9px] font-black uppercase tracking-tighter border
-                                {{ $izin->status == 'Pending' ? 'bg-amber-50 text-amber-600 border-amber-200' : ($izin->status == 'Disetujui' ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-rose-50 text-rose-600 border-rose-200') }}">
+                            <span class="px-3 py-1 rounded-full text-xs font-semibold border
+                                {{ $izin->status == 'Pending' ? 'bg-amber-50 text-amber-700 border-amber-200/60' : ($izin->status == 'Disetujui' ? 'bg-emerald-50 text-emerald-700 border-emerald-200/60' : 'bg-rose-50 text-rose-700 border-rose-200/60') }}">
                                 {{ $izin->status }}
                             </span>
                         </div>
-                        @empty
-                        <div class="py-16 text-center opacity-30">
-                            <i data-lucide="inbox" class="w-10 h-10 mb-2 mx-auto"></i>
-                            <p class="text-[10px] font-black uppercase tracking-widest">Belum ada pengajuan</p>
+                    @empty
+                        <div class="py-12 text-center text-slate-400 space-y-1">
+                            <i data-lucide="inbox" class="w-8 h-8 mx-auto opacity-40"></i>
+                            <p class="text-xs font-medium">Belum ada pengajuan izin tercatat.</p>
                         </div>
-                        @endforelse
-                    </div>
+                    @endforelse
+                </div>
+            </div>
+
+            <!-- KOLOM KANAN: WARTA KELAS -->
+            <div class="lg:col-span-5 bg-white rounded-2xl border border-slate-200/70 shadow-xs overflow-hidden">
+                <div class="p-6 border-b border-slate-100">
+                    <h3 class="text-sm font-bold text-[#0b1e36]">Warta & Pengumuman Kelas</h3>
+                    <p class="text-xs text-slate-500 mt-0.5">Informasi resmi dari wali kelas dan pendidik</p>
                 </div>
 
-                <!-- KOLOM KANAN: PENGUMUMAN (Accent Sky) -->
-                <div class="lg:col-span-5 bg-white rounded-xl border border-slate-200/60 shadow-sm relative overflow-hidden">
-                    <div class="absolute left-0 top-0 bottom-0 w-[3px] bg-sky-600"></div>
-                    
-                    <div class="px-6 py-4 border-b border-slate-100 flex items-center gap-2">
-                        <i data-lucide="megaphone" class="w-4 h-4 text-sky-600"></i>
-                        <h3 class="text-[11px] font-black text-slate-800 uppercase tracking-widest">Warta Kelas</h3>
-                    </div>
-
-                    <div class="p-5 space-y-4">
-                        @forelse($pengumuman as $p)
-                        <div class="group p-4 bg-slate-50 border border-slate-100 rounded-xl hover:border-sky-500 transition-all cursor-default">
-                            <h4 class="text-xs font-extrabold text-slate-800 group-hover:text-sky-600 transition-colors">{{ $p->judul }}</h4>
-                            <p class="text-[11px] text-slate-500 mt-1.5 leading-relaxed line-clamp-2">{{ $p->isi }}</p>
-                            <div class="mt-3 pt-3 border-t border-slate-200/60 flex items-center justify-between">
-                                <span class="text-[9px] font-bold text-slate-400 uppercase flex items-center gap-1">
-                                    <i data-lucide="user-check" class="w-3 h-3"></i> {{ $p->guru->name }}
+                <div class="p-6 space-y-4">
+                    @forelse($pengumuman as $p)
+                        <div class="p-4 bg-slate-50/70 border border-slate-200/60 rounded-xl space-y-2">
+                            <h4 class="text-xs font-bold text-slate-800">{{ $p->judul }}</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed line-clamp-2">{{ $p->isi }}</p>
+                            <div class="pt-2 border-t border-slate-200/60 flex items-center justify-between text-[11px] text-slate-400">
+                                <span class="font-semibold text-slate-600 flex items-center gap-1">
+                                    <i data-lucide="user-check" class="w-3.5 h-3.5"></i> {{ $p->guru->name }}
                                 </span>
-                                <span class="text-[9px] font-mono text-slate-300">{{ $p->created_at->diffForHumans() }}</span>
+                                <span class="font-mono">{{ $p->created_at->diffForHumans() }}</span>
                             </div>
                         </div>
-                        @empty
-                        <div class="py-10 text-center opacity-30">
-                            <p class="text-[10px] font-black uppercase tracking-widest italic">Tidak ada warta</p>
+                    @empty
+                        <div class="py-8 text-center text-slate-400 space-y-1">
+                            <i data-lucide="megaphone" class="w-8 h-8 mx-auto opacity-40"></i>
+                            <p class="text-xs font-medium">Tidak ada warta pengumuman saat ini.</p>
                         </div>
-                        @endforelse
-                    </div>
+                    @endforelse
                 </div>
-
             </div>
+
         </div>
     </div>
 
@@ -161,13 +143,9 @@
                           now.getMinutes().toString().padStart(2, '0') + ':' + 
                           now.getSeconds().toString().padStart(2, '0');
             const el = document.getElementById('realtime-clock');
-            if(el) el.textContent = timeStr;
+            if(el) el.textContent = `${timeStr} WIB`;
         }
-        setInterval(updateClock, 1000); updateClock();
+        setInterval(updateClock, 1000); 
+        updateClock();
     </script>
-
-    <style>
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    </style>
 </x-app-layout>

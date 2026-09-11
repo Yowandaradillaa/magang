@@ -72,6 +72,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::put('/admin/akun/{id}', [AdminUserController::class, 'update'])->name('admin.akun.update');
     Route::delete('/admin/akun/{id}', [AdminUserController::class, 'destroy'])->name('admin.akun.destroy');
     Route::post('/admin/users/{id}/reset-password', [AdminUserController::class, 'resetPassword'])->name('admin.users.reset');
+        // Import & Template Excel untuk Manajemen Akun
+    Route::get('/admin/akun/template', [AdminUserController::class, 'downloadTemplate'])->name('admin.akun.template');
+    Route::post('/admin/akun/import', [AdminUserController::class, 'import'])->name('admin.akun.import');
+
 
     // Manajemen Kelas
     Route::get('/admin/kelas', [AdminKelasController::class, 'index'])->name('admin.kelas.index');
@@ -89,6 +93,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     
     Route::get('/admin/laporan', [AdminUserController::class, 'laporan'])->name('admin.laporan');
 
+    
     Route::get('/admin/jadwal', [AdminJadwalController::class, 'index'])->name('admin.jadwal');
 Route::post('/admin/jadwal', [AdminJadwalController::class, 'store'])->name('admin.jadwal.store');
 Route::delete('/admin/jadwal/{id}', [AdminJadwalController::class, 'destroy'])->name('admin.jadwal.destroy');

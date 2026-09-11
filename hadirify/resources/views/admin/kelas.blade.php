@@ -7,18 +7,18 @@
         showJadwalModal: false,
         deleteUrl: '',
         editData: { id: '', nama_kelas: '', mata_pelajaran: '', tahun_ajaran: '', id_wali_kelas: '' }
-    }" class="animate-in fade-in duration-500 flex flex-col space-y-4 px-2 h-[calc(100vh-140px)]">
+    }" class="animate-in fade-in duration-500 space-y-6 pb-12">
         
         <!-- Notifikasi Berhasil -->
         @if(session('success'))
-            <div class="flex-none p-3 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl font-bold text-xs flex items-center gap-3 shadow-sm">
+            <div class="p-3 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl font-bold text-xs flex items-center gap-3 shadow-sm">
                 <i data-lucide="check-circle" class="w-4 h-4 text-emerald-500"></i>
                 {{ session('success') }}
             </div>
         @endif
 
-        <!-- ================= SECTION 1: HEADER (FIXED) ================= -->
-        <div class="flex-none bg-white p-5 rounded-xl border border-slate-200/50 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <!-- ================= SECTION 1: HEADER ================= -->
+        <div class="bg-white p-5 rounded-xl border border-slate-200/50 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div class="flex items-center gap-4">
                 <div class="w-10 h-10 bg-[#0b1e36] text-white rounded-lg flex items-center justify-center shadow-lg">
                     <i data-lucide="building" class="w-5 h-5"></i>
@@ -37,11 +37,11 @@
             </button>
         </div>
 
-        <!-- ================= SECTION 2: TABEL KELAS (SCROLLABLE) ================= -->
-        <div class="flex-1 min-h-0 bg-white rounded-xl border border-slate-200/60 shadow-sm overflow-hidden flex flex-col">
-            <div class="flex-1 overflow-y-auto no-scrollbar relative">
+        <!-- ================= SECTION 2: TABEL KELAS ================= -->
+        <div class="bg-white rounded-xl border border-slate-200/60 shadow-sm overflow-hidden">
+            <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
-                    <thead class="sticky top-0 bg-white z-10 border-b border-slate-100">
+                    <thead class="bg-slate-50 border-b border-slate-100">
                         <tr class="bg-slate-50 text-[10px] font-black text-slate-400 uppercase tracking-widest">
                             <th class="px-6 py-4">Identitas Kelas</th>
                             <th class="px-6 py-4">Tahun Ajaran</th>
@@ -95,7 +95,7 @@
         </div>
 
         <!-- ================= SECTION 3: MANAJEMEN JADWAL MENGAJAR ================= -->
-        <div class="bg-white rounded-xl border border-slate-200/60 shadow-sm overflow-hidden flex flex-col mt-6">
+        <div class="bg-white rounded-xl border border-slate-200/60 shadow-sm overflow-hidden mt-6">
             <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/30">
                 <h3 class="text-[11px] font-black text-[#0b1e36] uppercase tracking-widest flex items-center gap-2">
                     <i data-lucide="calendar" class="w-4 h-4 text-blue-500"></i>
@@ -107,7 +107,7 @@
                 </button>
             </div>
 
-            <div class="overflow-y-auto no-scrollbar">
+            <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead class="bg-slate-50 border-b border-slate-100">
                         <tr class="text-[10px] font-black text-slate-400 uppercase tracking-widest">

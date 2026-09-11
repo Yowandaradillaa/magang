@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Imports\UsersImport;
+use App\Exports\UsersTemplateExport;
+use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Kelas;
@@ -69,6 +72,48 @@ class AdminUserController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Akun berhasil dibuat!');
+    }
+
+        /**
+     * Unduh file template Excel untuk import massal
+     */
+    public function downloadTemplate()
+    {
+        return Excel::download(new UsersTemplateExport(), 'template_import_akun.xlsx');
+    }
+
+    /**
+     * Import banyak user sekaligus dari file Excel/CSV
+     */
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv|max:5120',
+        ], [
+            'file.required' => 'Silakan pilih file terlebih dahulu.',
+            'file.mimes'    => 'Format file harus Excel (.xlsx / .xls) atau CSV.',
+            'file.max'      => 'Ukuran file maksimal 5MB.',
+        ]);
+
+        $import = new UsersImport();
+        Excel::import($import, $request->file('file'));
+
+        $sukses = $import->getSuccessCount();
+        $errors = $import->getErrors();
+
+        if ($sukses > 0 && empty($errors)) {
+            return redirect()->back()->with('success', "{$sukses} akun berhasil ditambahkan dari file Excel!");
+        }
+
+        if ($sukses > 0 && !empty($errors)) {
+            return redirect()->back()
+                ->with('success', "{$sukses} akun berhasil ditambahkan.")
+                ->with('import_errors', $errors);
+        }
+
+        return redirect()->back()
+            ->with('error', 'Tidak ada akun yang berhasil ditambahkan. Cek detail error di bawah.')
+            ->with('import_errors', $errors);
     }
 
     /**

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>Hadirify - Sistem Absensi Digital</title>
+    <title>Presensi Mutu - Portal Siswa SMA Muhammadiyah 7 Yogyakarta</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,97 +15,112 @@
     
     <script src="https://unpkg.com/lucide@latest"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .font-mono { font-family: 'Space Mono', monospace; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 4px; }
+    </style>
 </head>
 
-<body class="bg-[#f8fafc] text-[#0b1e36] antialiased [font-family:'Plus_Jakarta_Sans',sans-serif]">
+<body class="bg-[#f8fafc] text-[#0b1e36] antialiased overflow-hidden">
 
-    <div class="relative min-h-screen flex">
+    <div class="h-screen w-full flex overflow-hidden">
         
-        <aside id="sidebar" class="fixed left-0 top-0 z-50 flex h-screen w-64 flex-col bg-gradient-to-b from-[#0b1e36] to-[#0f172a] text-white shadow-2xl border-r border-white/5 transition-transform duration-300 transform -translate-x-full md:translate-x-0">
+        <!-- Sidebar Siswa (Fixed / Sticky Screen Height) -->
+        <aside id="sidebar" class="fixed left-0 top-0 z-50 flex h-screen w-64 flex-col bg-[#0b1e36] text-white shadow-2xl border-r border-white/5 transition-transform duration-300 transform -translate-x-full md:translate-x-0 justify-between">
             
-            <div class="flex flex-col border-b border-white/10 p-6 gap-2 relative">
-                <button id="close-sidebar" class="absolute top-4 right-4 text-white/50 hover:text-white md:hidden">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
-
-                <div class="flex items-center gap-3">
-                    <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 text-white shadow-lg">
-                        <i data-lucide="clipboard-check" class="w-6 h-6" stroke-width="2.5"></i>
-                    </div>
-                    <div>
-                        <h2 class="text-lg font-black leading-tight tracking-tight">Hadirify</h2>
-                        <p class="text-[9px] tracking-widest text-amber-400/80 uppercase font-extrabold">Portal Utama</p>
-                    </div>
-                </div>
-                <div class="mt-2 text-[10px] font-bold text-sky-300 bg-sky-900/40 border border-sky-400/20 px-2.5 py-1.5 rounded-lg uppercase tracking-wider text-center backdrop-blur-sm">
-                    SMA MUH 7 YOGYAKARTA
-                </div>
-            </div>
-            
-            <div class="flex items-center gap-3 bg-white/5 p-4 mx-3 my-4 rounded-2xl border border-white/10 shadow-inner backdrop-blur-md">
-                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-slate-100 to-slate-300 font-extrabold text-[#0b1e36] uppercase text-sm shadow-md">
-                    {{ substr(Auth::user()->name ?? 'HI', 0, 2) }}
-                </div>
-                <div class="overflow-hidden">
-                    <p class="truncate text-[13.5px] font-bold text-white">{{ Auth::user()->name ?? 'Pengguna Hadirify' }}</p>
-                    <span class="mt-0.5 inline-block rounded-full bg-emerald-500/20 px-2.5 py-[2px] text-[8.5px] font-extrabold uppercase tracking-widest text-emerald-300 border border-emerald-500/30">
-                        {{ Auth::user()->role ?? 'Siswa' }}
-                    </span>
-                </div>
-            </div>
-
-            <nav class="flex-1 overflow-y-auto px-3 space-y-1.5 scrollbar-hide">
-                <p class="mb-3 mt-2 px-3 text-[10px] font-extrabold uppercase tracking-widest text-slate-400/70">Menu Navigasi</p>
+            <div class="flex flex-col min-h-0 space-y-4 flex-1 overflow-hidden">
                 
-                @php $role = Auth::user()->role ?? 'siswa'; @endphp
+                <!-- Logo & Portal Title -->
+                <div class="flex flex-col border-b border-white/10 p-5 gap-2 relative shrink-0">
+                    <button id="close-sidebar" class="absolute top-4 right-4 text-white/50 hover:text-white md:hidden">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
 
-                @if($role === 'siswa')
-                    <a href="/siswa/dashboard" class="group flex items-center gap-3 rounded-xl px-4 py-3 transition-all duration-300 {{ request()->is('siswa/dashboard*') ? 'bg-white/10 font-bold text-white shadow-md border-l-4 border-amber-400 pl-3' : 'text-slate-400 hover:bg-white/5 hover:text-white hover:translate-x-1' }}">
-                        <i data-lucide="layout-dashboard" class="w-5 h-5 transition-colors duration-300 {{ request()->is('siswa/dashboard*') ? 'text-amber-400' : 'group-hover:text-amber-400/70' }}"></i> 
-                        <span class="text-[13.5px]">Dashboard</span>
-                    </a>
-                    
-                    <a href="/siswa/scan-qr" class="group flex items-center gap-3 rounded-xl px-4 py-3 transition-all duration-300 {{ request()->is('siswa/scan-qr*') ? 'bg-white/10 font-bold text-white shadow-md border-l-4 border-amber-400 pl-3' : 'text-slate-400 hover:bg-white/5 hover:text-white hover:translate-x-1' }}">
-                        <i data-lucide="qr-code" class="w-5 h-5 transition-colors duration-300 {{ request()->is('siswa/scan-qr*') ? 'text-amber-400' : 'group-hover:text-amber-400/70' }}"></i> 
-                        <span class="text-[13.5px]">Scan QR Absen</span>
-                    </a>
-
-                    <a href="/siswa/rekap" class="group flex items-center gap-3 rounded-xl px-4 py-3 transition-all duration-300 {{ request()->is('siswa/rekap*') ? 'bg-white/10 font-bold text-white shadow-md border-l-4 border-amber-400 pl-3' : 'text-slate-400 hover:bg-white/5 hover:text-white hover:translate-x-1' }}">
-                        <i data-lucide="history" class="w-5 h-5 transition-colors duration-300 {{ request()->is('siswa/rekap*') ? 'text-amber-400' : 'group-hover:text-amber-400/70' }}"></i> 
-                        <span class="text-[13.5px]">Rekap Kehadiran</span>
-                    </a>
-
-                    <a href="/siswa/izin" class="group flex items-center gap-3 rounded-xl px-4 py-3 transition-all duration-300 {{ request()->is('siswa/izin*') ? 'bg-white/10 font-bold text-white shadow-md border-l-4 border-amber-400 pl-3' : 'text-slate-400 hover:bg-white/5 hover:text-white hover:translate-x-1' }}">
-                        <i data-lucide="file-signature" class="w-5 h-5 transition-colors duration-300 {{ request()->is('siswa/izin*') ? 'text-amber-400' : 'group-hover:text-amber-400/70' }}"></i> 
-                        <span class="text-[13.5px]">Ajukan Izin</span>
-                    </a>
-
-                    <a href="/siswa/notifikasi" class="group flex items-center justify-between rounded-xl px-4 py-3 transition-all duration-300 {{ request()->is('siswa/notifikasi*') ? 'bg-white/10 font-bold text-white shadow-md border-l-4 border-amber-400 pl-3' : 'text-slate-400 hover:bg-white/5 hover:text-white hover:translate-x-1' }}">
-                        <div class="flex items-center gap-3">
-                            <i data-lucide="bell" class="w-5 h-5 transition-colors duration-300 {{ request()->is('siswa/notifikasi*') ? 'text-amber-400' : 'group-hover:text-amber-400/70' }}"></i> 
-                            <span class="text-[13.5px]">Notifikasi</span>
+                    <div class="flex items-center gap-3">
+                        <div class="p-2.5 bg-sky-500/20 text-sky-400 rounded-xl border border-sky-500/30 shrink-0">
+                            <i data-lucide="school" class="w-6 h-6" stroke-width="2"></i>
                         </div>
-                        @php
-                            $user = Auth::user();
-                            $notifCount = \App\Models\Pengumuman::where('kelas_id', $user->id_kelas)
-                                ->where('created_at', '>', $user->notification_last_viewed_at ?? '2000-01-01')
-                                ->count();
-                        @endphp
+                        <div>
+                            <h2 class="text-base font-black leading-tight tracking-tight text-white">Presensi Mutu</h2>
+                            <p class="text-[10px] text-sky-300 font-semibold mt-0.5">Portal Siswa</p>
+                        </div>
+                    </div>
+                    <div class="mt-2 text-[9.5px] font-bold text-sky-300 bg-sky-500/10 border border-sky-400/20 px-2 py-1 rounded-lg uppercase tracking-wider text-center">
+                        SMA MUHAMMADIYAH 7
+                    </div>
+                </div>
+                
+                <!-- Profil Singkat Siswa -->
+                <div class="flex items-center gap-3 bg-white/5 p-3.5 mx-3 rounded-xl border border-white/5 shrink-0">
+                    <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-sky-600 font-extrabold text-white text-xs shadow-sm">
+                        {{ substr(Auth::user()->name ?? 'SW', 0, 2) }}
+                    </div>
+                    <div class="overflow-hidden">
+                        <p class="truncate text-xs font-bold text-white">{{ Auth::user()->name ?? 'Siswa' }}</p>
+                        <span class="mt-0.5 inline-block text-[9.5px] font-medium text-slate-400 truncate">
+                            Kelas {{ Auth::user()->kelas->nama_kelas ?? 'Siswa Active' }}
+                        </span>
+                    </div>
+                </div>
 
-                        @if($notifCount > 0)
-                            <span class="bg-amber-50 text-amber-600 border border-amber-200 text-[10px] font-black px-2 py-0.5 rounded-full shadow-sm animate-pulse">
-                                {{ $notifCount }}
-                            </span>
-                        @endif
-                    </a>
-                @endif
-            </nav>
+                <!-- Navigation Menu -->
+                <nav class="flex-1 overflow-y-auto px-3 space-y-1 custom-scrollbar">
+                    <p class="mb-2 mt-1 px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400">Menu Utam</p>
+                    
+                    @php $role = Auth::user()->role ?? 'siswa'; @endphp
 
-            <div class="border-t border-white/10 p-5 bg-[#0b1e36]/50">
+                    @if($role === 'siswa')
+                        <a href="/siswa/dashboard" class="group flex items-center gap-3 rounded-xl px-3.5 py-2.5 transition-all duration-200 {{ request()->is('siswa/dashboard*') ? 'bg-white/10 font-bold text-white shadow-sm border-l-4 border-sky-400 pl-3' : 'text-slate-400 hover:bg-white/5 hover:text-white' }}">
+                            <i data-lucide="layout-dashboard" class="w-4.5 h-4.5 {{ request()->is('siswa/dashboard*') ? 'text-sky-400' : '' }}"></i> 
+                            <span class="text-xs font-semibold">Dashboard</span>
+                        </a>
+                        
+                        <a href="/siswa/scan-qr" class="group flex items-center gap-3 rounded-xl px-3.5 py-2.5 transition-all duration-200 {{ request()->is('siswa/scan-qr*') ? 'bg-white/10 font-bold text-white shadow-sm border-l-4 border-sky-400 pl-3' : 'text-slate-400 hover:bg-white/5 hover:text-white' }}">
+                            <i data-lucide="qr-code" class="w-4.5 h-4.5 {{ request()->is('siswa/scan-qr*') ? 'text-sky-400' : '' }}"></i> 
+                            <span class="text-xs font-semibold">Scan QR Absen</span>
+                        </a>
+
+                        <a href="/siswa/rekap" class="group flex items-center gap-3 rounded-xl px-3.5 py-2.5 transition-all duration-200 {{ request()->is('siswa/rekap*') ? 'bg-white/10 font-bold text-white shadow-sm border-l-4 border-sky-400 pl-3' : 'text-slate-400 hover:bg-white/5 hover:text-white' }}">
+                            <i data-lucide="history" class="w-4.5 h-4.5 {{ request()->is('siswa/rekap*') ? 'text-sky-400' : '' }}"></i> 
+                            <span class="text-xs font-semibold">Rekap Kehadiran</span>
+                        </a>
+
+                        <a href="/siswa/izin" class="group flex items-center gap-3 rounded-xl px-3.5 py-2.5 transition-all duration-200 {{ request()->is('siswa/izin*') ? 'bg-white/10 font-bold text-white shadow-sm border-l-4 border-sky-400 pl-3' : 'text-slate-400 hover:bg-white/5 hover:text-white' }}">
+                            <i data-lucide="file-signature" class="w-4.5 h-4.5 {{ request()->is('siswa/izin*') ? 'text-sky-400' : '' }}"></i> 
+                            <span class="text-xs font-semibold">Ajukan Izin</span>
+                        </a>
+
+                        <a href="/siswa/notifikasi" class="group flex items-center justify-between rounded-xl px-3.5 py-2.5 transition-all duration-200 {{ request()->is('siswa/notifikasi*') ? 'bg-white/10 font-bold text-white shadow-sm border-l-4 border-sky-400 pl-3' : 'text-slate-400 hover:bg-white/5 hover:text-white' }}">
+                            <div class="flex items-center gap-3">
+                                <i data-lucide="bell" class="w-4.5 h-4.5 {{ request()->is('siswa/notifikasi*') ? 'text-sky-400' : '' }}"></i> 
+                                <span class="text-xs font-semibold">Notifikasi</span>
+                            </div>
+                            @php
+                                $user = Auth::user();
+                                $notifCount = \App\Models\Pengumuman::where('kelas_id', $user->id_kelas)
+                                    ->where('created_at', '>', $user->notification_last_viewed_at ?? '2000-01-01')
+                                    ->count();
+                            @endphp
+
+                            @if($notifCount > 0)
+                                <span class="bg-sky-500/20 text-sky-300 border border-sky-500/30 text-[10px] font-semibold px-2 py-0.5 rounded-full">
+                                    {{ $notifCount }}
+                                </span>
+                            @endif
+                        </a>
+                    @endif
+                </nav>
+            </div>
+
+            <!-- Bottom Logout Section (Pinned) -->
+            <div class="border-t border-white/10 p-4 shrink-0">
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button type="submit" class="group flex w-full items-center justify-center gap-2 rounded-xl border border-rose-500/20 bg-rose-500/10 p-3 text-[13.5px] font-bold text-rose-400 transition-all duration-300 hover:bg-rose-500 hover:text-white hover:shadow-lg hover:shadow-rose-500/20 cursor-pointer">
-                        <i data-lucide="log-out" class="w-4 h-4 transition-transform group-hover:-translate-x-1"></i> Keluar Portal
+                    <button type="submit" class="group flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 p-2.5 text-xs font-semibold text-slate-300 transition-colors hover:bg-white/10 hover:text-white cursor-pointer">
+                        <i data-lucide="log-out" class="w-4 h-4"></i> Keluar
                     </button>
                 </form>
             </div>
@@ -113,25 +128,25 @@
 
         <div id="sidebar-overlay" class="fixed inset-0 bg-[#0b1e36]/60 backdrop-blur-sm z-40 hidden md:hidden transition-opacity"></div>
 
-        <main class="flex-1 w-full pl-0 md:pl-64 min-h-screen bg-[#f8fafc] transition-all duration-300">
-            <header class="h-20 border-b border-slate-200 bg-white/70 backdrop-blur-xl sticky top-0 z-30 flex items-center justify-between px-4 md:px-8">
-                
+        <!-- Main Content (Scroll Mandiri Vertikal) -->
+        <main class="flex-1 w-full pl-0 md:pl-64 h-screen overflow-y-auto flex flex-col bg-[#f8fafc]">
+            <header class="h-16 border-b border-slate-200/60 bg-white/80 backdrop-blur-md sticky top-0 z-30 flex items-center justify-between px-6 md:px-10 shrink-0">
                 <div>
-                    <button id="open-sidebar" class="p-2 -ml-2 text-slate-800 rounded-lg hover:bg-slate-100 md:hidden focus:outline-none focus:ring-2 focus:ring-amber-400/50">
+                    <button id="open-sidebar" class="p-2 -ml-2 text-slate-700 rounded-lg hover:bg-slate-100 md:hidden focus:outline-none">
                         <i data-lucide="menu" class="w-6 h-6"></i>
                     </button>
                 </div>
                 
-                <div class="flex items-center gap-3 bg-white px-4 py-2 rounded-full border border-slate-200 shadow-sm">
-                    <span class="relative flex h-3 w-3">
+                <div class="flex items-center gap-2.5 bg-slate-50 px-3.5 py-1.5 rounded-full border border-slate-200/60">
+                    <span class="relative flex h-2.5 w-2.5">
                         <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
                     </span>
-                    <span class="text-[12px] font-extrabold text-slate-600 uppercase tracking-widest hidden sm:inline-block">Sesi Aktif</span>
+                    <span class="text-xs font-semibold text-slate-600">Sesi Siswa Aktif</span>
                 </div>
             </header>
             
-            <div class="p-4 sm:p-6 md:p-8 max-w-[1400px] mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500 ease-out">
+            <div class="flex-1 p-6 md:p-10 max-w-[1400px]">
                 {{ $slot }}
             </div>
         </main>
@@ -147,7 +162,6 @@
             const closeBtn = document.getElementById('close-sidebar');
             const overlay = document.getElementById('sidebar-overlay');
 
-            // Buka Sidebar
             if (openBtn) {
                 openBtn.addEventListener('click', () => {
                     sidebar.classList.remove('-translate-x-full');
@@ -155,7 +169,6 @@
                 });
             }
 
-            // Tutup Sidebar
             const closeSidebar = () => {
                 sidebar.classList.add('-translate-x-full');
                 overlay.classList.add('hidden');

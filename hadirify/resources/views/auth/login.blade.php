@@ -3,143 +3,118 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Masuk ke Sistem - Hadirify</title>
+    <title>Masuk - Presensi SMA Muhammadiyah 7 Yogyakarta</title>
     
     <!-- Scripts & Fonts -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Alpine.js untuk interaksi Show/Hide Password -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     
     <style>
         body {
-            background-color: #0b1c30; 
             font-family: 'Plus Jakarta Sans', sans-serif;
-            letter-spacing: -0.01em;
-        }
-
-        /* Sleek Corners (12px standard) */
-        .card-pro {
-            background: #ffffff;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        }
-
-        .input-pro {
-            border-radius: 8px;
-            border: 1px solid #e2e8f0;
-            background-color: #f8fafc;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .input-pro:focus {
-            background-color: #ffffff;
-            border-color: #006196;
-            box-shadow: 0 0 0 4px rgba(0, 97, 150, 0.1);
-            outline: none;
-        }
-
-        .btn-pro {
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-
-        /* Glass decorative elements */
-        .bg-glow {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1;
-            overflow: hidden;
-            pointer-events: none;
-            opacity: 0.4;
         }
     </style>
 </head>
 
-<body class="min-h-screen flex flex-col items-center justify-center p-6">
-    
-    <!-- Background Glow -->
-    <div class="bg-glow">
-        <div class="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-[#006196] blur-[120px] rounded-full"></div>
-        <div class="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-amber-600 blur-[120px] rounded-full"></div>
-    </div>
+<body class="min-h-screen flex items-center justify-center p-6 bg-slate-900 relative overflow-hidden">
 
-    <main class="w-full max-w-[400px] animate-in fade-in zoom-in duration-700">
+    <!-- Background dengan Efek Blur Estetik (Blob Cahaya) -->
+    <div class="absolute -top-32 -left-32 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-[128px] opacity-60 animate-pulse"></div>
+    <div class="absolute top-1/3 -right-32 w-96 h-96 bg-sky-400 rounded-full mix-blend-multiply filter blur-[128px] opacity-60"></div>
+    <div class="absolute -bottom-32 left-1/4 w-96 h-96 bg-indigo-600 rounded-full mix-blend-multiply filter blur-[128px] opacity-60"></div>
+
+    <main class="w-full max-w-[420px] relative z-10">
         
-        <div class="card-pro overflow-hidden">
-            <div class="p-8 sm:p-10 text-center">
-                
-                <!-- Branding -->
-                <div class="flex flex-col items-center mb-8">
-                    <div class="w-14 h-14 bg-[#0b1c30] rounded-2xl flex items-center justify-center shadow-xl mb-4 transform hover:rotate-6 transition-transform">
-                        <i data-lucide="fingerprint" class="w-8 h-8 text-white"></i>
-                    </div>
-                    <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight leading-none">Hadirify<span class="text-[#006196]">.</span></h1>
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-2">Digital Attendance System</p>
+        <!-- Card Putih Bersih & Elegan -->
+        <div class="bg-white rounded-3xl shadow-2xl border border-white/20 overflow-hidden p-8 sm:p-10 text-slate-800">
+            
+            <!-- Branding / Identitas Sekolah -->
+            <div class="flex flex-col items-center text-center mb-8">
+                <div class="w-12 h-12 bg-sky-50 rounded-2xl flex items-center justify-center text-[#0b1e36] mb-3.5 border border-sky-100 shadow-sm">
+                    <i data-lucide="school" class="w-6 h-6"></i>
                 </div>
-
-                <!-- Judul Akses -->
-                <div class="mb-8 space-y-1">
-                    <h2 class="text-lg font-bold text-slate-800">Masuk ke Akun</h2>
-                    <p class="text-sm text-slate-500">Gunakan NISN, NUPTK, atau Email Anda.</p>
-                </div>
-
-                <!-- Alert Error -->
-                @if($errors->any())
-                    <div class="mb-6 p-3.5 bg-rose-50 border border-rose-100 text-rose-600 text-[11px] font-bold rounded-lg flex items-start gap-3 text-left">
-                        <i data-lucide="alert-circle" class="w-4 h-4 shrink-0"></i>
-                        <span>{{ $errors->first() }}</span>
-                    </div>
-                @endif
-
-                <!-- Form Login (Universal) -->
-                <form method="POST" action="{{ route('login.proses') }}" class="space-y-5 text-left">
-                    @csrf 
-                    
-                    <div class="space-y-1.5">
-                        <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1" for="login_id">ID Pengguna / Email</label>
-                        <div class="relative group">
-                            <input name="login_id" id="login_id" 
-                                   class="input-pro w-full h-12 pl-11 pr-4 text-sm text-slate-900 placeholder:text-slate-300" 
-                                   placeholder="Email / NISN / NUPTK" 
-                                   type="text" required autofocus/>
-                            <i data-lucide="user" class="absolute left-4 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-slate-300 group-focus-within:text-[#006196] transition-colors"></i>
-                        </div>
-                    </div>
-
-                    <div class="space-y-1.5">
-                        <div class="flex justify-between items-center px-1">
-                            <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest" for="password">Kata Sandi</label>
-                            <a class="text-[11px] font-bold text-[#006196] hover:underline" href="#">Lupa?</a>
-                        </div>
-                        <div class="relative group">
-                            <input name="password" id="password" 
-                                   class="input-pro w-full h-12 pl-11 pr-4 text-sm text-slate-900 placeholder:text-slate-300" 
-                                   placeholder="••••••••" 
-                                   type="password" required/>
-                            <i data-lucide="lock-keyhole" class="absolute left-4 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-slate-300 group-focus-within:text-[#006196] transition-colors"></i>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="btn-pro w-full h-12 bg-[#0b1e36] hover:bg-black text-white text-[11px] font-black uppercase tracking-[0.15em] flex items-center justify-center gap-2 shadow-lg shadow-[#0b1e36]/20 active:scale-[0.98]">
-                        Masuk Ke Sistem
-                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
-                    </button>
-                </form>
-                
-                <div class="mt-10 pt-6 border-t border-slate-50 text-center">
-                    <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none">
-                        SMA MUHAMMADIYAH 7 YOGYAKARTA
-                    </p>
-                    <p class="text-[8px] text-slate-300 mt-2 font-medium">© 2024 Hadirify Ecosystem &bull; v2.5.0</p>
-                </div>
-
+                <h1 class="text-xl font-bold text-slate-900 tracking-tight">Presensi Mutu</h1>
+                <p class="text-xs text-slate-500 font-medium mt-0.5">SMA Muhammadiyah 7 Yogyakarta</p>
             </div>
+
+            <!-- Pesan Sambutan -->
+            <div class="mb-6">
+                <h2 class="text-base font-bold text-slate-800">Masuk ke Portal</h2>
+                <p class="text-xs text-slate-500 mt-0.5">Silakan masukkan kredensial akun Anda.</p>
+            </div>
+
+            <!-- Alert Error -->
+            @if($errors->any())
+                <div class="mb-5 p-3.5 bg-rose-50 border border-rose-200/80 text-rose-700 text-xs font-medium rounded-xl flex items-start gap-2.5">
+                    <i data-lucide="alert-circle" class="w-4 h-4 shrink-0 mt-0.5 text-rose-500"></i>
+                    <span>{{ $errors->first() }}</span>
+                </div>
+            @endif
+
+            <!-- Form Login -->
+            <form method="POST" action="{{ route('login.proses') }}" class="space-y-4 text-left">
+                @csrf 
+                
+                <!-- Input ID / Email -->
+                <div class="space-y-1.5">
+                    <label class="block text-xs font-semibold text-slate-700 ml-0.5" for="login_id">ID Pengguna / Email</label>
+                    <div class="relative">
+                        <input name="login_id" id="login_id" 
+                               class="w-full h-11 pl-10 pr-4 text-sm bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-[#0b1e36] focus:ring-2 focus:ring-[#0b1e36]/10 outline-none transition-all" 
+                               placeholder="Email, NISN, atau NUPTK" 
+                               type="text" required autofocus/>
+                        <i data-lucide="user" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
+                    </div>
+                </div>
+
+                <!-- Input Password dengan Toggle Mata (Alpine.js) -->
+                <div class="space-y-1.5" x-data="{ showPassword: false }">
+                    <div class="flex justify-between items-center ml-0.5">
+                        <label class="text-xs font-semibold text-slate-700" for="password">Kata Sandi</label>
+                        <a class="text-xs font-medium text-sky-600 hover:underline" href="#">Lupa sandi?</a>
+                    </div>
+                    <div class="relative">
+                        <input :type="showPassword ? 'text' : 'password'" 
+                               name="password" id="password" 
+                               class="w-full h-11 pl-10 pr-11 text-sm bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-[#0b1e36] focus:ring-2 focus:ring-[#0b1e36]/10 outline-none transition-all" 
+                               placeholder="••••••••" 
+                               required/>
+                        <i data-lucide="lock" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
+                        
+                        <!-- Tombol Mata Interaktif -->
+                        <button type="button" @click="showPassword = !showPassword" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 focus:outline-none cursor-pointer">
+                            <span x-show="!showPassword">
+                                <i data-lucide="eye" class="w-4 h-4"></i>
+                            </span>
+                            <span x-show="showPassword" style="display: none;">
+                                <i data-lucide="eye-off" class="w-4 h-4"></i>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tombol Submit -->
+                <button type="submit" class="w-full h-11 mt-2 bg-[#0b1e36] hover:bg-slate-900 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-2 shadow-md transition-all active:scale-[0.98]">
+                    <span>Masuk ke Sistem</span>
+                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </button>
+            </form>
+            
+            <!-- Footer Kecil -->
+            <div class="mt-8 pt-5 border-t border-slate-100 text-center">
+                <p class="text-[11px] text-slate-400 font-medium">
+                    &copy; {{ date('Y') }} SMA Muhammadiyah 7 Yogyakarta
+                </p>
+            </div>
+
         </div>
     </main>
 
     <script>
-        // Render Icons
+        // Render Icons Lucide
         lucide.createIcons();
     </script>
 </body>

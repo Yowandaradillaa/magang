@@ -24,7 +24,8 @@
     </style>
 </head>
 
-<body class="bg-[#f8fafc] text-[#0b1e36] antialiased overflow-hidden">
+<!-- Tambahkan x-data untuk mengontrol modal di tag body -->
+<body class="bg-[#f8fafc] text-[#0b1e36] antialiased overflow-hidden" x-data="{ logoutModal: false }">
 
     <div class="h-screen w-full flex overflow-hidden">
         
@@ -68,7 +69,7 @@
 
                 <!-- Navigation Menu -->
                 <nav class="flex-1 overflow-y-auto px-3 space-y-1 custom-scrollbar">
-                    <p class="mb-2 mt-1 px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400">Menu Utam</p>
+                    <p class="mb-2 mt-1 px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400">Menu Utama</p>
                     
                     @php $role = Auth::user()->role ?? 'siswa'; @endphp
 
@@ -100,7 +101,7 @@
                             </div>
                             @php
                                 $user = Auth::user();
-                                $notifCount = \App\Models\Pengumuman::where('kelas_id', $user->id_kelas)
+                                $notifCount = \App\Models\Pengumuman::where('kelas_id', $user->id_kelas ?? null)
                                     ->where('created_at', '>', $user->notification_last_viewed_at ?? '2000-01-01')
                                     ->count();
                             @endphp
@@ -115,14 +116,11 @@
                 </nav>
             </div>
 
-            <!-- Bottom Logout Section (Pinned) -->
+            <!-- Bottom Logout Section (Telah diubah menjadi trigger modal) -->
             <div class="border-t border-white/10 p-4 shrink-0">
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="group flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 p-2.5 text-xs font-semibold text-slate-300 transition-colors hover:bg-white/10 hover:text-white cursor-pointer">
-                        <i data-lucide="log-out" class="w-4 h-4"></i> Keluar
-                    </button>
-                </form>
+                <button @click="logoutModal = true" type="button" class="group flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 p-2.5 text-xs font-semibold text-slate-300 transition-colors hover:bg-white/10 hover:text-white cursor-pointer">
+                    <i data-lucide="log-out" class="w-4 h-4"></i> Keluar
+                </button>
             </div>
         </aside>
 
@@ -150,8 +148,44 @@
                 {{ $slot }}
             </div>
         </main>
-
     </div>
+
+    <!-- ================= MODAL KONFIRMASI KELUAR ================= -->
+    <div x-show="logoutModal" 
+         class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
+         x-transition.opacity
+         style="display: none;">
+        
+        <div @click.outside="logoutModal = false" 
+             class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-100 text-center space-y-4 relative"
+             x-transition>
+            
+            <div class="w-12 h-12 bg-rose-50 text-rose-600 rounded-full flex items-center justify-center mx-auto border border-rose-100">
+                <i data-lucide="log-out" class="w-6 h-6"></i>
+            </div>
+
+            <div class="space-y-1">
+                <h3 class="text-base font-extrabold text-[#0b1e36]">Konfirmasi Keluar</h3>
+                <p class="text-xs text-slate-500">Apakah Anda yakin ingin mengakhiri sesi dan keluar dari Portal Siswa?</p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 pt-2">
+                <!-- Tombol Batal -->
+                <button @click="logoutModal = false" type="button" class="py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all cursor-pointer">
+                    Batal
+                </button>
+                
+                <!-- Form Eksekusi Logout Sebenarnya -->
+                <form method="POST" action="{{ route('logout') }}" class="m-0">
+                    @csrf
+                    <button type="submit" class="w-full h-full py-2.5 px-4 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl shadow-lg shadow-rose-600/20 transition-all cursor-pointer">
+                        Ya, Keluar
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- ============================================================== -->
 
     <script>
         lucide.createIcons();

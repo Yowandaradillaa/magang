@@ -27,7 +27,7 @@
                     Dashboard Admin
                 </h1>
                 <p class="text-sm text-slate-500 font-normal">
-                    Selamat datang, <span class="font-semibold text-slate-800">{{ Auth::user()->name }}</span>. Monitoring operasional presensi harian sekolah.
+                    Selamat datang, <strong>Administrator</strong>. Monitoring operasional presensi harian sekolah.
                 </p>
             </div>
 

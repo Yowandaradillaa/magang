@@ -135,7 +135,12 @@ Route::middleware(['auth', 'role:siswa'])->group(function () {
     Route::get('/siswa/scan-qr', [SiswaController::class, 'scanQR'])->name('siswa.scan-qr');
     Route::get('/siswa/rekap', [SiswaController::class, 'rekap'])->name('siswa.rekap');
     Route::get('/siswa/notifikasi', [SiswaController::class, 'pengumuman'])->name('siswa.notifikasi');
-    Route::get('/siswa/izin', function () { return view('siswa.izin'); })->name('siswa.izin');
+    Route::get('/siswa/izin', function () {
+        return response()
+            ->view('siswa.izin')
+            ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+            ->header('Pragma', 'no-cache');
+    })->name('siswa.izin');
     Route::post('/siswa/izin/ajukan', [IzinController::class, 'ajukan'])->name('siswa.izin.ajukan');
     Route::post('/siswa/scan-proses', [AbsensiController::class, 'scanQR'])->name('siswa.scan.proses');
 });

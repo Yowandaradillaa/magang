@@ -4,7 +4,7 @@
         showModal: false, 
         showEditModal: false,
         showDeleteModal: false,
-        showJadwalModal: false,
+        showJadwalModal: @json($errors->jadwal->any()),
         deleteUrl: '',
         editData: { id: '', nama_kelas: '', mata_pelajaran: '', tahun_ajaran: '', id_wali_kelas: '' }
     }" class="animate-in fade-in duration-500 space-y-6 pb-12">
@@ -16,7 +16,6 @@
                 {{ session('success') }}
             </div>
         @endif
-
         <!-- ================= SECTION 1: HEADER ================= -->
         <div class="bg-white p-5 rounded-xl border border-slate-200/50 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div class="flex items-center gap-4">
@@ -31,10 +30,12 @@
                 </div>
             </div>
             
-            <button @click="showModal = true" class="w-full md:w-auto flex items-center justify-center gap-2 px-5 py-2.5 bg-[#0b1e36] hover:bg-slate-800 text-white text-[11px] font-bold rounded-lg shadow-lg transition-all active:scale-95 cursor-pointer">
-                <i data-lucide="plus" class="w-4 h-4"></i>
-                Tambah Kelas Baru
-            </button>
+            <div class="flex flex-col sm:flex-row gap-2">
+                <button @click="showModal = true" class="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 bg-[#0b1e36] hover:bg-slate-800 text-white text-[11px] font-bold rounded-lg shadow-lg transition-all active:scale-95 cursor-pointer">
+                    <i data-lucide="plus" class="w-4 h-4"></i>
+                    Tambah Kelas Baru
+                </button>
+            </div>
         </div>
 
         <!-- ================= SECTION 2: TABEL KELAS ================= -->
@@ -203,14 +204,27 @@
                             <h3 class="text-lg font-extrabold text-[#0b1e36] tracking-tight">Tambah Jadwal Mengajar</h3>
                             <button @click="showJadwalModal = false" class="text-slate-300 hover:text-rose-500 cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
                         </div>
-                        <form action="{{ route('admin.jadwal.store') }}" method="POST" class="space-y-4">
+                        <form action="{{ route('admin.jadwal.store') }}" method="POST" class="space-y-4"
+                            @input="if ($el.dataset.validationAnchor) $el.elements[$el.dataset.validationAnchor].setCustomValidity('')"
+                            @change="if ($el.dataset.validationAnchor) $el.elements[$el.dataset.validationAnchor].setCustomValidity('')"
+                            @if($errors->jadwal->any())
+                                x-init="$nextTick(() => {
+                                    const fieldName = @js($errors->jadwal->keys()[0]);
+                                    const field = $el.elements[fieldName];
+                                    if (field) {
+                                        $el.dataset.validationAnchor = fieldName;
+                                        field.setCustomValidity(@js(implode(' ', $errors->jadwal->all())));
+                                        setTimeout(() => field.reportValidity(), 250);
+                                    }
+                                })"
+                            @endif>
                             @csrf
                             <div class="space-y-1">
                                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Pilih Kelas</label>
                                 <select name="id_kelas" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none">
                                     <option value="">-- Pilih Kelas --</option>
                                     @foreach($kelas as $k)
-                                        <option value="{{ $k->id }}">{{ $k->nama_kelas }}</option>
+                                        <option value="{{ $k->id }}" @selected(old('id_kelas') == $k->id)>{{ $k->nama_kelas }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -219,7 +233,7 @@
                                 <select name="id_mapel" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none">
                                     <option value="">-- Pilih Mapel --</option>
                                     @foreach($mapels as $m)
-                                        <option value="{{ $m->id }}">{{ $m->nama_mapel }}</option>
+                                        <option value="{{ $m->id }}" @selected(old('id_mapel') == $m->id)>{{ $m->nama_mapel }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -228,7 +242,7 @@
                                 <select name="id_guru" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none">
                                     <option value="">-- Pilih Guru --</option>
                                     @foreach($gurus as $guru)
-                                        <option value="{{ $guru->id }}">{{ $guru->name }}</option>
+                                        <option value="{{ $guru->id }}" @selected(old('id_guru') == $guru->id)>{{ $guru->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -236,21 +250,22 @@
                                 <div class="space-y-1">
                                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Hari</label>
                                     <select name="hari" required class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs outline-none">
-                                        <option value="Senin">Senin</option>
-                                        <option value="Selasa">Selasa</option>
-                                        <option value="Rabu">Rabu</option>
-                                        <option value="Kamis">Kamis</option>
-                                        <option value="Jumat">Jumat</option>
-                                        <option value="Sabtu">Sabtu</option>
+                                        <option value="">Pilih hari</option>
+                                        <option value="Senin" @selected(old('hari') === 'Senin')>Senin</option>
+                                        <option value="Selasa" @selected(old('hari') === 'Selasa')>Selasa</option>
+                                        <option value="Rabu" @selected(old('hari') === 'Rabu')>Rabu</option>
+                                        <option value="Kamis" @selected(old('hari') === 'Kamis')>Kamis</option>
+                                        <option value="Jumat" @selected(old('hari') === 'Jumat')>Jumat</option>
+                                        <option value="Sabtu" @selected(old('hari') === 'Sabtu')>Sabtu</option>
                                     </select>
                                 </div>
                                 <div class="space-y-1">
                                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Jam Mulai</label>
-                                    <input type="time" name="jam_mulai" required class="w-full px-2 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs outline-none">
+                                    <input type="time" name="jam_mulai" value="{{ old('jam_mulai') }}" required class="w-full px-2 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs outline-none">
                                 </div>
                                 <div class="space-y-1">
                                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Jam Selesai</label>
-                                    <input type="time" name="jam_selesai" required class="w-full px-2 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs outline-none">
+                                    <input type="time" name="jam_selesai" value="{{ old('jam_selesai') }}" required class="w-full px-2 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs outline-none">
                                 </div>
                             </div>
                             <div class="flex gap-3 pt-4 border-t border-slate-100">

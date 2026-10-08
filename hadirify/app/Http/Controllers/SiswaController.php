@@ -46,7 +46,7 @@ class SiswaController extends Controller
         
         // Ambil nama hari ini dalam Bahasa Indonesia (Misal: Senin)
         // Jika di database kamu kolom 'hari' isinya bahasa Inggris, ganti format('l')
-        $hariIni = now()->translatedFormat('l'); 
+        $hariIni = now()->locale('id')->dayName;
 
         // Ambil Jadwal khusus hari ini untuk kelas siswa tersebut
         $jadwalHariIni = Jadwal::with(['mapel', 'guru', 'absensis' => function($q) {

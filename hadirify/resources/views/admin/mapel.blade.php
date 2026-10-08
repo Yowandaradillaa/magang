@@ -15,6 +15,11 @@
                 {{ session('success') }}
             </div>
         @endif
+        @if($errors->any())
+            <script>
+                window.alert(@json(implode("\n", $errors->all())));
+            </script>
+        @endif
 
         <!-- ================= SECTION 1: HEADER (FIXED) ================= -->
         <div class="flex-none bg-white p-5 rounded-xl border border-slate-200/50 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -30,10 +35,12 @@
                 </div>
             </div>
             
-            <button @click="showModal = true" class="w-full md:w-auto flex items-center justify-center gap-2 px-5 py-2.5 bg-[#0b1e36] hover:bg-slate-800 text-white text-[11px] font-bold rounded-lg shadow-lg transition-all active:scale-95 cursor-pointer">
-                <i data-lucide="plus" class="w-4 h-4"></i>
-                Tambah Mapel Baru
-            </button>
+            <div class="flex flex-col sm:flex-row gap-2">
+                <button @click="showModal = true" class="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 bg-[#0b1e36] hover:bg-slate-800 text-white text-[11px] font-bold rounded-lg shadow-lg transition-all active:scale-95 cursor-pointer">
+                    <i data-lucide="plus" class="w-4 h-4"></i>
+                    Tambah Mapel Baru
+                </button>
+            </div>
         </div>
 
         <!-- ================= SECTION 2: TABEL (SCROLLABLE) ================= -->
@@ -114,7 +121,7 @@
                             </div>
                             <div class="space-y-1">
                                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Kode Mapel (Opsional)</label>
-                                <input type="text" name="kode_mapel" placeholder="Contoh: MTM-12" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:border-[#0b1e36] outline-none font-mono">
+                                <input type="text" name="kode_mapel" maxlength="50" placeholder="Contoh: MTM-12" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:border-[#0b1e36] outline-none font-mono">
                             </div>
                             <div class="flex gap-3 pt-4 border-t border-slate-100">
                                 <button type="button" @click="showModal = false" class="flex-1 py-3 text-slate-400 text-[10px] font-bold uppercase tracking-widest">Batal</button>
@@ -145,7 +152,7 @@
                             </div>
                             <div class="space-y-1">
                                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Kode Mapel</label>
-                                <input type="text" name="kode_mapel" x-model="editData.kode_mapel" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none font-mono">
+                                <input type="text" name="kode_mapel" x-model="editData.kode_mapel" maxlength="50" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none font-mono">
                             </div>
                             <div class="flex gap-3 pt-4 border-t border-slate-100">
                                 <button type="button" @click="showEditModal = false" class="flex-1 py-3 text-slate-400 text-[10px] font-bold uppercase tracking-widest">Batal</button>

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
 
 class QRCode extends Model
@@ -20,4 +21,9 @@ class QRCode extends Model
 
     // Aktifkan ini jika tabel kamu punya created_at & updated_at
     public $timestamps = true;
+
+    public function jadwal(): BelongsTo
+    {
+        return $this->belongsTo(Jadwal::class, 'jadwal_id');
+    }
 }

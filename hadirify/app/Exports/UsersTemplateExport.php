@@ -16,8 +16,8 @@ class UsersTemplateExport implements FromArray, WithHeadings, WithStyles, WithCo
     public function array(): array
     {
         return [
-            ['Ahmad Fauzi', 'siswa', 'ahmad.fauzi@contoh.sch.id', '0012345678', '', 'X IPA 1'],
-            ['Siti Rahma', 'guru', 'siti.rahma@contoh.sch.id', '', '198501012010012001', ''],
+            ['Ahmad Fauzi', 'siswa', 'ahmad.fauzi@gmail.com', '0012345678', '', 'X IPA 1'],
+            ['Siti Rahma', 'guru', 'siti.rahma@gmail.com', '', '1985010120100120', ''],
         ];
     }
 
@@ -33,6 +33,8 @@ class UsersTemplateExport implements FromArray, WithHeadings, WithStyles, WithCo
 
     public function styles(Worksheet $sheet)
     {
+        $sheet->getStyle('D2:E' . $sheet->getHighestRow())->getNumberFormat()->setFormatCode('@');
+
         return [1 => ['font' => ['bold' => true]]];
     }
 }

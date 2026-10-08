@@ -71,7 +71,24 @@
                 <!-- Left Accent Line -->
                 <div class="absolute left-0 top-0 bottom-0 w-[3px] bg-amber-500"></div>
                 
-                <form method="POST" action="{{ route('siswa.izin.ajukan') }}" enctype="multipart/form-data" class="p-6 md:p-8 space-y-6">
+                <form method="POST" action="{{ route('siswa.izin.ajukan') }}" enctype="multipart/form-data" class="p-6 md:p-8 space-y-6"
+                    x-data="{ submitting: false }"
+                    @submit="if (submitting) { $event.preventDefault(); return; } submitting = true"
+                    @formdata="$event.formData.set('_token', document.querySelector('meta[name=csrf-token]').content)"
+                    @input="if ($el.dataset.validationAnchor) $el.elements[$el.dataset.validationAnchor].setCustomValidity('')"
+                    @change="if ($el.dataset.validationAnchor) $el.elements[$el.dataset.validationAnchor].setCustomValidity(''); if ($event.target.name === 'tanggal_mulai') $el.elements.tanggal_selesai.min = $event.target.value"
+                    x-init="$el.elements.tanggal_selesai.min = $el.elements.tanggal_mulai.value;
+                    @if($errors->any())
+                        $nextTick(() => {
+                            const fieldName = @js($errors->keys()[0]);
+                            const field = $el.elements[fieldName];
+                            if (field) {
+                                $el.dataset.validationAnchor = fieldName;
+                                field.setCustomValidity(@js($errors->first()));
+                                setTimeout(() => field.reportValidity(), 250);
+                            }
+                        });
+                    @endif>
                     @csrf
                     <input type="hidden" name="jenis" :value="jenis">
 
@@ -96,12 +113,12 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="space-y-1.5">
                             <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Mulai Tanggal</label>
-                            <input type="date" name="tanggal_mulai" required
+                            <input type="date" name="tanggal_mulai" value="{{ old('tanggal_mulai') }}" required
                                 class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-700 outline-none focus:border-amber-500 focus:bg-white transition-all">
                         </div>
                         <div class="space-y-1.5">
                             <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Sampai Tanggal</label>
-                            <input type="date" name="tanggal_selesai" required
+                            <input type="date" name="tanggal_selesai" value="{{ old('tanggal_selesai') }}" min="{{ old('tanggal_mulai') }}" required
                                 class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-700 outline-none focus:border-amber-500 focus:bg-white transition-all">
                         </div>
                     </div>
@@ -109,15 +126,15 @@
                     <!-- Alasan Detail -->
                     <div class="space-y-1.5">
                         <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Deskripsi Alasan</label>
-                        <textarea name="alasan" rows="4" placeholder="Tulis rincian keterangan Anda..." required
-                            class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium text-slate-600 outline-none focus:border-amber-500 focus:bg-white transition-all resize-none"></textarea>
+                        <textarea name="alasan" rows="4" maxlength="10000" placeholder="Tulis rincian keterangan Anda..." required
+                            class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium text-slate-600 outline-none focus:border-amber-500 focus:bg-white transition-all resize-none">{{ old('alasan') }}</textarea>
                     </div>
 
                     <!-- File Upload Dropzone -->
                     <div class="space-y-1.5">
                         <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Lampiran Dokumen (Foto/PDF)</label>
                         <div class="relative group">
-                            <input type="file" name="file_surat" accept="image/*,application/pdf"
+                            <input type="file" name="file_surat" accept=".jpg,.jpeg,.png,.pdf"
                                 @change="fileName = $event.target.files[0] ? $event.target.files[0].name : ''"
                                 class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
                             
@@ -132,7 +149,8 @@
                     </div>
 
                     <!-- Submit -->
-                    <button type="submit"
+                    <button type="submit" :disabled="submitting"
+                        :class="submitting ? 'opacity-60 cursor-not-allowed' : ''"
                         class="w-full h-12 bg-slate-900 hover:bg-black text-white text-[11px] font-black uppercase tracking-[0.2em] rounded-lg shadow-lg shadow-slate-200 flex items-center justify-center gap-3 transition-all active:scale-95">
                         <i data-lucide="send" class="w-4 h-4 stroke-[2.5px]"></i>
                         Kirim Permohonan

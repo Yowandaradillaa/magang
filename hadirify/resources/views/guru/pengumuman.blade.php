@@ -48,7 +48,20 @@
                     </div>
                     
                     <div class="p-6">
-                        <form action="{{ route('guru.pengumuman.send') }}" method="POST" class="space-y-4">
+                        <form action="{{ route('guru.pengumuman.send') }}" method="POST" class="space-y-4"
+                            @input="if ($el.dataset.validationAnchor) $el.elements[$el.dataset.validationAnchor].setCustomValidity('')"
+                            @change="if ($el.dataset.validationAnchor) $el.elements[$el.dataset.validationAnchor].setCustomValidity('')"
+                            @if($errors->any())
+                                x-init="$nextTick(() => {
+                                    const fieldName = @js($errors->keys()[0]);
+                                    const field = $el.elements[fieldName];
+                                    if (field) {
+                                        $el.dataset.validationAnchor = fieldName;
+                                        field.setCustomValidity(@js($errors->first()));
+                                        setTimeout(() => field.reportValidity(), 250);
+                                    }
+                                })"
+                            @endif>
                             @csrf
                             <div class="space-y-1.5">
                                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Target Kelas</label>
@@ -56,7 +69,7 @@
                                     <select name="kelas_id" required class="w-full pl-3 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-700 outline-none focus:border-amber-500 appearance-none transition-all">
                                         <option value="">-- Pilih Kelas Penerima --</option>
                                         @foreach($kelas as $k)
-                                            <option value="{{ $k->id }}">{{ $k->nama_kelas }} ({{ $k->tahun_ajaran }})</option>
+                                            <option value="{{ $k->id }}" @selected(old('kelas_id') == $k->id)>{{ $k->nama_kelas }} ({{ $k->tahun_ajaran }})</option>
                                         @endforeach
                                     </select>
                                     <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 pointer-events-none"></i>
@@ -65,14 +78,14 @@
 
                             <div class="space-y-1.5">
                                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Subjek / Topik</label>
-                                <input type="text" name="judul" placeholder="Contoh: Info Tugas Pertemuan 5" required
+                                <input type="text" name="judul" value="{{ old('judul') }}" maxlength="200" placeholder="Contoh: Info Tugas Pertemuan 5" required
                                        class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-700 outline-none focus:border-amber-500 transition-all">
                             </div>
 
                             <div class="space-y-1.5">
                                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Rincian Pesan</label>
-                                <textarea name="isi" placeholder="Tulis instruksi lengkap di sini..." required rows="6"
-                                          class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium text-slate-600 outline-none focus:border-amber-500 transition-all resize-none"></textarea>
+                                <textarea name="isi" placeholder="Tulis instruksi lengkap di sini..." required maxlength="10000" rows="6"
+                                          class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium text-slate-600 outline-none focus:border-amber-500 transition-all resize-none">{{ old('isi') }}</textarea>
                             </div>
 
                             <button type="submit" class="w-full h-11 bg-slate-900 hover:bg-black text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-lg shadow-lg flex items-center justify-center gap-3 transition-all active:scale-95">

@@ -19,6 +19,12 @@
             </div>
         @endif
 
+        @if($errors->any())
+            <script>
+                window.alert(@json(implode("\n", $errors->all())));
+            </script>
+        @endif
+
         <!-- Notifikasi Gagal Total -->
         @if(session('error'))
             <div class="p-3 bg-rose-50 border border-rose-200 text-rose-700 rounded-xl font-bold text-xs flex items-center gap-3 shadow-sm">
@@ -211,7 +217,7 @@
 
                             <div class="bg-amber-50 border border-amber-100 rounded-lg p-3">
                                 <p class="text-[10px] text-amber-700 leading-relaxed">
-                                    <span class="font-black">Catatan:</span> Kolom "kelas" wajib diisi persis sama seperti nama kelas yang ada di menu Manajemen Kelas. Password akun otomatis dibuat dari NISN (siswa) atau NUPTK (guru).
+                                    <span class="font-black">Catatan:</span> Kolom "kelas" wajib diisi persis sama seperti nama kelas yang ada di menu Manajemen Kelas. NISN/NUPTK, email, dan setiap baris yang duplikat akan ditolak. Password akun otomatis dibuat dari NISN (siswa) atau NUPTK (guru).
                                 </p>
                             </div>
 
@@ -240,7 +246,7 @@
                             @csrf
                             <div class="space-y-1">
                                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Nama Lengkap</label>
-                                <input type="text" name="name" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none focus:border-[#0b1e36]">
+                                <input type="text" name="name" required maxlength="255" pattern="[^0-9]+" title="Nama tidak boleh mengandung angka" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none focus:border-[#0b1e36]">
                             </div>
                             <div class="grid grid-cols-2 gap-4">
                                 <div class="space-y-1">
@@ -260,15 +266,23 @@
                             </div>
                             <div x-show="rolePilihan === 'siswa'" class="space-y-1 animate-in fade-in zoom-in">
                                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Nomor NISN</label>
-                                <input type="text" name="nisn" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none">
+                                <input type="text" name="nisn" inputmode="numeric" maxlength="10" pattern="[0-9]{10}" title="NISN harus terdiri dari 10 digit angka" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none">
                             </div>
                             <div x-show="rolePilihan === 'guru'" class="space-y-1 animate-in fade-in zoom-in">
                                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Nomor NUPTK</label>
-                                <input type="text" name="nuptk" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none">
+                                <input type="text" name="nuptk" inputmode="numeric" maxlength="16" pattern="[0-9]{16}" title="NUPTK harus terdiri dari 16 digit angka" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none">
                             </div>
                             <div class="space-y-1">
                                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Email</label>
-                                <input type="email" name="email" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none">
+                                <input type="email" name="email" maxlength="255" pattern="[^@]+@gmail\.com" title="Email harus menggunakan domain @gmail.com" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none">
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Password</label>
+                                <input type="password" name="password" required minlength="8" autocomplete="new-password" placeholder="Minimal 8 karakter" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none focus:border-[#0b1e36]">
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Konfirmasi Password</label>
+                                <input type="password" name="password_confirmation" required minlength="8" autocomplete="new-password" placeholder="Ulangi password" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none focus:border-[#0b1e36]">
                             </div>
                             <div class="flex gap-3 pt-4 border-t border-slate-100">
                                 <button type="button" @click="showModal = false" class="flex-1 py-3 text-slate-400 text-[10px] font-bold uppercase tracking-widest">Batal</button>
@@ -295,12 +309,12 @@
                             @csrf @method('PUT')
                             <div class="space-y-1">
                                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Nama Lengkap</label>
-                                <input type="text" name="name" x-model="editData.name" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none">
+                                <input type="text" name="name" x-model="editData.name" required maxlength="255" pattern="[^0-9]+" title="Nama tidak boleh mengandung angka" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none">
                             </div>
                             <div class="grid grid-cols-2 gap-4">
                                 <div class="space-y-1">
                                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Email</label>
-                                    <input type="email" name="email" x-model="editData.email" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none">
+                                    <input type="email" name="email" x-model="editData.email" maxlength="255" pattern="[^@]+@gmail\.com" title="Email harus menggunakan domain @gmail.com" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none">
                                 </div>
                                 <div class="space-y-1" x-show="editData.role === 'siswa'">
                                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Kelas</label>
@@ -311,11 +325,11 @@
                             </div>
                             <div x-show="editData.role === 'siswa'" class="space-y-1">
                                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">NISN</label>
-                                <input type="text" name="nisn" x-model="editData.nisn" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none">
+                                <input type="text" name="nisn" x-model="editData.nisn" inputmode="numeric" maxlength="10" pattern="[0-9]{10}" title="NISN harus terdiri dari 10 digit angka" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none">
                             </div>
                             <div x-show="editData.role === 'guru'" class="space-y-1">
                                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">NUPTK</label>
-                                <input type="text" name="nuptk" x-model="editData.nuptk" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none">
+                                <input type="text" name="nuptk" x-model="editData.nuptk" inputmode="numeric" maxlength="16" pattern="[0-9]{16}" title="NUPTK harus terdiri dari 16 digit angka" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none">
                             </div>
                             <div class="flex gap-3 pt-4 border-t border-slate-100">
                                 <button type="button" @click="showEditModal = false" class="flex-1 py-3 text-slate-400 text-[10px] font-bold uppercase tracking-widest">Batal</button>

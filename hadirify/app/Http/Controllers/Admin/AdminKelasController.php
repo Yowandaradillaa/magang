@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Jadwal;
 use Illuminate\Http\Request;
 use App\Models\MataPelajaran;
+use Illuminate\Validation\Rule;
 
 class AdminKelasController extends Controller
 {
@@ -17,20 +18,23 @@ class AdminKelasController extends Controller
         
         $gurus = User::where('role', 'guru')->get(); 
         $jadwals = Jadwal::with(['kelas', 'mapel', 'guru'])->get();
-        $mapels = \App\Models\MataPelajaran::all(); // Tambahkan baris ini untuk mengambil data mapel
+        $mapels = MataPelajaran::all();
 
         return view('admin.kelas', compact('kelas', 'gurus', 'jadwals', 'mapels'));
     }
 
     public function store(Request $request)
     {
-        $request->validate([
-            'nama_kelas'    => 'required|string|unique:kelas,nama_kelas',
-            'tahun_ajaran'  => 'required|string',
-            'id_wali_kelas' => 'nullable|exists:users,id',
+        $validated = $request->validate([
+            'nama_kelas'    => ['required', 'string', 'max:255', Rule::unique('kelas', 'nama_kelas')->where('tahun_ajaran', $request->input('tahun_ajaran'))],
+            'mata_pelajaran' => 'nullable|string|max:255',
+            'tahun_ajaran'  => 'required|string|max:20',
+            'id_wali_kelas' => ['nullable', Rule::exists('users', 'id')->where('role', 'guru')],
+        ], [
+            'nama_kelas.unique' => 'Kelas dengan nama dan tahun ajaran tersebut sudah terdaftar.',
         ]);
 
-        Kelas::create($request->all());
+        Kelas::create($validated);
 
         return redirect()->back()->with('success', 'Kelas berhasil dibuat!');
     }
@@ -39,13 +43,18 @@ class AdminKelasController extends Controller
     {
         $kelas = Kelas::findOrFail($id);
         
-        $request->validate([
-            'nama_kelas' => 'required|string',
-            'tahun_ajaran' => 'required',
-            'id_wali_kelas' => 'required|exists:users,id'
+        $validated = $request->validate([
+            'nama_kelas' => ['required', 'string', 'max:255', Rule::unique('kelas', 'nama_kelas')
+                ->where('tahun_ajaran', $request->input('tahun_ajaran'))
+                ->ignore($kelas->id)],
+            'mata_pelajaran' => 'nullable|string|max:255',
+            'tahun_ajaran' => 'required|string|max:20',
+            'id_wali_kelas' => ['required', Rule::exists('users', 'id')->where('role', 'guru')],
+        ], [
+            'nama_kelas.unique' => 'Kelas dengan nama dan tahun ajaran tersebut sudah terdaftar.',
         ]);
 
-        $kelas->update($request->all());
+        $kelas->update($validated);
 
         return redirect()->back()->with('success', 'Data kelas berhasil diperbarui!');
     }

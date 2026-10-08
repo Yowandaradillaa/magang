@@ -13,6 +13,7 @@ return new class extends Migration
             $table->id();
 
             $table->string('nama_kelas');
+            $table->string('mata_pelajaran')->nullable();
             $table->string('tahun_ajaran');
 
             $table->foreignId('id_wali_kelas')

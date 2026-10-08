@@ -46,20 +46,26 @@ class AdminUserController extends Controller
     }
 
     /**
-     * Simpan User Baru dari Form (Password otomatis NISN/NUPTK)
+     * Simpan User Baru dari Form
      */
     public function store(Request $request)
     {
         $request->validate([
-            'name'  => 'required|string|max:255',
+            'name'  => ['required', 'string', 'max:255', 'regex:/^(?=.*\p{L})[\p{L}\p{M}\s.\'-]+$/u'],
             'role'  => 'required|in:admin,guru,siswa',
-            'email' => 'nullable|email|unique:users,email',
-            'nisn'  => 'nullable|string|unique:users,nisn|max:10',
-            'nuptk' => 'nullable|string|unique:users,nuptk|max:16',
+            'email' => ['nullable', 'email:rfc', 'max:255', 'regex:/^[^@\s]+@gmail\.com$/i', Rule::unique('users', 'email')],
+            'nisn'  => ['nullable', 'digits:10', Rule::unique('users', 'nisn')],
+            'nuptk' => ['nullable', 'digits:16', Rule::unique('users', 'nuptk')],
             'id_kelas' => 'nullable|exists:kelas,id',
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ], [
+            'email.unique' => 'Email tersebut sudah digunakan oleh akun lain.',
+            'nisn.unique' => 'NISN tersebut sudah terdaftar pada akun lain.',
+            'nuptk.unique' => 'NUPTK tersebut sudah terdaftar pada akun lain.',
+            'password.required' => 'Silakan tentukan password untuk akun ini.',
+            'password.min' => 'Password harus terdiri dari minimal 8 karakter.',
+            'password.confirmed' => 'Konfirmasi password tidak sama.',
         ]);
-
-        $passwordDefault = $request->role === 'siswa' ? $request->nisn : $request->nuptk;
 
         User::create([
             'name'     => $request->name,
@@ -68,7 +74,7 @@ class AdminUserController extends Controller
             'nisn'     => $request->nisn,
             'nuptk'    => $request->nuptk,
             'id_kelas' => $request->id_kelas,
-            'password' => Hash::make($passwordDefault ?? 'password123'),
+            'password' => Hash::make($request->password),
         ]);
 
         return redirect()->back()->with('success', 'Akun berhasil dibuat!');
@@ -124,11 +130,15 @@ class AdminUserController extends Controller
         $user = User::findOrFail($id);
 
         $request->validate([
-            'name'  => 'string|max:255',
-            'email' => ['nullable', 'email', Rule::unique('users')->ignore($user->id)],
-            'nisn'  => ['nullable', 'string', Rule::unique('users')->ignore($user->id)],
-            'nuptk' => ['nullable', 'string', Rule::unique('users')->ignore($user->id)],
+            'name'  => ['sometimes', 'required', 'string', 'max:255', 'regex:/^(?=.*\p{L})[\p{L}\p{M}\s.\'-]+$/u'],
+            'email' => ['nullable', 'email:rfc', 'max:255', 'regex:/^[^@\s]+@gmail\.com$/i', Rule::unique('users', 'email')->ignore($user->id)],
+            'nisn'  => ['nullable', 'digits:10', Rule::unique('users', 'nisn')->ignore($user->id)],
+            'nuptk' => ['nullable', 'digits:16', Rule::unique('users', 'nuptk')->ignore($user->id)],
             'id_kelas' => 'nullable|exists:kelas,id',
+        ], [
+            'email.unique' => 'Email tersebut sudah digunakan oleh akun lain.',
+            'nisn.unique' => 'NISN tersebut sudah terdaftar pada akun lain.',
+            'nuptk.unique' => 'NUPTK tersebut sudah terdaftar pada akun lain.',
         ]);
 
         $user->update($request->all());

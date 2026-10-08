@@ -107,10 +107,17 @@
                                 <!-- Badge Status Berdasarkan Tabel Absensi -->
                                 @php
                                     $sudahAbsen = $jadwal->absensis->where('siswa_id', Auth::id())->where('tanggal', now()->toDateString())->first();
+                                    $labelStatus = $sudahAbsen ? match ($sudahAbsen->status) {
+                                        'H' => 'Hadir',
+                                        'I' => 'Izin',
+                                        'S' => 'Sakit',
+                                        'A' => 'Alfa',
+                                        default => 'Tercatat',
+                                    } : null;
                                 @endphp
                                 
                                 @if($sudahAbsen)
-                                    <span class="text-[8px] font-black px-2 py-0.5 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded uppercase">Hadir</span>
+                                    <span class="text-[8px] font-black px-2 py-0.5 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded uppercase">{{ $labelStatus }}</span>
                                 @else
                                     <span class="text-[8px] font-black px-2 py-0.5 bg-amber-50 text-amber-600 border border-amber-100 rounded uppercase animate-pulse">Belum Scan</span>
                                 @endif
@@ -152,8 +159,8 @@
                             this.userLng = pos.coords.longitude;
                             
                             // Titik Pusat Sekolah
-                            const schoolLat = -7.801533; 
-                            const schoolLng = 110.352726; 
+                            const schoolLat = @json(config('attendance.school.latitude'));
+                            const schoolLng = @json(config('attendance.school.longitude'));
                             
                             // Hitung Jarak (Haversine)
                             const R = 6371e3; 
@@ -163,10 +170,10 @@
                             const dl = (this.userLng-schoolLng) * Math.PI/180;
                             const a = Math.sin(dp/2) * Math.sin(dp/2) + Math.cos(p1) * Math.cos(p2) * Math.sin(dl/2) * Math.sin(dl/2);
                             const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-                            this.jarakMeter = Math.round(R * c);
+                            const jarakMeter = R * c;
+                            this.jarakMeter = Math.round(jarakMeter);
 
-                            // Batas Radius (misal 100m)
-                            this.gpsValid = this.jarakMeter <= 100; 
+                            this.gpsValid = jarakMeter <= @json(config('attendance.school.radius_meters'));
                             this.isCheckingLocation = false;
                             this.status = { type: 'success', msg: '📍 Lokasi diperbarui' };
                         }, (err) => {
@@ -178,7 +185,17 @@
                 
                 startScanning() {
                     if(this.isScanning) return;
-                    if(!this.userLat) { this.status = { type: 'error', msg: '❌ Aktifkan GPS Terlebih dahulu' }; return; }
+                    if(this.userLat === null || this.userLng === null) {
+                        this.status = { type: 'error', msg: '❌ Aktifkan GPS terlebih dahulu' };
+                        return;
+                    }
+                    if(!this.gpsValid) {
+                        this.status = {
+                            type: 'error',
+                            msg: '❌ Anda harus berada maksimal ' + @json(config('attendance.school.radius_meters')) + ' meter dari sekolah'
+                        };
+                        return;
+                    }
 
                     this.isScanning = true;
                     const html5QrCode = new Html5Qrcode('reader');
@@ -204,6 +221,7 @@
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
+                            'Accept': 'application/json',
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                         },
                         body: JSON.stringify({ 

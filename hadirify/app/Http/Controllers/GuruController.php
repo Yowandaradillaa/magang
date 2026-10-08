@@ -8,6 +8,7 @@ use App\Models\Jadwal;
 use App\Models\Pengumuman;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class GuruController extends Controller
 {
@@ -155,17 +156,36 @@ class GuruController extends Controller
      */
     public function kirimPengumuman(Request $request)
     {
-        $request->validate([
-            'kelas_id' => 'required|exists:kelas,id',
-            'judul'    => 'required|string|max:200',
-            'isi'      => 'required|string',
+        $validated = $request->validate([
+            'kelas_id' => ['required', 'exists:kelas,id'],
+            'judul'    => [
+                'required',
+                'string',
+                'max:200',
+                Rule::unique('pengumumen', 'judul')
+                    ->where('kelas_id', $request->input('kelas_id'))
+                    ->where('isi', $request->input('isi')),
+            ],
+            'isi'      => 'required|string|max:10000',
+        ], [
+            'kelas_id.required' => 'Silakan pilih kelas penerima pengumuman.',
+            'kelas_id.exists' => 'Kelas yang dipilih tidak ditemukan. Silakan pilih kelas yang tersedia.',
+            'judul.required' => 'Silakan isi subjek atau topik pengumuman.',
+            'judul.max' => 'Subjek pengumuman tidak boleh lebih dari 200 karakter.',
+            'judul.unique' => 'Pengumuman dengan subjek dan isi yang sama sudah pernah dikirim ke kelas ini.',
+            'isi.required' => 'Silakan isi rincian pesan pengumuman.',
+            'isi.max' => 'Rincian pengumuman tidak boleh lebih dari 10.000 karakter.',
+        ], [
+            'kelas_id' => 'kelas penerima',
+            'judul' => 'subjek pengumuman',
+            'isi' => 'rincian pesan',
         ]);
 
         Pengumuman::create([
             'guru_id'  => Auth::id(),
-            'kelas_id' => $request->kelas_id,
-            'judul'    => $request->judul,
-            'isi'      => $request->isi,
+            'kelas_id' => $validated['kelas_id'],
+            'judul'    => $validated['judul'],
+            'isi'      => $validated['isi'],
             'tanggal'  => now(),
         ]);
 

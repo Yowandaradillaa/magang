@@ -15,12 +15,17 @@
             </div>
             
             <div class="flex items-center gap-2">
-                <button onclick="alert('Fitur PDF sedang disiapkan')" class="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-600 text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-slate-50 transition-all">
+                <a id="btn-export-pdf" 
+                   href="{{ route('admin.laporan.pdf', ['bulan' => request('bulan', now()->month), 'kelas_id' => request('kelas_id')]) }}" 
+                   target="_blank"
+                   class="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-600 text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-slate-50 transition-all shadow-sm active:scale-95">
                     <i data-lucide="file-text" class="w-3.5 h-3.5 text-rose-500"></i> Export PDF
-                </button>
-                <button onclick="alert('Fitur Excel sedang disiapkan')" class="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-emerald-700 transition-all">
+                </a>
+                <a id="btn-export-excel" 
+                   href="{{ route('admin.laporan.excel', ['bulan' => request('bulan', now()->month), 'kelas_id' => request('kelas_id')]) }}" 
+                   class="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-emerald-700 transition-all shadow-sm active:scale-95">
                     <i data-lucide="sheet" class="w-3.5 h-3.5"></i> Export Excel
-                </button>
+                </a>
             </div>
         </div>
 
@@ -168,4 +173,36 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const selectBulan = document.querySelector('select[name="bulan"]');
+            const selectKelas = document.querySelector('select[name="kelas_id"]');
+            const btnPdf = document.getElementById('btn-export-pdf');
+            const btnExcel = document.getElementById('btn-export-excel');
+
+            function updateExportUrls() {
+                const bulan = selectBulan ? selectBulan.value : '';
+                const kelasId = selectKelas ? selectKelas.value : '';
+
+                const pdfUrl = new URL("{{ route('admin.laporan.pdf') }}", window.location.origin);
+                const excelUrl = new URL("{{ route('admin.laporan.excel') }}", window.location.origin);
+
+                if (bulan) {
+                    pdfUrl.searchParams.set('bulan', bulan);
+                    excelUrl.searchParams.set('bulan', bulan);
+                }
+                if (kelasId) {
+                    pdfUrl.searchParams.set('kelas_id', kelasId);
+                    excelUrl.searchParams.set('kelas_id', kelasId);
+                }
+
+                if (btnPdf) btnPdf.href = pdfUrl.toString();
+                if (btnExcel) btnExcel.href = excelUrl.toString();
+            }
+
+            selectBulan?.addEventListener('change', updateExportUrls);
+            selectKelas?.addEventListener('change', updateExportUrls);
+        });
+    </script>
 </x-admin-layout>

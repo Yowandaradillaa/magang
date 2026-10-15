@@ -3,12 +3,12 @@
 use Illuminate\Support\Facades\Route;
 
 // Import Semua Controller
-use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\QRController;
 use App\Http\Controllers\AbsensiController;
-use App\Http\Controllers\API\IzinController;
-use App\Http\Controllers\API\GuruController;
-use App\Http\Controllers\API\SiswaController;
+use App\Http\Controllers\IzinController;
+use App\Http\Controllers\GuruController;
+use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\AdminKelasController;
 use App\Http\Controllers\Admin\AdminMapelController;

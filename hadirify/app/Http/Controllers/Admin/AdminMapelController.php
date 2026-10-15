@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\MataPelajaran;
+use App\Imports\MapelImport;
+use App\Exports\MapelTemplateExport;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -12,6 +15,48 @@ class AdminMapelController extends Controller
     public function index() {
         $mapels = MataPelajaran::all();
         return view('admin.mapel', compact('mapels'));
+    }
+
+    /**
+     * Unduh template file Excel untuk import Mata Pelajaran
+     */
+    public function downloadTemplate()
+    {
+        return Excel::download(new MapelTemplateExport(), 'template_import_mapel.xlsx');
+    }
+
+    /**
+     * Import massal data Mata Pelajaran dari Excel/CSV
+     */
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv|max:5120',
+        ], [
+            'file.required' => 'Silakan pilih file terlebih dahulu.',
+            'file.mimes'    => 'Format file harus Excel (.xlsx / .xls) atau CSV.',
+            'file.max'      => 'Ukuran file maksimal 5MB.',
+        ]);
+
+        $import = new MapelImport();
+        Excel::import($import, $request->file('file'));
+
+        $sukses = $import->getSuccessCount();
+        $errors = $import->getErrors();
+
+        if ($sukses > 0 && empty($errors)) {
+            return redirect()->back()->with('success', "{$sukses} mata pelajaran berhasil ditambahkan dari file Excel!");
+        }
+
+        if ($sukses > 0 && !empty($errors)) {
+            return redirect()->back()
+                ->with('success', "{$sukses} mata pelajaran berhasil ditambahkan.")
+                ->with('import_errors', $errors);
+        }
+
+        return redirect()->back()
+            ->with('error', 'Tidak ada mata pelajaran yang berhasil ditambahkan. Cek detail error di bawah.')
+            ->with('import_errors', $errors);
     }
 
     public function store(Request $request) {

@@ -202,17 +202,24 @@ class AdminUserController extends Controller
      */
     public function laporan(Request $request)
     {
-        $kelas = Kelas::all();
+        $kelas = Kelas::orderBy('nama_kelas', 'asc')->get();
         $kelasId = $request->input('kelas_id');
         $bulanInput = $request->input('bulan');
 
         $bulan = $bulanInput ? intval($bulanInput) : now()->month;
         $tahun = now()->year;
 
-        // Query Stats Kehadiran Sekolah
-        $totalHadir = Absensi::whereMonth('tanggal', $bulan)->whereYear('tanggal', $tahun)->where('status', 'H')->count();
-        $totalIzinSakit = Absensi::whereMonth('tanggal', $bulan)->whereYear('tanggal', $tahun)->whereIn('status', ['I', 'S'])->count();
-        $totalAlpa = Absensi::whereMonth('tanggal', $bulan)->whereYear('tanggal', $tahun)->where('status', 'A')->count();
+        // Query Stats Kehadiran
+        $absensiQuery = Absensi::whereMonth('tanggal', $bulan)->whereYear('tanggal', $tahun);
+        if (!empty($kelasId) && $kelasId !== 'Semua Kelas') {
+            $absensiQuery->whereHas('user', function ($q) use ($kelasId) {
+                $q->where('id_kelas', $kelasId);
+            });
+        }
+
+        $totalHadir = (clone $absensiQuery)->where('status', 'H')->count();
+        $totalIzinSakit = (clone $absensiQuery)->whereIn('status', ['I', 'S'])->count();
+        $totalAlpa = (clone $absensiQuery)->where('status', 'A')->count();
         
         $totalSemua = $totalHadir + $totalIzinSakit + $totalAlpa;
         $rataKehadiran = $totalSemua > 0 ? round(($totalHadir / $totalSemua) * 100) : 0;
@@ -224,9 +231,14 @@ class AdminUserController extends Controller
             'total_alpa' => $totalAlpa,
         ];
 
+        // Filter kelas untuk tabel rekapitulasi
+        $kelasList = (!empty($kelasId) && $kelasId !== 'Semua Kelas') 
+            ? $kelas->where('id', $kelasId) 
+            : $kelas;
+
         // Hitung rekap per kelas
         $laporans = [];
-        foreach ($kelas as $k) {
+        foreach ($kelasList as $k) {
             $hadir = Absensi::whereHas('user', function($q) use ($k) {
                 $q->where('id_kelas', $k->id);
             })->whereMonth('tanggal', $bulan)->whereYear('tanggal', $tahun)->where('status', 'H')->count();
@@ -254,5 +266,21 @@ class AdminUserController extends Controller
         }
 
         return view('admin.laporan', compact('kelas', 'stats', 'laporans', 'kelasId', 'bulanInput'));
+    }
+
+    /**
+     * Export Laporan Kehadiran ke PDF
+     */
+    public function exportPdf(Request $request)
+    {
+        return app(\App\Http\Controllers\LaporanController::class)->exportPdf($request);
+    }
+
+    /**
+     * Export Laporan Kehadiran ke Excel
+     */
+    public function exportExcel(Request $request)
+    {
+        return app(\App\Http\Controllers\LaporanController::class)->exportExcel($request);
     }
 }

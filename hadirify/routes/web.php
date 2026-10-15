@@ -78,25 +78,34 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
 
     // Manajemen Kelas
+    Route::get('/admin/kelas/template', [AdminKelasController::class, 'downloadTemplate'])->name('admin.kelas.template');
+    Route::post('/admin/kelas/import', [AdminKelasController::class, 'import'])->name('admin.kelas.import');
     Route::get('/admin/kelas', [AdminKelasController::class, 'index'])->name('admin.kelas.index');
     Route::post('/admin/kelas', [AdminKelasController::class, 'store'])->name('admin.kelas.store');
     Route::put('/admin/kelas/{id}', [AdminKelasController::class, 'update'])->name('admin.kelas.update');
     Route::delete('/admin/kelas/{id}', [AdminKelasController::class, 'destroy'])->name('admin.kelas.destroy');
 
-    // Lain-lain
+    // Mata Pelajaran
+    Route::get('/admin/mapel/template', [AdminMapelController::class, 'downloadTemplate'])->name('admin.mapel.template');
+    Route::post('/admin/mapel/import', [AdminMapelController::class, 'import'])->name('admin.mapel.import');
     Route::resource('/admin/mapel', AdminMapelController::class)->names('admin.mapel');
+
+    // Jadwal Mengajar
     Route::get('/admin/jadwal', [AdminJadwalController::class, 'index'])->name('admin.jadwal');
+    Route::post('/admin/jadwal', [AdminJadwalController::class, 'store'])->name('admin.jadwal.store');
+    Route::put('/admin/jadwal/{id}', [AdminJadwalController::class, 'update'])->name('admin.jadwal.update');
+    Route::delete('/admin/jadwal/{id}', [AdminJadwalController::class, 'destroy'])->name('admin.jadwal.destroy');
+    Route::get('/admin/jadwal/template', [AdminJadwalController::class, 'downloadTemplate'])->name('admin.jadwal.template');
+    Route::post('/admin/jadwal/import', [AdminJadwalController::class, 'import'])->name('admin.jadwal.import');
     
     // Koreksi Absensi (Menggunakan AdminJadwalController)
     Route::get('/admin/koreksi', [AdminJadwalController::class, 'koreksiIndex'])->name('admin.koreksi');
     Route::put('/admin/koreksi/{id}', [AdminJadwalController::class, 'koreksiAbsen'])->name('admin.koreksi.update');
     
+    // Laporan Kehadiran & Export
     Route::get('/admin/laporan', [AdminUserController::class, 'laporan'])->name('admin.laporan');
-
-    
-    Route::get('/admin/jadwal', [AdminJadwalController::class, 'index'])->name('admin.jadwal');
-Route::post('/admin/jadwal', [AdminJadwalController::class, 'store'])->name('admin.jadwal.store');
-Route::delete('/admin/jadwal/{id}', [AdminJadwalController::class, 'destroy'])->name('admin.jadwal.destroy');
+    Route::get('/admin/laporan/export-pdf', [LaporanController::class, 'exportPdf'])->name('admin.laporan.pdf');
+    Route::get('/admin/laporan/export-excel', [LaporanController::class, 'exportExcel'])->name('admin.laporan.excel');
 });
 
 /*

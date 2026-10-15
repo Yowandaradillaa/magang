@@ -4,6 +4,7 @@
         showModal: false, 
         showEditModal: false,
         showDeleteModal: false,
+        showImportModal: false,
         deleteUrl: '',
         editData: { id: '', nama_mapel: '', kode_mapel: '' }
     }" class="animate-in fade-in duration-500 flex flex-col space-y-4 px-2 h-[calc(100vh-140px)]">
@@ -15,6 +16,30 @@
                 {{ session('success') }}
             </div>
         @endif
+
+        <!-- Notifikasi Gagal Total -->
+        @if(session('error'))
+            <div class="flex-none p-3 bg-rose-50 border border-rose-200 text-rose-700 rounded-xl font-bold text-xs flex items-center gap-3 shadow-sm">
+                <i data-lucide="alert-circle" class="w-4 h-4 text-rose-500"></i>
+                {{ session('error') }}
+            </div>
+        @endif
+
+        <!-- Daftar Baris yang Gagal Diimport -->
+        @if(session('import_errors') && count(session('import_errors')) > 0)
+            <div class="flex-none p-4 bg-amber-50 border border-amber-200 rounded-xl shadow-sm">
+                <p class="text-[11px] font-black text-amber-700 uppercase tracking-widest mb-2 flex items-center gap-2">
+                    <i data-lucide="alert-triangle" class="w-4 h-4"></i>
+                    {{ count(session('import_errors')) }} Baris Gagal Diimport
+                </p>
+                <ul class="space-y-1 max-h-32 overflow-y-auto pr-2">
+                    @foreach(session('import_errors') as $err)
+                        <li class="text-[11px] text-amber-700">• {{ $err }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         @if($errors->any())
             <script>
                 window.alert(@json(implode("\n", $errors->all())));
@@ -22,23 +47,27 @@
         @endif
 
         <!-- ================= SECTION 1: HEADER (FIXED) ================= -->
-        <div class="flex-none bg-white p-5 rounded-xl border border-slate-200/50 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div class="flex items-center gap-4">
-                <div class="w-10 h-10 bg-[#0b1e36] text-white rounded-lg flex items-center justify-center shadow-lg">
-                    <i data-lucide="book-open" class="w-5 h-5"></i>
+        <div class="flex-none bg-white px-5 py-3.5 rounded-xl border border-slate-200/60 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="flex items-center gap-3.5">
+                <div class="w-9 h-9 bg-[#0b1e36] text-white rounded-lg flex items-center justify-center shadow-md shrink-0">
+                    <i data-lucide="book-open" class="w-4.5 h-4.5"></i>
                 </div>
                 <div class="space-y-0.5">
-                    <h2 class="text-lg font-extrabold text-[#0b1e36] tracking-tight">Manajemen Mata Pelajaran</h2>
+                    <h2 class="text-base font-extrabold text-[#0b1e36] tracking-tight">Manajemen Mata Pelajaran</h2>
                     <p class="text-[11px] text-slate-500 font-medium">
                         Kurikulum Sekolah • <span class="text-[#0b1e36] font-bold">{{ isset($mapels) ? count($mapels) : 0 }} Mapel Terdaftar</span>
                     </p>
                 </div>
             </div>
             
-            <div class="flex flex-col sm:flex-row gap-2">
-                <button @click="showModal = true" class="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 bg-[#0b1e36] hover:bg-slate-800 text-white text-[11px] font-bold rounded-lg shadow-lg transition-all active:scale-95 cursor-pointer">
-                    <i data-lucide="plus" class="w-4 h-4"></i>
-                    Tambah Mapel Baru
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                <button @click="showImportModal = true" class="w-full sm:w-auto flex items-center justify-center gap-2 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg shadow-sm transition-all active:scale-95 cursor-pointer">
+                    <i data-lucide="file-spreadsheet" class="w-4 h-4 stroke-[2.2] shrink-0"></i>
+                    <span>Import Excel</span>
+                </button>
+                <button @click="showModal = true" class="w-full sm:w-auto flex items-center justify-center gap-2 px-3.5 py-2 bg-[#0b1e36] hover:bg-slate-800 text-white text-xs font-bold rounded-lg shadow-md transition-all active:scale-95 cursor-pointer">
+                    <i data-lucide="plus" class="w-4 h-4 stroke-[2.5] shrink-0"></i>
+                    <span>Tambah Mapel Baru</span>
                 </button>
             </div>
         </div>
@@ -182,6 +211,63 @@
                                 <button type="submit" class="w-full py-2.5 bg-rose-600 text-white text-[10px] font-bold rounded-lg shadow-lg shadow-rose-200 transition-all uppercase tracking-widest cursor-pointer">HAPUS DATA</button>
                             </form>
                         </div>
+                    </div>
+                </div>
+            </div>
+        <!-- ================= MODAL IMPORT MAPEL ================= -->
+        <template x-teleport="body">
+            <div x-show="showImportModal" class="fixed inset-0 z-[10000] flex items-center justify-center p-4" x-cloak>
+                <div x-show="showImportModal" x-transition @click="showImportModal = false" class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm"></div>
+                <div x-show="showImportModal" x-transition class="relative bg-white w-full max-w-md rounded-xl shadow-2xl overflow-hidden border border-slate-200">
+                    <div class="h-1.5 w-full bg-emerald-600"></div>
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                                    <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-base font-extrabold text-[#0b1e36] leading-none">Import Mata Pelajaran</h3>
+                                    <p class="text-[10px] text-slate-500 font-medium mt-0.5">Unggah file Excel/CSV data mata pelajaran</p>
+                                </div>
+                            </div>
+                            <button @click="showImportModal = false" class="text-slate-400 hover:text-rose-500 cursor-pointer">
+                                <i data-lucide="x" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+
+                        <!-- Kotak Unduh Template -->
+                        <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl mb-4 flex items-center justify-between">
+                            <div class="text-[11px] text-slate-600 font-medium">
+                                <span class="font-bold text-[#0b1e36] block">Belum punya formatnya?</span>
+                                Gunakan template standar
+                            </div>
+                            <a href="{{ route('admin.mapel.template') }}" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 hover:text-emerald-600 hover:border-emerald-300 rounded-lg text-[10px] font-bold shadow-sm transition-all flex items-center gap-1.5">
+                                <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                                Unduh Template
+                            </a>
+                        </div>
+
+                        <!-- Form Import -->
+                        <form action="{{ route('admin.mapel.import') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+                            @csrf
+                            <div class="space-y-1.5">
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Pilih File (.xlsx, .xls, .csv)</label>
+                                <input type="file" name="file" required accept=".xlsx, .xls, .csv" 
+                                       class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-[10px] file:font-bold file:bg-[#0b1e36] file:text-white file:cursor-pointer hover:file:bg-slate-800 transition-all cursor-pointer">
+                                <p class="text-[10px] text-slate-400 italic ml-1">Format kolom: <b>Nama Mapel, Kode Mapel</b></p>
+                            </div>
+
+                            <div class="flex gap-2.5 pt-3 border-t border-slate-100">
+                                <button type="button" @click="showImportModal = false" class="flex-1 py-2.5 text-slate-400 hover:text-slate-600 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer">
+                                    Batal
+                                </button>
+                                <button type="submit" class="flex-[2] py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold rounded-lg shadow-lg uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-2">
+                                    <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+                                    Mulai Import
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>

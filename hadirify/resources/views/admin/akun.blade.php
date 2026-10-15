@@ -49,25 +49,25 @@
         @endif
 
         <!-- ================= SECTION 1: HEADER ================= -->
-        <div class="bg-white p-5 rounded-xl border border-slate-200/50 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div class="flex items-center gap-4">
-                <div class="w-10 h-10 bg-[#0b1e36] text-white rounded-lg flex items-center justify-center shadow-lg">
-                    <i data-lucide="users" class="w-5 h-5"></i>
+        <div class="bg-white px-5 py-3.5 rounded-xl border border-slate-200/60 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="flex items-center gap-3.5">
+                <div class="w-9 h-9 bg-[#0b1e36] text-white rounded-lg flex items-center justify-center shadow-md shrink-0">
+                    <i data-lucide="users" class="w-4.5 h-4.5"></i>
                 </div>
                 <div class="space-y-0.5">
-                    <h2 class="text-lg font-extrabold text-[#0b1e36] tracking-tight">Kelola Akun</h2>
+                    <h2 class="text-base font-extrabold text-[#0b1e36] tracking-tight">Kelola Akun</h2>
                     <p class="text-[11px] text-slate-500 font-medium">Database Siswa & Tenaga Pendidik</p>
                 </div>
             </div>
             
-            <div class="w-full md:w-auto flex flex-col sm:flex-row items-center gap-2">
-                <button @click="showImportModal = true" class="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 bg-white text-[#0b1e36] border border-slate-200 text-[11px] font-bold rounded-lg shadow-sm hover:bg-slate-50 transition-all active:scale-95 cursor-pointer">
-                    <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
-                    Import Excel
+            <div class="w-full md:w-auto flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                <button @click="showImportModal = true" class="w-full sm:w-auto flex items-center justify-center gap-2 px-3.5 py-2 bg-white text-[#0b1e36] border border-slate-200 text-xs font-bold rounded-lg shadow-sm hover:bg-slate-50 transition-all active:scale-95 cursor-pointer">
+                    <i data-lucide="file-spreadsheet" class="w-4 h-4 stroke-[2.2] shrink-0"></i>
+                    <span>Import Excel</span>
                 </button>
-                <button @click="showModal = true" class="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 bg-[#0b1e36] text-white text-[11px] font-bold rounded-lg shadow-lg hover:bg-slate-800 transition-all active:scale-95 cursor-pointer">
-                    <i data-lucide="plus" class="w-4 h-4"></i>
-                    Tambah Akun Baru
+                <button @click="showModal = true" class="w-full sm:w-auto flex items-center justify-center gap-2 px-3.5 py-2 bg-[#0b1e36] text-white text-xs font-bold rounded-lg shadow-md hover:bg-slate-800 transition-all active:scale-95 cursor-pointer">
+                    <i data-lucide="plus" class="w-4 h-4 stroke-[2.5] shrink-0"></i>
+                    <span>Tambah Akun Baru</span>
                 </button>
             </div>
         </div>

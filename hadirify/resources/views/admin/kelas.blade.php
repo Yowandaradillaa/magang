@@ -4,9 +4,13 @@
         showModal: false, 
         showEditModal: false,
         showDeleteModal: false,
+        showImportKelasModal: false,
+        showImportJadwalModal: false,
         showJadwalModal: @json($errors->jadwal->any()),
+        showEditJadwalModal: false,
         deleteUrl: '',
-        editData: { id: '', nama_kelas: '', mata_pelajaran: '', tahun_ajaran: '', id_wali_kelas: '' }
+        editData: { id: '', nama_kelas: '', mata_pelajaran: '', tahun_ajaran: '', id_wali_kelas: '' },
+        editJadwalData: { id: '', id_kelas: '', id_mapel: '', id_guru: '', hari: '', jam_mulai: '', jam_selesai: '' }
     }" class="animate-in fade-in duration-500 space-y-6 pb-12">
         
         <!-- Notifikasi Berhasil -->
@@ -16,24 +20,51 @@
                 {{ session('success') }}
             </div>
         @endif
-        <!-- ================= SECTION 1: HEADER ================= -->
-        <div class="bg-white p-5 rounded-xl border border-slate-200/50 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div class="flex items-center gap-4">
-                <div class="w-10 h-10 bg-[#0b1e36] text-white rounded-lg flex items-center justify-center shadow-lg">
-                    <i data-lucide="building" class="w-5 h-5"></i>
+
+        <!-- Notifikasi Gagal Total -->
+        @if(session('error'))
+            <div class="p-3 bg-rose-50 border border-rose-200 text-rose-700 rounded-xl font-bold text-xs flex items-center gap-3 shadow-sm">
+                <i data-lucide="alert-circle" class="w-4 h-4 text-rose-500"></i>
+                {{ session('error') }}
+            </div>
+        @endif
+
+        <!-- Daftar Baris yang Gagal Diimport -->
+        @if(session('import_errors') && count(session('import_errors')) > 0)
+            <div class="p-4 bg-amber-50 border border-amber-200 rounded-xl shadow-sm">
+                <p class="text-[11px] font-black text-amber-700 uppercase tracking-widest mb-2 flex items-center gap-2">
+                    <i data-lucide="alert-triangle" class="w-4 h-4"></i>
+                    {{ count(session('import_errors')) }} Baris Gagal Diimport
+                </p>
+                <ul class="space-y-1 max-h-36 overflow-y-auto pr-2">
+                    @foreach(session('import_errors') as $err)
+                        <li class="text-[11px] text-amber-700">• {{ $err }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+        <!-- ================= SECTION 1: HEADER MANAJEMEN KELAS ================= -->
+        <div class="bg-white px-5 py-3.5 rounded-xl border border-slate-200/60 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="flex items-center gap-3.5">
+                <div class="w-9 h-9 bg-[#0b1e36] text-white rounded-lg flex items-center justify-center shadow-md shrink-0">
+                    <i data-lucide="building" class="w-4.5 h-4.5"></i>
                 </div>
                 <div class="space-y-0.5">
-                    <h2 class="text-lg font-extrabold text-[#0b1e36] tracking-tight">Manajemen Kelas</h2>
+                    <h2 class="text-base font-extrabold text-[#0b1e36] tracking-tight">Manajemen Kelas</h2>
                     <p class="text-[11px] text-slate-500 font-medium">
                         Struktur Kurikulum • <span class="text-[#0b1e36] font-bold">{{ count($kelas) }} Kelas Terdaftar</span>
                     </p>
                 </div>
             </div>
             
-            <div class="flex flex-col sm:flex-row gap-2">
-                <button @click="showModal = true" class="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 bg-[#0b1e36] hover:bg-slate-800 text-white text-[11px] font-bold rounded-lg shadow-lg transition-all active:scale-95 cursor-pointer">
-                    <i data-lucide="plus" class="w-4 h-4"></i>
-                    Tambah Kelas Baru
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                <button @click="showImportKelasModal = true" class="w-full sm:w-auto flex items-center justify-center gap-2 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg shadow-sm transition-all active:scale-95 cursor-pointer">
+                    <i data-lucide="file-spreadsheet" class="w-4 h-4 stroke-[2.2] shrink-0"></i>
+                    <span>Import Excel</span>
+                </button>
+                <button @click="showModal = true" class="w-full sm:w-auto flex items-center justify-center gap-2 px-3.5 py-2 bg-[#0b1e36] hover:bg-slate-800 text-white text-xs font-bold rounded-lg shadow-md transition-all active:scale-95 cursor-pointer">
+                    <i data-lucide="plus" class="w-4 h-4 stroke-[2.5] shrink-0"></i>
+                    <span>Tambah Kelas Baru</span>
                 </button>
             </div>
         </div>
@@ -44,10 +75,10 @@
                 <table class="w-full text-left border-collapse">
                     <thead class="bg-slate-50 border-b border-slate-100">
                         <tr class="bg-slate-50 text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                            <th class="px-6 py-4">Identitas Kelas</th>
-                            <th class="px-6 py-4">Tahun Ajaran</th>
-                            <th class="px-6 py-4">Wali Kelas</th>
-                            <th class="px-6 py-4 text-right">Opsi</th>
+                            <th class="px-6 py-3.5">Identitas Kelas</th>
+                            <th class="px-6 py-3.5">Tahun Ajaran</th>
+                            <th class="px-6 py-3.5">Wali Kelas</th>
+                            <th class="px-6 py-3.5 text-right">Opsi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-50 text-sm">
@@ -88,57 +119,97 @@
                             </td>
                         </tr>
                         @empty
-                        <tr><td colspan="5" class="py-20 text-center opacity-30 text-[10px] font-black uppercase tracking-widest italic leading-relaxed">Belum ada data kelas</td></tr>
+                        <tr><td colspan="4" class="py-16 text-center opacity-30 text-[10px] font-black uppercase tracking-widest italic leading-relaxed">Belum ada data kelas</td></tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
         </div>
 
-        <!-- ================= SECTION 3: MANAJEMEN JADWAL MENGAJAR ================= -->
-        <div class="bg-white rounded-xl border border-slate-200/60 shadow-sm overflow-hidden mt-6">
-            <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/30">
-                <h3 class="text-[11px] font-black text-[#0b1e36] uppercase tracking-widest flex items-center gap-2">
-                    <i data-lucide="calendar" class="w-4 h-4 text-blue-500"></i>
-                    Jadwal Mengajar Guru & Kelas
-                </h3>
-                <!-- Tombol Trigger Modal Tambah Jadwal -->
-                <button @click="showJadwalModal = true" class="px-4 py-2 bg-[#0b1e36] hover:bg-slate-800 text-white text-[10px] font-bold rounded-lg shadow uppercase tracking-wider cursor-pointer transition-all active:scale-95">
-                    + Tambah Jadwal
+        <!-- ================= SECTION 3: HEADER JADWAL MENGAJAR ================= -->
+        <div class="bg-white px-5 py-3.5 rounded-xl border border-slate-200/60 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 mt-6">
+            <div class="flex items-center gap-3.5">
+                <div class="w-9 h-9 bg-[#0b1e36] text-white rounded-lg flex items-center justify-center shadow-md shrink-0">
+                    <i data-lucide="calendar" class="w-4.5 h-4.5"></i>
+                </div>
+                <div class="space-y-0.5">
+                    <h2 class="text-base font-extrabold text-[#0b1e36] tracking-tight">Jadwal Mengajar Guru & Kelas</h2>
+                    <p class="text-[11px] text-slate-500 font-medium">
+                        Alokasi Jam Pembelajaran • <span class="text-[#0b1e36] font-bold">{{ count($jadwals ?? []) }} Sesi Terjadwal</span>
+                    </p>
+                </div>
+            </div>
+            
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                <button @click="showImportJadwalModal = true" class="w-full sm:w-auto flex items-center justify-center gap-2 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg shadow-sm transition-all active:scale-95 cursor-pointer">
+                    <i data-lucide="file-spreadsheet" class="w-4 h-4 stroke-[2.2] shrink-0"></i>
+                    <span>Import Excel</span>
+                </button>
+                <button @click="showJadwalModal = true" class="w-full sm:w-auto flex items-center justify-center gap-2 px-3.5 py-2 bg-[#0b1e36] hover:bg-slate-800 text-white text-xs font-bold rounded-lg shadow-md transition-all active:scale-95 cursor-pointer">
+                    <i data-lucide="plus" class="w-4 h-4 stroke-[2.5] shrink-0"></i>
+                    <span>Tambah Jadwal</span>
                 </button>
             </div>
+        </div>
 
+        <!-- ================= SECTION 4: TABEL JADWAL MENGAJAR ================= -->
+        <div class="bg-white rounded-xl border border-slate-200/60 shadow-sm overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead class="bg-slate-50 border-b border-slate-100">
                         <tr class="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                            <th class="px-6 py-3">Hari & Jam</th>
-                            <th class="px-6 py-3">Kelas</th>
-                            <th class="px-6 py-3">Mata Pelajaran</th>
-                            <th class="px-6 py-3">Guru Pengampu</th>
-                            <th class="px-6 py-3 text-right">Aksi</th>
+                            <th class="px-6 py-3.5">Hari & Jam</th>
+                            <th class="px-6 py-3.5">Kelas</th>
+                            <th class="px-6 py-3.5">Mata Pelajaran</th>
+                            <th class="px-6 py-3.5">Guru Pengampu</th>
+                            <th class="px-6 py-3.5 text-right">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-50 text-xs font-semibold text-slate-700">
                         @forelse($jadwals ?? [] as $jadwal)
-                        <tr class="hover:bg-slate-50/50">
+                        <tr class="hover:bg-slate-50/50 transition-colors">
                             <td class="px-6 py-3">
                                 <span class="font-bold text-[#0b1e36]">{{ $jadwal->hari }}</span>
                                 <span class="text-[10px] text-slate-400 block">{{ $jadwal->jam_mulai }} - {{ $jadwal->jam_selesai }}</span>
                             </td>
-                            <td class="px-6 py-3">{{ $jadwal->kelas->nama_kelas ?? '---' }}</td>
-                            <td class="px-6 py-3">{{ $jadwal->mapel->nama_mapel ?? '---' }}</td>
-                            <td class="px-6 py-3">{{ $jadwal->guru->name ?? '---' }}</td>
+                            <td class="px-6 py-3 font-medium text-slate-800">{{ $jadwal->kelas->nama_kelas ?? '---' }}</td>
+                            <td class="px-6 py-3 font-medium text-slate-800">{{ $jadwal->mapel->nama_mapel ?? '---' }}</td>
+                            <td class="px-6 py-3 font-medium text-slate-800">{{ $jadwal->guru->name ?? '---' }}</td>
                             <td class="px-6 py-3 text-right">
-                                <form action="{{ route('admin.jadwal.destroy', $jadwal->id) }}" method="POST" class="inline">
-                                    @csrf @method('DELETE')
-                                    <button type="submit" class="text-slate-400 hover:text-rose-600 text-xs cursor-pointer">Hapus</button>
-                                </form>
+                                <div class="flex justify-end items-center gap-1">
+                                    <!-- Tombol Edit Jadwal -->
+                                    <button type="button" 
+                                            @click="
+                                                editJadwalData = {
+                                                    id: '{{ $jadwal->id }}',
+                                                    id_kelas: '{{ $jadwal->id_kelas }}',
+                                                    id_mapel: '{{ $jadwal->id_mapel }}',
+                                                    id_guru: '{{ $jadwal->id_guru }}',
+                                                    hari: '{{ $jadwal->hari }}',
+                                                    jam_mulai: '{{ substr($jadwal->jam_mulai, 0, 5) }}',
+                                                    jam_selesai: '{{ substr($jadwal->jam_selesai, 0, 5) }}'
+                                                };
+                                                showEditJadwalModal = true"
+                                            class="p-1.5 text-slate-400 hover:text-blue-600 transition-all cursor-pointer"
+                                            title="Edit Jadwal">
+                                        <i data-lucide="edit-3" class="w-4 h-4"></i>
+                                    </button>
+
+                                    <!-- Tombol Hapus Jadwal -->
+                                    <form action="{{ route('admin.jadwal.destroy', $jadwal->id) }}" method="POST" class="inline m-0" onsubmit="return confirm('Apakah Anda yakin ingin menghapus jadwal ini?');">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="p-1.5 text-slate-400 hover:text-rose-600 transition-all cursor-pointer" title="Hapus Jadwal">
+                                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="5" class="py-10 text-center text-slate-400 italic text-[11px]">Belum ada jadwal yang diatur. Silakan tambahkan jadwal baru.</td>
+                            <td colspan="5" class="py-16 text-center opacity-30 text-[10px] font-black uppercase tracking-widest italic leading-relaxed">
+                                Belum ada jadwal yang diatur
+                            </td>
                         </tr>
                         @endforelse
                     </tbody>
@@ -323,6 +394,86 @@
             </div>
         </template>
 
+        <!-- ================= MODAL EDIT JADWAL ================= -->
+        <template x-teleport="body">
+            <div x-show="showEditJadwalModal" class="fixed inset-0 z-[9999] flex items-center justify-center p-4" x-cloak>
+                <div x-show="showEditJadwalModal" x-transition @click="showEditJadwalModal = false" class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm"></div>
+                <div x-show="showEditJadwalModal" x-transition class="relative bg-white w-full max-w-md rounded-xl shadow-2xl overflow-hidden border border-blue-100">
+                    <div class="h-1.5 w-full bg-blue-600"></div>
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-lg font-extrabold text-[#0b1e36] tracking-tight">Perbarui Jadwal Mengajar</h3>
+                            <button @click="showEditJadwalModal = false" class="text-slate-300 hover:text-rose-500 cursor-pointer">
+                                <i data-lucide="x" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                        <form :action="'/admin/jadwal/' + editJadwalData.id" method="POST" class="space-y-4">
+                            @csrf 
+                            @method('PUT')
+                            
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Pilih Kelas</label>
+                                <select name="id_kelas" x-model="editJadwalData.id_kelas" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:border-blue-600 outline-none transition-all">
+                                    <option value="">-- Pilih Kelas --</option>
+                                    @foreach($kelas as $k)
+                                        <option value="{{ $k->id }}">{{ $k->nama_kelas }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Mata Pelajaran</label>
+                                <select name="id_mapel" x-model="editJadwalData.id_mapel" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:border-blue-600 outline-none transition-all">
+                                    <option value="">-- Pilih Mapel --</option>
+                                    @foreach($mapels as $m)
+                                        <option value="{{ $m->id }}">{{ $m->nama_mapel }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Guru Pengampu</label>
+                                <select name="id_guru" x-model="editJadwalData.id_guru" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:border-blue-600 outline-none transition-all">
+                                    <option value="">-- Pilih Guru --</option>
+                                    @foreach($gurus as $guru)
+                                        <option value="{{ $guru->id }}">{{ $guru->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-2">
+                                <div class="space-y-1">
+                                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Hari</label>
+                                    <select name="hari" x-model="editJadwalData.hari" required class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:border-blue-600 outline-none transition-all">
+                                        <option value="">Pilih hari</option>
+                                        <option value="Senin">Senin</option>
+                                        <option value="Selasa">Selasa</option>
+                                        <option value="Rabu">Rabu</option>
+                                        <option value="Kamis">Kamis</option>
+                                        <option value="Jumat">Jumat</option>
+                                        <option value="Sabtu">Sabtu</option>
+                                    </select>
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Jam Mulai</label>
+                                    <input type="time" name="jam_mulai" x-model="editJadwalData.jam_mulai" required class="w-full px-2 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:border-blue-600 outline-none transition-all">
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Jam Selesai</label>
+                                    <input type="time" name="jam_selesai" x-model="editJadwalData.jam_selesai" required class="w-full px-2 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:border-blue-600 outline-none transition-all">
+                                </div>
+                            </div>
+
+                            <div class="flex gap-3 pt-4 border-t border-slate-100">
+                                <button type="button" @click="showEditJadwalModal = false" class="flex-1 py-3 text-slate-400 text-[10px] font-bold uppercase tracking-widest cursor-pointer hover:text-slate-600 transition-all">Batal</button>
+                                <button type="submit" class="flex-[2] py-3 bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-bold rounded-lg shadow-lg uppercase tracking-widest cursor-pointer transition-all active:scale-95">Update Jadwal</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </template>
+
         <!-- ================= MODAL KONFIRMASI HAPUS ================= -->
         <template x-teleport="body">
             <div x-show="showDeleteModal" class="fixed inset-0 z-[10000] flex items-center justify-center p-4" x-cloak>
@@ -341,6 +492,124 @@
                                 <button type="submit" class="w-full py-2.5 bg-rose-600 text-white text-[10px] font-bold rounded-lg shadow-lg shadow-rose-200 transition-all uppercase tracking-widest cursor-pointer">HAPUS DATA</button>
                             </form>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- ================= MODAL IMPORT KELAS ================= -->
+        <template x-teleport="body">
+            <div x-show="showImportKelasModal" class="fixed inset-0 z-[10000] flex items-center justify-center p-4" x-cloak>
+                <div x-show="showImportKelasModal" x-transition @click="showImportKelasModal = false" class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm"></div>
+                <div x-show="showImportKelasModal" x-transition class="relative bg-white w-full max-w-md rounded-xl shadow-2xl overflow-hidden border border-slate-200">
+                    <div class="h-1.5 w-full bg-emerald-600"></div>
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                                    <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-base font-extrabold text-[#0b1e36] leading-none">Import Data Kelas</h3>
+                                    <p class="text-[10px] text-slate-500 font-medium mt-0.5">Unggah file Excel/CSV data kelas sekolah</p>
+                                </div>
+                            </div>
+                            <button @click="showImportKelasModal = false" class="text-slate-400 hover:text-rose-500 cursor-pointer">
+                                <i data-lucide="x" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+
+                        <!-- Kotak Unduh Template -->
+                        <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl mb-4 flex items-center justify-between">
+                            <div class="text-[11px] text-slate-600 font-medium">
+                                <span class="font-bold text-[#0b1e36] block">Belum punya formatnya?</span>
+                                Gunakan template standar
+                            </div>
+                            <a href="{{ route('admin.kelas.template') }}" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 hover:text-emerald-600 hover:border-emerald-300 rounded-lg text-[10px] font-bold shadow-sm transition-all flex items-center gap-1.5">
+                                <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                                Unduh Template
+                            </a>
+                        </div>
+
+                        <!-- Form Import -->
+                        <form action="{{ route('admin.kelas.import') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+                            @csrf
+                            <div class="space-y-1.5">
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Pilih File (.xlsx, .xls, .csv)</label>
+                                <input type="file" name="file" required accept=".xlsx, .xls, .csv" 
+                                       class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-[10px] file:font-bold file:bg-[#0b1e36] file:text-white file:cursor-pointer hover:file:bg-slate-800 transition-all cursor-pointer">
+                                <p class="text-[10px] text-slate-400 italic ml-1">Format kolom: <b>Nama Kelas, Tahun Ajaran, Wali Kelas</b> (opsional)</p>
+                            </div>
+
+                            <div class="flex gap-2.5 pt-3 border-t border-slate-100">
+                                <button type="button" @click="showImportKelasModal = false" class="flex-1 py-2.5 text-slate-400 hover:text-slate-600 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer">
+                                    Batal
+                                </button>
+                                <button type="submit" class="flex-[2] py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold rounded-lg shadow-lg uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-2">
+                                    <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+                                    Mulai Import
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- ================= MODAL IMPORT JADWAL ================= -->
+        <template x-teleport="body">
+            <div x-show="showImportJadwalModal" class="fixed inset-0 z-[10000] flex items-center justify-center p-4" x-cloak>
+                <div x-show="showImportJadwalModal" x-transition @click="showImportJadwalModal = false" class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm"></div>
+                <div x-show="showImportJadwalModal" x-transition class="relative bg-white w-full max-w-md rounded-xl shadow-2xl overflow-hidden border border-slate-200">
+                    <div class="h-1.5 w-full bg-emerald-600"></div>
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                                    <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-base font-extrabold text-[#0b1e36] leading-none">Import Jadwal Mengajar</h3>
+                                    <p class="text-[10px] text-slate-500 font-medium mt-0.5">Unggah file Excel/CSV jadwal mengajar kelas</p>
+                                </div>
+                            </div>
+                            <button @click="showImportJadwalModal = false" class="text-slate-400 hover:text-rose-500 cursor-pointer">
+                                <i data-lucide="x" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+
+                        <!-- Kotak Unduh Template -->
+                        <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl mb-4 flex items-center justify-between">
+                            <div class="text-[11px] text-slate-600 font-medium">
+                                <span class="font-bold text-[#0b1e36] block">Belum punya formatnya?</span>
+                                Gunakan template standar
+                            </div>
+                            <a href="{{ route('admin.jadwal.template') }}" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 hover:text-emerald-600 hover:border-emerald-300 rounded-lg text-[10px] font-bold shadow-sm transition-all flex items-center gap-1.5">
+                                <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                                Unduh Template
+                            </a>
+                        </div>
+
+                        <!-- Form Import -->
+                        <form action="{{ route('admin.jadwal.import') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+                            @csrf
+                            <div class="space-y-1.5">
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Pilih File (.xlsx, .xls, .csv)</label>
+                                <input type="file" name="file" required accept=".xlsx, .xls, .csv" 
+                                       class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-[10px] file:font-bold file:bg-[#0b1e36] file:text-white file:cursor-pointer hover:file:bg-slate-800 transition-all cursor-pointer">
+                                <p class="text-[10px] text-slate-400 italic ml-1">Format kolom: <b>Hari, Waktu, Nama Kelas, Nama Mapel, Nama Guru</b></p>
+                            </div>
+
+                            <div class="flex gap-2.5 pt-3 border-t border-slate-100">
+                                <button type="button" @click="showImportJadwalModal = false" class="flex-1 py-2.5 text-slate-400 hover:text-slate-600 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer">
+                                    Batal
+                                </button>
+                                <button type="submit" class="flex-[2] py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold rounded-lg shadow-lg uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-2">
+                                    <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+                                    Mulai Import
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>

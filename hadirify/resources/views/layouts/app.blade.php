@@ -30,74 +30,54 @@
     <div class="h-screen w-full flex overflow-hidden">
         
         <!-- Sidebar Siswa (Fixed / Sticky Screen Height) -->
-        <aside id="sidebar" class="fixed left-0 top-0 z-50 flex h-screen w-64 flex-col bg-[#0b1e36] text-white shadow-2xl border-r border-white/5 transition-transform duration-300 transform -translate-x-full md:translate-x-0 justify-between">
+        <aside id="sidebar" class="fixed left-0 top-0 z-50 flex h-screen w-64 flex-col bg-[#0b1e36] text-white p-4 shadow-2xl border-r border-white/10 transition-transform duration-300 transform -translate-x-full md:translate-x-0 justify-between">
             
             <div class="flex flex-col min-h-0 space-y-4 flex-1 overflow-hidden">
                 
-                <!-- Logo & Portal Title -->
-                <div class="flex flex-col border-b border-white/10 p-5 gap-2 relative shrink-0">
-                    <button id="close-sidebar" class="absolute top-4 right-4 text-white/50 hover:text-white md:hidden">
-                        <i data-lucide="x" class="w-5 h-5"></i>
-                    </button>
-
+                <!-- Logo & Portal Title (Clean Minimalist Header) -->
+                <div class="px-2 pt-2 relative shrink-0">
                     <div class="flex items-center gap-3">
-                        <div class="p-2.5 bg-sky-500/20 text-sky-400 rounded-xl border border-sky-500/30 shrink-0">
-                            <i data-lucide="school" class="w-6 h-6" stroke-width="2"></i>
+                        <div class="w-9 h-9 bg-sky-500 text-white rounded-lg flex items-center justify-center shrink-0 shadow-sm shadow-sky-500/30">
+                            <i data-lucide="school" class="w-5 h-5" stroke-width="2"></i>
                         </div>
-                        <div>
-                            <h2 class="text-base font-black leading-tight tracking-tight text-white">Presensi Mutu</h2>
-                            <p class="text-[10px] text-sky-300 font-semibold mt-0.5">Portal Siswa</p>
+                        <div class="min-w-0">
+                            <h2 class="text-sm font-extrabold leading-tight tracking-tight text-white uppercase">Presensi Mutu</h2>
+                            <p class="text-[11px] text-slate-400 font-medium truncate">SMA Muhammadiyah 7</p>
                         </div>
-                    </div>
-                    <div class="mt-2 text-[9.5px] font-bold text-sky-300 bg-sky-500/10 border border-sky-400/20 px-2 py-1 rounded-lg uppercase tracking-wider text-center">
-                        SMA MUHAMMADIYAH 7
-                    </div>
-                </div>
-                
-                <!-- Profil Singkat Siswa -->
-                <div class="flex items-center gap-3 bg-white/5 p-3.5 mx-3 rounded-xl border border-white/5 shrink-0">
-                    <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-sky-600 font-extrabold text-white text-xs shadow-sm">
-                        {{ substr(Auth::user()->name ?? 'SW', 0, 2) }}
-                    </div>
-                    <div class="overflow-hidden">
-                        <p class="truncate text-xs font-bold text-white">{{ Auth::user()->name ?? 'Siswa' }}</p>
-                        <span class="mt-0.5 inline-block text-[9.5px] font-medium text-slate-400 truncate">
-                            Kelas {{ Auth::user()->kelas->nama_kelas ?? 'Siswa Active' }}
-                        </span>
                     </div>
                 </div>
 
-                <!-- Navigation Menu -->
-                <nav class="flex-1 overflow-y-auto px-3 space-y-1 custom-scrollbar">
-                    <p class="mb-2 mt-1 px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400">Menu Utama</p>
+                <!-- Navigation Menu (Gaya Bersih & Minimalis Solid Blue seperti Referensi) -->
+                <nav class="flex-1 overflow-y-auto pr-1 space-y-1.5 custom-scrollbar pt-2">
+                    <p class="mb-2 px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400">Menu Utama</p>
                     
                     @php $role = Auth::user()->role ?? 'siswa'; @endphp
 
                     @if($role === 'siswa')
-                        <a href="/siswa/dashboard" class="group flex items-center gap-3 rounded-xl px-3.5 py-2.5 transition-all duration-200 {{ request()->is('siswa/dashboard*') ? 'bg-white/10 font-bold text-white shadow-sm border-l-4 border-sky-400 pl-3' : 'text-slate-400 hover:bg-white/5 hover:text-white' }}">
-                            <i data-lucide="layout-dashboard" class="w-4.5 h-4.5 {{ request()->is('siswa/dashboard*') ? 'text-sky-400' : '' }}"></i> 
-                            <span class="text-xs font-semibold">Dashboard</span>
+                        <a href="/siswa/dashboard" class="group flex items-center gap-3 rounded-lg px-3.5 py-2.5 text-xs transition-all duration-150 {{ request()->is('siswa/dashboard*') ? 'bg-sky-500 font-bold text-white shadow-md shadow-sky-500/20' : 'text-slate-400 font-medium hover:bg-white/5 hover:text-white' }}">
+                            <i data-lucide="layout-dashboard" class="w-[18px] h-[18px] shrink-0 {{ request()->is('siswa/dashboard*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" stroke-width="2"></i> 
+                            <span>Dashboard</span>
                         </a>
                         
-                        <a href="/siswa/scan-qr" class="group flex items-center gap-3 rounded-xl px-3.5 py-2.5 transition-all duration-200 {{ request()->is('siswa/scan-qr*') ? 'bg-white/10 font-bold text-white shadow-sm border-l-4 border-sky-400 pl-3' : 'text-slate-400 hover:bg-white/5 hover:text-white' }}">
-                            <i data-lucide="qr-code" class="w-4.5 h-4.5 {{ request()->is('siswa/scan-qr*') ? 'text-sky-400' : '' }}"></i> 
-                            <span class="text-xs font-semibold">Scan QR Absen</span>
+                        <a href="/siswa/scan-qr" class="group flex items-center gap-3 rounded-lg px-3.5 py-2.5 text-xs transition-all duration-150 {{ request()->is('siswa/scan-qr*') ? 'bg-sky-500 font-bold text-white shadow-md shadow-sky-500/20' : 'text-slate-400 font-medium hover:bg-white/5 hover:text-white' }}">
+                            <i data-lucide="qr-code" class="w-[18px] h-[18px] shrink-0 {{ request()->is('siswa/scan-qr*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" stroke-width="2"></i> 
+                            <span>Scan QR Absen</span>
                         </a>
 
-                        <a href="/siswa/rekap" class="group flex items-center gap-3 rounded-xl px-3.5 py-2.5 transition-all duration-200 {{ request()->is('siswa/rekap*') ? 'bg-white/10 font-bold text-white shadow-sm border-l-4 border-sky-400 pl-3' : 'text-slate-400 hover:bg-white/5 hover:text-white' }}">
-                            <i data-lucide="history" class="w-4.5 h-4.5 {{ request()->is('siswa/rekap*') ? 'text-sky-400' : '' }}"></i> 
-                            <span class="text-xs font-semibold">Rekap Kehadiran</span>
+                        <a href="/siswa/rekap" class="group flex items-center gap-3 rounded-lg px-3.5 py-2.5 text-xs transition-all duration-150 {{ request()->is('siswa/rekap*') ? 'bg-sky-500 font-bold text-white shadow-md shadow-sky-500/20' : 'text-slate-400 font-medium hover:bg-white/5 hover:text-white' }}">
+                            <i data-lucide="history" class="w-[18px] h-[18px] shrink-0 {{ request()->is('siswa/rekap*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" stroke-width="2"></i> 
+                            <span>Rekap Kehadiran</span>
                         </a>
 
-                        <a href="/siswa/izin" class="group flex items-center gap-3 rounded-xl px-3.5 py-2.5 transition-all duration-200 {{ request()->is('siswa/izin*') ? 'bg-white/10 font-bold text-white shadow-sm border-l-4 border-sky-400 pl-3' : 'text-slate-400 hover:bg-white/5 hover:text-white' }}">
-                            <i data-lucide="file-signature" class="w-4.5 h-4.5 {{ request()->is('siswa/izin*') ? 'text-sky-400' : '' }}"></i> 
-                            <span class="text-xs font-semibold">Ajukan Izin</span>
+                        <a href="/siswa/izin" class="group flex items-center gap-3 rounded-lg px-3.5 py-2.5 text-xs transition-all duration-150 {{ request()->is('siswa/izin*') ? 'bg-sky-500 font-bold text-white shadow-md shadow-sky-500/20' : 'text-slate-400 font-medium hover:bg-white/5 hover:text-white' }}">
+                            <i data-lucide="file-signature" class="w-[18px] h-[18px] shrink-0 {{ request()->is('siswa/izin*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" stroke-width="2"></i> 
+                            <span>Ajukan Izin</span>
                         </a>
 
-                        <a href="/siswa/notifikasi" class="group flex items-center justify-between rounded-xl px-3.5 py-2.5 transition-all duration-200 {{ request()->is('siswa/notifikasi*') ? 'bg-white/10 font-bold text-white shadow-sm border-l-4 border-sky-400 pl-3' : 'text-slate-400 hover:bg-white/5 hover:text-white' }}">
+                        <a href="/siswa/notifikasi" class="group flex items-center justify-between rounded-lg px-3.5 py-2.5 text-xs transition-all duration-150 {{ request()->is('siswa/notifikasi*') ? 'bg-sky-500 font-bold text-white shadow-md shadow-sky-500/20' : 'text-slate-400 font-medium hover:bg-white/5 hover:text-white' }}">
                             <div class="flex items-center gap-3">
-                                <i data-lucide="bell" class="w-4.5 h-4.5 {{ request()->is('siswa/notifikasi*') ? 'text-sky-400' : '' }}"></i> 
-                                <span class="text-xs font-semibold">Notifikasi</span>
+                                <i data-lucide="bell" class="w-[18px] h-[18px] shrink-0 {{ request()->is('siswa/notifikasi*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" stroke-width="2"></i> 
+                                <span>Notifikasi</span>
                             </div>
                             @php
                                 $user = Auth::user();
@@ -107,7 +87,7 @@
                             @endphp
 
                             @if($notifCount > 0)
-                                <span class="bg-sky-500/20 text-sky-300 border border-sky-500/30 text-[10px] font-semibold px-2 py-0.5 rounded-full">
+                                <span class="{{ request()->is('siswa/notifikasi*') ? 'bg-white text-sky-600' : 'bg-sky-500 text-white' }} text-[10px] font-bold px-2 py-0.5 rounded-md">
                                     {{ $notifCount }}
                                 </span>
                             @endif
@@ -116,10 +96,22 @@
                 </nav>
             </div>
 
-            <!-- Bottom Logout Section (Telah diubah menjadi trigger modal) -->
-            <div class="border-t border-white/10 p-4 shrink-0">
-                <button @click="logoutModal = true" type="button" class="group flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 p-2.5 text-xs font-semibold text-slate-300 transition-colors hover:bg-white/10 hover:text-white cursor-pointer">
-                    <i data-lucide="log-out" class="w-4 h-4"></i> Keluar
+            <!-- Profil & Logout Section -->
+            <div class="border-t border-white/10 pt-3 space-y-2 shrink-0 mt-3">
+                <div class="flex items-center gap-2.5 bg-white/5 p-2.5 rounded-lg border border-white/10">
+                    <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-sky-500 font-extrabold text-white text-xs shadow-sm">
+                        {{ strtoupper(substr(Auth::user()->name ?? 'SW', 0, 2)) }}
+                    </div>
+                    <div class="overflow-hidden">
+                        <p class="truncate text-xs font-bold text-white">{{ Auth::user()->name ?? 'Siswa' }}</p>
+                        <span class="block text-[10px] font-medium text-slate-400 truncate">
+                            Kelas {{ Auth::user()->kelas->nama_kelas ?? 'Siswa Aktif' }}
+                        </span>
+                    </div>
+                </div>
+
+                <button @click="logoutModal = true" type="button" class="group flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 py-2 text-xs font-bold text-slate-300 transition-colors hover:bg-rose-500/20 hover:border-rose-400/30 hover:text-rose-200 cursor-pointer">
+                    <i data-lucide="log-out" class="w-4 h-4" stroke-width="1.9"></i> Keluar
                 </button>
             </div>
         </aside>
@@ -127,24 +119,22 @@
         <div id="sidebar-overlay" class="fixed inset-0 bg-[#0b1e36]/60 backdrop-blur-sm z-40 hidden md:hidden transition-opacity"></div>
 
         <!-- Main Content (Scroll Mandiri Vertikal) -->
-        <main class="flex-1 w-full pl-0 md:pl-64 h-screen overflow-y-auto flex flex-col bg-[#f8fafc]">
-            <header class="h-16 border-b border-slate-200/60 bg-white/80 backdrop-blur-md sticky top-0 z-30 flex items-center justify-between px-6 md:px-10 shrink-0">
-                <div>
-                    <button id="open-sidebar" class="p-2 -ml-2 text-slate-700 rounded-lg hover:bg-slate-100 md:hidden focus:outline-none">
-                        <i data-lucide="menu" class="w-6 h-6"></i>
+        <main class="flex-1 min-w-0 w-full pl-0 md:pl-64 h-screen overflow-y-auto flex flex-col bg-[#f8fafc]">
+            <header class="h-14 border-b border-slate-200/70 bg-white/90 backdrop-blur-md sticky top-0 z-30 flex items-center justify-between px-4 md:px-6 shrink-0">
+                <div class="flex items-center gap-3">
+                    <button id="open-sidebar" class="p-2 text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200 md:hidden focus:outline-none">
+                        <i data-lucide="menu" class="w-[18px] h-[18px]"></i>
                     </button>
+                    <span class="hidden sm:inline-block text-xs font-semibold text-slate-500">Presensi Mutu • Portal Siswa</span>
                 </div>
                 
-                <div class="flex items-center gap-2.5 bg-slate-50 px-3.5 py-1.5 rounded-full border border-slate-200/60">
-                    <span class="relative flex h-2.5 w-2.5">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-                    </span>
-                    <span class="text-xs font-semibold text-slate-600">Sesi Siswa Aktif</span>
+                <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-emerald-50 border border-emerald-200 text-[11px] font-bold text-emerald-700">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span>Sesi Siswa Aktif</span>
                 </div>
             </header>
             
-            <div class="flex-1 p-6 md:p-10 max-w-[1400px]">
+            <div class="flex-1 min-w-0 p-4 md:p-6 max-w-[1400px] w-full mx-auto">
                 {{ $slot }}
             </div>
         </main>
@@ -157,10 +147,10 @@
          style="display: none;">
         
         <div @click.outside="logoutModal = false" 
-             class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-100 text-center space-y-4 relative"
+             class="bg-white rounded-lg max-w-sm w-full p-6 shadow-2xl border border-slate-100 text-center space-y-4 relative"
              x-transition>
             
-            <div class="w-12 h-12 bg-rose-50 text-rose-600 rounded-full flex items-center justify-center mx-auto border border-rose-100">
+            <div class="w-12 h-12 bg-rose-50 text-rose-600 rounded-md flex items-center justify-center mx-auto border border-rose-100">
                 <i data-lucide="log-out" class="w-6 h-6"></i>
             </div>
 
@@ -171,14 +161,14 @@
 
             <div class="grid grid-cols-2 gap-3 pt-2">
                 <!-- Tombol Batal -->
-                <button @click="logoutModal = false" type="button" class="py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all cursor-pointer">
+                <button @click="logoutModal = false" type="button" class="py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-md transition-all cursor-pointer">
                     Batal
                 </button>
                 
                 <!-- Form Eksekusi Logout Sebenarnya -->
                 <form method="POST" action="{{ route('logout') }}" class="m-0">
                     @csrf
-                    <button type="submit" class="w-full h-full py-2.5 px-4 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl shadow-lg shadow-rose-600/20 transition-all cursor-pointer">
+                    <button type="submit" class="w-full h-full py-2.5 px-4 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-md shadow-2xs transition-all cursor-pointer">
                         Ya, Keluar
                     </button>
                 </form>

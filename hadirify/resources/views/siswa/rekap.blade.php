@@ -1,49 +1,72 @@
 <x-app-layout>
     <!-- Container Utama: Fixed Height agar Header diam & Tabel bisa di-scroll -->
-    <div class="animate-in fade-in duration-700 flex flex-col space-y-4 px-2 h-[calc(100vh-140px)]">
+    <div class="animate-in fade-in duration-700 flex flex-col space-y-4 px-1 lg:h-[calc(100vh-108px)]">
         
-        <!-- ================= SECTION 1: HEADER (FIXED) ================= -->
-        <div class="flex-none bg-white border border-slate-200/50 rounded-xl shadow-[0_2px_4px_rgba(0,0,0,0.02)]">
-            <div class="p-5 sm:px-6 sm:py-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div class="flex items-center gap-4">
+        <!-- ================= SECTION 1: HEADER (FIXED - KOTAK ELEGAN) ================= -->
+        <div class="flex-none bg-white border border-slate-200/70 rounded-lg shadow-2xs">
+            <div class="p-4 sm:px-6 sm:py-3.5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="flex items-center gap-3.5">
                     <!-- Icon History (Navy Theme) -->
-                    <div class="flex-shrink-0 w-11 h-11 bg-[#0b1e36] flex items-center justify-center rounded-lg shadow-lg">
-                        <i data-lucide="history" class="w-6 h-6 text-white"></i>
+                    <div class="flex-shrink-0 w-10 h-10 bg-[#0b1e36] flex items-center justify-center rounded-md shadow-sm">
+                        <i data-lucide="history" class="w-5 h-5 text-white"></i>
                     </div>
                     <div class="space-y-0.5">
-                        <h2 class="text-lg font-extrabold text-[#0b1e36] tracking-tight">Rekap Kehadiran</h2>
-                        <p class="text-[11px] text-slate-500 font-medium italic">Log absensi digital transparan & akurat</p>
+                        <h2 class="text-base font-extrabold text-[#0b1e36] tracking-tight">Rekap Kehadiran</h2>
+                        <p class="text-[11px] text-slate-500 font-medium">Log absensi digital transparan & akurat</p>
                     </div>
                 </div>
 
                 <!-- Clock & Date (Konsisten dengan Dashboard) -->
-                <div class="flex items-center gap-3 px-4 py-2 bg-slate-50/80 rounded-xl border border-slate-100">
+                <div class="flex items-center gap-3 px-3.5 py-1.5 bg-slate-50/80 rounded-md border border-slate-200/70">
                     <div class="text-right">
-                        <p id="realtime-date" class="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">
+                        <p id="realtime-date" class="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-0.5">
                             {{ now()->translatedFormat('d F Y') }}
                         </p>
-                        <p id="realtime-clock" class="text-sm font-bold text-[#0b1e36] font-mono leading-none">
+                        <p id="realtime-clock" class="text-xs font-bold text-[#0b1e36] font-mono leading-none">
                             00:00:00
                         </p>
                     </div>
-                    <div class="w-[1px] h-6 bg-slate-200 mx-1"></div>
-                    <i data-lucide="calendar-days" class="w-5 h-5 text-slate-400"></i>
+                    <div class="w-[1px] h-5 bg-slate-200 mx-0.5"></div>
+                    <i data-lucide="calendar-days" class="w-4 h-4 text-slate-400"></i>
                 </div>
             </div>
         </div>
 
-        <!-- ================= SECTION 2: AREA TABEL (SCROLLABLE) ================= -->
-        <div class="flex-1 min-h-0 bg-white rounded-xl border border-slate-200/60 shadow-sm overflow-hidden flex flex-col">
+        <!-- ================= SECTION 2: AREA TABEL (SCROLLABLE - KOTAK TEGAS) ================= -->
+        <div class="flex-1 min-h-0 bg-white rounded-lg border border-slate-200/70 shadow-2xs overflow-hidden flex flex-col">
             
-            <!-- Table Info Bar -->
-            <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/30">
-                <h3 class="text-[11px] font-black text-[#0b1e36] uppercase tracking-widest flex items-center gap-2">
-                    <i data-lucide="database" class="w-4 h-4 text-sky-600"></i>
-                    Dataset Absensi Anda
-                </h3>
-                <span class="px-2.5 py-1 bg-white border border-slate-200 text-slate-400 text-[9px] font-black rounded uppercase">
-                    Total: {{ $history->count() }} Entri
-                </span>
+            <!-- Table Info Bar & Quick Filter Tabs -->
+            <div class="px-6 py-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/40">
+                <div class="flex items-center gap-2.5">
+                    <h3 class="text-xs font-bold text-[#0b1e36] uppercase tracking-wider flex items-center gap-2">
+                        <i data-lucide="database" class="w-4 h-4 text-sky-600"></i>
+                        Dataset Absensi Anda
+                    </h3>
+                    <span class="px-2 py-0.5 bg-white border border-slate-200 text-slate-500 text-[10px] font-bold rounded-md shadow-2xs">
+                        {{ $history->total() }} Entri
+                    </span>
+                </div>
+
+                <!-- Quick Filter Tabs -->
+                <div class="flex items-center gap-1 p-1 bg-slate-200/60 rounded-xl overflow-x-auto no-scrollbar">
+                    @php $p = $periode ?? 'semua'; @endphp
+                    <a href="{{ request()->fullUrlWithQuery(['periode' => 'semua', 'page' => 1]) }}"
+                       class="px-3 py-1 rounded-lg text-xs font-bold transition-all whitespace-nowrap {{ $p === 'semua' ? 'bg-white text-[#0b1e36] shadow-sm' : 'text-slate-600 hover:text-slate-900' }}">
+                        Semua
+                    </a>
+                    <a href="{{ request()->fullUrlWithQuery(['periode' => 'hari_ini', 'page' => 1]) }}"
+                       class="px-3 py-1 rounded-lg text-xs font-bold transition-all whitespace-nowrap {{ $p === 'hari_ini' ? 'bg-white text-[#0b1e36] shadow-sm' : 'text-slate-600 hover:text-slate-900' }}">
+                        Hari Ini
+                    </a>
+                    <a href="{{ request()->fullUrlWithQuery(['periode' => 'minggu_ini', 'page' => 1]) }}"
+                       class="px-3 py-1 rounded-lg text-xs font-bold transition-all whitespace-nowrap {{ $p === 'minggu_ini' ? 'bg-white text-[#0b1e36] shadow-sm' : 'text-slate-600 hover:text-slate-900' }}">
+                        Minggu Ini
+                    </a>
+                    <a href="{{ request()->fullUrlWithQuery(['periode' => 'bulan_ini', 'page' => 1]) }}"
+                       class="px-3 py-1 rounded-lg text-xs font-bold transition-all whitespace-nowrap {{ $p === 'bulan_ini' ? 'bg-white text-[#0b1e36] shadow-sm' : 'text-slate-600 hover:text-slate-900' }}">
+                        Bulan Ini
+                    </a>
+                </div>
             </div>
 
             <!-- Scrollable Table Body -->
@@ -115,6 +138,40 @@
                     </tbody>
                 </table>
             </div>
+
+            <!-- Pagination Bar -->
+            @if($history->hasPages())
+                <div class="px-6 py-3.5 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 bg-slate-50/40">
+                    <p class="text-xs text-slate-500 font-medium">
+                        Menampilkan <span class="font-bold text-slate-700">{{ $history->firstItem() ?? 0 }}</span> - <span class="font-bold text-slate-700">{{ $history->lastItem() ?? 0 }}</span> dari <span class="font-bold text-slate-700">{{ $history->total() }}</span> entri
+                    </p>
+                    <div class="flex items-center gap-1.5">
+                        @if ($history->onFirstPage())
+                            <span class="px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-slate-300 text-xs font-bold cursor-not-allowed">
+                                &larr; Prev
+                            </span>
+                        @else
+                            <a href="{{ $history->previousPageUrl() }}" class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-100 text-xs font-bold transition-all shadow-2xs">
+                                &larr; Prev
+                            </a>
+                        @endif
+
+                        <span class="px-3.5 py-1.5 rounded-lg bg-[#0b1e36] text-white text-xs font-black shadow-xs">
+                            {{ $history->currentPage() }} / {{ $history->lastPage() }}
+                        </span>
+
+                        @if ($history->hasMorePages())
+                            <a href="{{ $history->nextPageUrl() }}" class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-100 text-xs font-bold transition-all shadow-2xs">
+                                Next &rarr;
+                            </a>
+                        @else
+                            <span class="px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-slate-300 text-xs font-bold cursor-not-allowed">
+                                Next &rarr;
+                            </span>
+                        @endif
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
 

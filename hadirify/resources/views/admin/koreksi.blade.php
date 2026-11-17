@@ -6,8 +6,8 @@
         <div class="space-y-4">
             
             <!-- Header Page -->
-            <div class="bg-white p-5 rounded-xl border border-slate-200/50 shadow-sm flex items-center gap-4">
-                <div class="w-10 h-10 bg-[#0b1e36] text-white rounded-lg flex items-center justify-center shadow-lg shrink-0">
+            <div class="bg-white p-5 rounded-lg border border-slate-200/80 shadow-2xs flex items-center gap-4">
+                <div class="w-10 h-10 bg-[#0b1e36] text-white rounded-md flex items-center justify-center shadow-2xs shrink-0">
                     <i data-lucide="edit-3" class="w-5 h-5 text-white"></i>
                 </div>
                 <div class="space-y-0.5">
@@ -17,20 +17,20 @@
             </div>
 
             <!-- Formulir Pencarian -->
-            <div class="bg-white p-5 rounded-xl border border-slate-200/60 shadow-sm">
+            <div class="bg-white p-5 rounded-lg border border-slate-200/80 shadow-2xs">
                 <form action="{{ route('admin.koreksi') }}" method="GET" class="flex flex-col md:flex-row gap-4 items-end">
                     <div class="flex-1 w-full space-y-1.5">
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Cari Nama / NISN Siswa</label>
                         <div class="relative group">
                             <input type="text" name="search" placeholder="Masukkan Nama atau NISN..." value="{{ request('search') }}" required
-                                   class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-[#0b1e36] focus:bg-white outline-none text-sm font-semibold text-slate-700 transition-all">
+                                   class="w-full pl-11 pr-4 py-2.5 bg-white border border-slate-200 rounded-md focus:border-[#0b1e36] focus:ring-4 focus:ring-[#0b1e36]/10 outline-none text-sm font-semibold text-slate-700 transition-all">
                             <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#0b1e36] transition-colors">
                                 <i data-lucide="search" class="w-4 h-4"></i>
                             </span>
                         </div>
                     </div>
 
-                    <button type="submit" class="w-full md:w-auto h-12 px-8 bg-[#0b1e36] hover:bg-slate-800 text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-md transition-all flex items-center justify-center gap-2.5 active:scale-[0.98] cursor-pointer">
+                    <button type="submit" class="w-full md:w-auto h-11 px-8 bg-[#0b1e36] hover:bg-slate-800 text-white text-xs font-bold uppercase tracking-wider rounded-md shadow-2xs transition-all flex items-center justify-center gap-2.5 active:scale-[0.98] cursor-pointer">
                         <i data-lucide="filter" class="w-4 h-4"></i>
                         Muat Riwayat
                     </button>
@@ -40,26 +40,52 @@
 
         <!-- Notifikasi Berhasil -->
         @if(session('success'))
-            <div class="p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl font-bold text-xs flex items-center gap-3 shadow-sm animate-in zoom-in duration-300">
+            <div class="p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-md font-bold text-xs flex items-center gap-3 shadow-2xs animate-in zoom-in duration-300">
                 <i data-lucide="check-circle" class="w-4 h-4 text-emerald-500 shrink-0"></i>
                 {{ session('success') }}
             </div>
         @endif
 
         <!-- ================= SECTION 2: AREA HASIL TABEL (NATURAL FLOW) ================= -->
-        <div class="bg-white rounded-xl border border-slate-200/60 shadow-sm overflow-hidden">
+        <div class="bg-white rounded-lg border border-slate-200/80 shadow-2xs overflow-hidden">
             
-            <!-- Header Info Tabel -->
-            <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-                <h3 class="text-xs font-bold text-[#0b1e36] uppercase tracking-wider flex items-center gap-2">
-                    <i data-lucide="database" class="w-4 h-4 text-sky-500"></i>
-                    Dataset Riwayat Absensi
-                </h3>
-                @if(request('search'))
-                    <span class="px-2.5 py-1 bg-white border border-slate-200 text-slate-600 text-xs font-semibold rounded-lg shadow-2xs">
-                        Hasil: "{{ request('search') }}"
+            <!-- Header Info Tabel & Quick Filter Tabs -->
+            <div class="px-6 py-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/50">
+                <div class="flex items-center gap-2.5">
+                    <h3 class="text-xs font-bold text-[#0b1e36] uppercase tracking-wider flex items-center gap-2">
+                        <i data-lucide="database" class="w-4 h-4 text-sky-500"></i>
+                        Dataset Riwayat Absensi
+                    </h3>
+                    <span class="px-2 py-0.5 bg-white border border-slate-200 text-slate-500 text-[10px] font-bold rounded-md shadow-2xs">
+                        {{ $absensis->total() }} Data
                     </span>
-                @endif
+                    @if(request('search'))
+                        <span class="px-2 py-0.5 bg-sky-50 border border-sky-200 text-sky-700 text-[10px] font-bold rounded-md">
+                            "{{ request('search') }}"
+                        </span>
+                    @endif
+                </div>
+
+                <!-- Quick Filter Tabs -->
+                <div class="flex items-center gap-1 p-1 bg-slate-200/60 rounded-md overflow-x-auto no-scrollbar">
+                    @php $p = $periode ?? 'semua'; @endphp
+                    <a href="{{ request()->fullUrlWithQuery(['periode' => 'semua', 'page' => 1]) }}"
+                       class="px-3 py-1 rounded-md text-xs font-bold transition-all whitespace-nowrap {{ $p === 'semua' ? 'bg-white text-[#0b1e36] shadow-2xs' : 'text-slate-600 hover:text-slate-900' }}">
+                        Semua
+                    </a>
+                    <a href="{{ request()->fullUrlWithQuery(['periode' => 'hari_ini', 'page' => 1]) }}"
+                       class="px-3 py-1 rounded-md text-xs font-bold transition-all whitespace-nowrap {{ $p === 'hari_ini' ? 'bg-white text-[#0b1e36] shadow-2xs' : 'text-slate-600 hover:text-slate-900' }}">
+                        Hari Ini
+                    </a>
+                    <a href="{{ request()->fullUrlWithQuery(['periode' => 'minggu_ini', 'page' => 1]) }}"
+                       class="px-3 py-1 rounded-md text-xs font-bold transition-all whitespace-nowrap {{ $p === 'minggu_ini' ? 'bg-white text-[#0b1e36] shadow-2xs' : 'text-slate-600 hover:text-slate-900' }}">
+                        Minggu Ini
+                    </a>
+                    <a href="{{ request()->fullUrlWithQuery(['periode' => 'bulan_ini', 'page' => 1]) }}"
+                       class="px-3 py-1 rounded-md text-xs font-bold transition-all whitespace-nowrap {{ $p === 'bulan_ini' ? 'bg-white text-[#0b1e36] shadow-2xs' : 'text-slate-600 hover:text-slate-900' }}">
+                        Bulan Ini
+                    </a>
+                </div>
             </div>
 
             <!-- Tabel Mengalir Sesuai Data -->
@@ -87,7 +113,7 @@
                                 <td class="px-6 py-3.5">
                                     <div class="flex flex-col">
                                         <div class="flex items-center gap-1.5 mb-0.5">
-                                            <span class="px-2 py-0.5 bg-slate-100 text-slate-700 text-[10px] font-bold rounded border border-slate-200">{{ $student->kelas->nama_kelas ?? 'N/A' }}</span>
+                                            <span class="px-2 py-0.5 bg-slate-100 text-slate-700 text-[10px] font-bold rounded-md border border-slate-200">{{ $student->kelas->nama_kelas ?? 'N/A' }}</span>
                                             <span class="text-xs font-bold text-slate-700">{{ $absen->jadwal->mapel->nama_mapel ?? 'Mapel' }}</span>
                                         </div>
                                         <span class="text-[10px] text-slate-400 font-medium">{{ \Carbon\Carbon::parse($absen->tanggal)->translatedFormat('d M Y') }}</span>
@@ -103,7 +129,7 @@
                                         ];
                                         $b = $badges[$absen->status] ?? ['bg-slate-50', 'text-slate-500', 'border-slate-200', 'L' => 'N/A'];
                                     @endphp
-                                    <span class="px-2.5 py-1 {{ $b[0] }} {{ $b[1] }} {{ $b[2] }} text-xs font-semibold rounded-full border">
+                                    <span class="px-2.5 py-1 {{ $b[0] }} {{ $b[1] }} {{ $b[2] }} text-xs font-semibold rounded-md border">
                                         {{ $b['L'] }}
                                     </span>
                                 </td>
@@ -112,17 +138,16 @@
                                     @csrf @method('PUT')
                                     <td class="px-6 py-3.5 text-center">
                                         <div class="relative inline-block w-full max-w-[110px]">
-                                            <select name="status" class="w-full pl-3 pr-7 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-700 outline-none appearance-none cursor-pointer focus:bg-white focus:border-[#0b1e36]">
+                                            <select name="status" class="w-full pl-3 pr-7 py-1.5 bg-white border border-slate-200 rounded-md text-xs font-bold text-slate-700 outline-none cursor-pointer focus:border-[#0b1e36]">
                                                 <option value="H" {{ $absen->status == 'H' ? 'selected' : '' }}>Hadir</option>
                                                 <option value="S" {{ $absen->status == 'S' ? 'selected' : '' }}>Sakit</option>
                                                 <option value="I" {{ $absen->status == 'I' ? 'selected' : '' }}>Izin</option>
                                                 <option value="A" {{ $absen->status == 'A' ? 'selected' : '' }}>Alpa</option>
                                             </select>
-                                            <i data-lucide="chevron-down" class="w-3.5 h-3.5 absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
                                         </div>
                                     </td>
                                     <td class="px-6 py-3.5 text-right">
-                                        <button type="submit" class="px-3.5 py-1.5 bg-[#0b1e36] hover:bg-slate-800 text-white text-xs font-bold rounded-lg shadow-sm active:scale-95 transition-all cursor-pointer">
+                                        <button type="submit" class="px-3.5 py-1.5 bg-[#0b1e36] hover:bg-slate-800 text-white text-xs font-bold rounded-md shadow-2xs active:scale-95 transition-all cursor-pointer">
                                             Update
                                         </button>
                                     </td>
@@ -142,6 +167,40 @@
                     </tbody>
                 </table>
             </div>
+
+            <!-- Pagination Bar -->
+            @if($absensis->hasPages())
+                <div class="px-6 py-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 bg-slate-50/40">
+                    <p class="text-xs text-slate-500 font-medium">
+                        Menampilkan <span class="font-bold text-slate-700">{{ $absensis->firstItem() ?? 0 }}</span> - <span class="font-bold text-slate-700">{{ $absensis->lastItem() ?? 0 }}</span> dari <span class="font-bold text-slate-700">{{ $absensis->total() }}</span> entri
+                    </p>
+                    <div class="flex items-center gap-1.5">
+                        @if ($absensis->onFirstPage())
+                            <span class="px-3 py-1.5 rounded-md border border-slate-200 bg-slate-50 text-slate-300 text-xs font-bold cursor-not-allowed">
+                                &larr; Prev
+                            </span>
+                        @else
+                            <a href="{{ $absensis->previousPageUrl() }}" class="px-3 py-1.5 rounded-md border border-slate-200 bg-white text-slate-600 hover:bg-slate-100 text-xs font-bold transition-all shadow-2xs">
+                                &larr; Prev
+                            </a>
+                        @endif
+
+                        <span class="px-3.5 py-1.5 rounded-md bg-[#0b1e36] text-white text-xs font-black shadow-xs">
+                            {{ $absensis->currentPage() }} / {{ $absensis->lastPage() }}
+                        </span>
+
+                        @if ($absensis->hasMorePages())
+                            <a href="{{ $absensis->nextPageUrl() }}" class="px-3 py-1.5 rounded-md border border-slate-200 bg-white text-slate-600 hover:bg-slate-100 text-xs font-bold transition-all shadow-2xs">
+                                Next &rarr;
+                            </a>
+                        @else
+                            <span class="px-3 py-1.5 rounded-md border border-slate-200 bg-slate-50 text-slate-300 text-xs font-bold cursor-not-allowed">
+                                Next &rarr;
+                            </span>
+                        @endif
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
 </x-admin-layout>

@@ -1,11 +1,11 @@
 <x-admin-layout>
     <!-- Container Utama -->
-    <div class="animate-in fade-in duration-700 flex flex-col space-y-4 px-2 h-[calc(100vh-140px)]">
+    <div class="animate-in fade-in duration-700 flex flex-col space-y-4 px-1 lg:h-[calc(100vh-108px)]">
         
         <!-- ================= SECTION 1: HEADER (FIXED) ================= -->
-        <div class="flex-none bg-white p-5 rounded-xl border border-slate-200/50 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="flex-none bg-white p-5 rounded-lg border border-slate-200/80 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div class="flex items-center gap-4">
-                <div class="w-10 h-10 bg-slate-900 text-white rounded-lg flex items-center justify-center shadow-lg">
+                <div class="w-10 h-10 bg-slate-900 text-white rounded-md flex items-center justify-center shadow-2xs">
                     <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
                 </div>
                 <div class="space-y-0.5">
@@ -18,12 +18,12 @@
                 <a id="btn-export-pdf" 
                    href="{{ route('admin.laporan.pdf', ['bulan' => request('bulan', now()->month), 'kelas_id' => request('kelas_id')]) }}" 
                    target="_blank"
-                   class="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-600 text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-slate-50 transition-all shadow-sm active:scale-95">
+                   class="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-600 text-[10px] font-black uppercase tracking-widest rounded-md hover:bg-slate-50 transition-all shadow-2xs active:scale-95">
                     <i data-lucide="file-text" class="w-3.5 h-3.5 text-rose-500"></i> Export PDF
                 </a>
                 <a id="btn-export-excel" 
                    href="{{ route('admin.laporan.excel', ['bulan' => request('bulan', now()->month), 'kelas_id' => request('kelas_id')]) }}" 
-                   class="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-emerald-700 transition-all shadow-sm active:scale-95">
+                   class="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white text-[10px] font-black uppercase tracking-widest rounded-md hover:bg-emerald-700 transition-all shadow-2xs active:scale-95">
                     <i data-lucide="sheet" class="w-3.5 h-3.5"></i> Export Excel
                 </a>
             </div>
@@ -44,27 +44,26 @@
             @endphp
 
             <!-- FORM FILTER -->
-            <div class="bg-white p-5 rounded-xl border border-slate-200/60 shadow-sm">
+            <div class="bg-white p-5 rounded-lg border border-slate-200/80 shadow-2xs">
                 <form action="{{ route('admin.laporan') }}" method="GET" class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
                     
                     <div class="md:col-span-4 space-y-1.5">
                         <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Periode Bulan</label>
-                        <div class="relative group">
-                            <select name="bulan" required class="w-full pl-4 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 outline-none focus:border-slate-900 appearance-none transition-all">
+                        <div class="relative">
+                            <select name="bulan" required class="w-full pl-4 pr-10 py-2.5 bg-white border border-slate-200 rounded-md text-xs font-bold text-slate-700 outline-none focus:border-[#0b1e36] focus:ring-4 focus:ring-[#0b1e36]/10 transition-all cursor-pointer">
                                 @foreach($months as $num => $name)
                                     <option value="{{ $num }}" {{ $currentMonth == $num ? 'selected' : '' }}>
                                         {{ $name }} {{ now()->year }}
                                     </option>
                                 @endforeach
                             </select>
-                            <i data-lucide="chevron-down" class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 pointer-events-none"></i>
                         </div>
                     </div>
 
                     <div class="md:col-span-4 space-y-1.5">
                         <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Filter Kelas</label>
-                        <div class="relative group">
-                            <select name="kelas_id" class="w-full pl-4 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 outline-none focus:border-slate-900 appearance-none transition-all">
+                        <div class="relative">
+                            <select name="kelas_id" class="w-full pl-4 pr-10 py-2.5 bg-white border border-slate-200 rounded-md text-xs font-bold text-slate-700 outline-none focus:border-[#0b1e36] focus:ring-4 focus:ring-[#0b1e36]/10 transition-all cursor-pointer">
                                 <option value="">Semua Kelas</option>
                                 @foreach($kelas as $k)
                                     <option value="{{ $k->id }}" {{ request('kelas_id') == $k->id ? 'selected' : '' }}>
@@ -72,13 +71,12 @@
                                     </option>
                                 @endforeach
                             </select>
-                            <i data-lucide="chevron-down" class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 pointer-events-none"></i>
                         </div>
                     </div>
 
                     <div class="md:col-span-4">
-                        <button type="submit" class="w-full h-12 bg-slate-900 hover:bg-black text-white text-[11px] font-black uppercase tracking-[0.15em] rounded-xl flex items-center justify-center gap-3 transition-all shadow-lg shadow-slate-200 active:scale-[0.98]">
-                            <i data-lucide="search" class="w-5 h-5 stroke-[2.5px]"></i>
+                        <button type="submit" class="w-full h-11 bg-slate-900 hover:bg-black text-white text-[11px] font-black uppercase tracking-[0.15em] rounded-md flex items-center justify-center gap-3 transition-all shadow-2xs active:scale-[0.98]">
+                            <i data-lucide="search" class="w-4 h-4 stroke-[2.5px]"></i>
                             Tampilkan Data
                         </button>
                     </div>
@@ -89,21 +87,20 @@
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 @php
                     $statItems = [
-                        ['label' => 'Rata-rata Presensi', 'val' => ($stats['rata_kehadiran'] ?? 0) . '%', 'icon' => 'trending-up', 'color' => 'bg-slate-900'],
-                        ['label' => 'Total Hadir', 'val' => number_format($stats['total_hadir'] ?? 0), 'icon' => 'check-circle', 'color' => 'bg-emerald-500'],
-                        ['label' => 'Total Izin/Sakit', 'val' => number_format($stats['total_izin_sakit'] ?? 0), 'icon' => 'clipboard-list', 'color' => 'bg-amber-500'],
-                        ['label' => 'Total Alpa', 'val' => number_format($stats['total_alpa'] ?? 0), 'icon' => 'alert-circle', 'color' => 'bg-rose-500'],
+                        ['label' => 'Rata-rata Presensi', 'val' => ($stats['rata_kehadiran'] ?? 0) . '%', 'icon' => 'trending-up'],
+                        ['label' => 'Total Hadir', 'val' => number_format($stats['total_hadir'] ?? 0), 'icon' => 'check-circle'],
+                        ['label' => 'Total Izin/Sakit', 'val' => number_format($stats['total_izin_sakit'] ?? 0), 'icon' => 'clipboard-list'],
+                        ['label' => 'Total Alpa', 'val' => number_format($stats['total_alpa'] ?? 0), 'icon' => 'alert-circle'],
                     ];
                 @endphp
                 @foreach($statItems as $s)
-                <div class="bg-white p-5 rounded-xl border border-slate-200/60 shadow-sm relative overflow-hidden group hover:border-slate-300 transition-all">
-                    <div class="absolute left-0 top-0 bottom-0 w-[3px] {{ $s['color'] }}"></div>
+                <div class="bg-white p-5 rounded-md border border-slate-200/80 shadow-2xs transition-all">
                     <div class="flex justify-between items-start">
                         <div>
                             <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">{{ $s['label'] }}</p>
                             <div class="text-xl font-bold text-slate-900 tracking-tight leading-none">{{ $s['val'] }}</div>
                         </div>
-                        <div class="p-2 bg-slate-50 text-slate-300 group-hover:text-slate-900 transition-colors">
+                        <div class="p-2 bg-slate-50 text-slate-400 rounded-md">
                             <i data-lucide="{{ $s['icon'] }}" class="w-4 h-4"></i>
                         </div>
                     </div>
@@ -112,10 +109,10 @@
             </div>
 
             <!-- DATA TABLE -->
-            <div class="bg-white rounded-xl border border-slate-200/60 shadow-sm overflow-hidden flex flex-col">
+            <div class="bg-white rounded-lg border border-slate-200/80 shadow-2xs overflow-hidden flex flex-col">
                 <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/30">
                     <h3 class="text-[11px] font-black text-slate-800 uppercase tracking-widest leading-none">Rekap Kehadiran Per Kelas</h3>
-                    <span class="px-2 py-0.5 bg-white border border-slate-200 text-slate-400 text-[9px] font-black rounded uppercase leading-none">
+                    <span class="px-2 py-0.5 bg-white border border-slate-200 text-slate-500 text-[9px] font-bold rounded-md uppercase leading-none">
                         Bulan: {{ $months[$currentMonth] }}
                     </span>
                 </div>
@@ -149,7 +146,7 @@
                                     <td class="px-6 py-3.5 text-center font-bold text-sky-500">{{ $laporan->izin ?? 0 }}</td>
                                     <td class="px-6 py-3.5 text-center font-bold text-rose-500">{{ $laporan->alpa ?? 0 }}</td>
                                     <td class="px-6 py-3.5 text-center">
-                                        <span class="inline-block px-3 py-1 text-[10px] font-black rounded border {{ $warnaClass }} font-mono">
+                                        <span class="inline-block px-2.5 py-1 text-[10px] font-bold rounded-md border {{ $warnaClass }} font-mono">
                                             {{ $persentase }}%
                                         </span>
                                     </td>

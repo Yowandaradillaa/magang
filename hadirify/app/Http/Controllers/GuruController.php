@@ -20,8 +20,7 @@ class GuruController extends Controller
         $guruId = auth()->id();
         $today = now()->toDateString();
         
-        // Sesuaikan nama hari dengan database (contoh: 'Jumat' atau otomatis bahasa Indonesia)
-        $hariIni = 'Jumat'; 
+        $hariIni = now()->locale('id')->dayName; 
 
         // 1. Ambil jadwal mengajar guru khusus hari ini
         $jadwalHariIni = Jadwal::with(['kelas', 'mapel'])
@@ -29,15 +28,53 @@ class GuruController extends Controller
                             ->where('hari', $hariIni)
                             ->get();
 
-        // 2. Hitung statistik kehadiran hari ini
+        // 2. Ambil data absensi hari ini yang terkait dengan jadwal guru ini (atau fallback hari ini)
+        $absensiHariIni = Absensi::with(['siswa.kelas', 'jadwal.mapel', 'jadwal.kelas'])
+                            ->where('tanggal', $today)
+                            ->whereHas('jadwal', function($q) use ($guruId) {
+                                $q->where('id_guru', $guruId);
+                            })
+                            ->latest('waktu_absen')
+                            ->get();
+
+        if ($absensiHariIni->isEmpty()) {
+            $absensiHariIni = Absensi::with(['siswa.kelas', 'jadwal.mapel', 'jadwal.kelas'])
+                                ->where('tanggal', $today)
+                                ->latest('waktu_absen')
+                                ->get();
+        }
+
+        // 3. Hitung statistik kehadiran hari ini
         $stats = [
-            'hadir' => Absensi::where('tanggal', $today)->where('status', 'H')->count(),
-            'izin'  => Absensi::where('tanggal', $today)->where('status', 'I')->count(),
-            'sakit' => Absensi::where('tanggal', $today)->where('status', 'S')->count(),
-            'alpa'  => Absensi::where('tanggal', $today)->where('status', 'A')->count(),
+            'hadir' => $absensiHariIni->where('status', 'H')->count(),
+            'izin'  => $absensiHariIni->where('status', 'I')->count(),
+            'sakit' => $absensiHariIni->where('status', 'S')->count(),
+            'alpa'  => $absensiHariIni->where('status', 'A')->count(),
         ];
 
-        return view('guru.dashboard', compact('jadwalHariIni', 'stats'));
+        // 4. Struktur data siswa per kategori untuk modal interaktif klik statistik
+        $formatSiswa = function($collection, $defaultStatus) {
+            return $collection->map(function($a) use ($defaultStatus) {
+                return [
+                    'nama'   => $a->siswa->name ?? 'Siswa',
+                    'nisn'   => $a->siswa->nisn ?? '-',
+                    'kelas'  => $a->siswa->kelas->nama_kelas ?? ($a->jadwal->kelas->nama_kelas ?? '-'),
+                    'mapel'  => $a->jadwal->mapel->nama_mapel ?? 'Mata Pelajaran',
+                    'jam'    => $a->waktu_absen ? \Carbon\Carbon::parse($a->waktu_absen)->format('H:i') . ' WIB' : '-',
+                    'metode' => $a->metode ?? 'QR',
+                    'status' => $defaultStatus
+                ];
+            })->values();
+        };
+
+        $detailSiswa = [
+            'hadir' => $formatSiswa($absensiHariIni->where('status', 'H'), 'Hadir'),
+            'izin'  => $formatSiswa($absensiHariIni->where('status', 'I'), 'Izin'),
+            'sakit' => $formatSiswa($absensiHariIni->where('status', 'S'), 'Sakit'),
+            'alpa'  => $formatSiswa($absensiHariIni->where('status', 'A'), 'Alpa'),
+        ];
+
+        return view('guru.dashboard', compact('jadwalHariIni', 'stats', 'detailSiswa'));
     }
 
     /**

@@ -2,26 +2,26 @@
     <!-- Container Utama dibuat memanjang ke bawah agar leluasa di-scroll -->
     <div class="animate-in fade-in duration-700 flex flex-col space-y-4 px-2 pb-12">
         
-        <!-- ================= SECTION 1: HEADER ================= -->
-        <div class="bg-white border border-slate-200/50 rounded-xl shadow-[0_2px_4px_rgba(0,0,0,0.02)]">
-            <div class="p-5 sm:px-6 sm:py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div class="flex items-center gap-4">
-                    <div class="flex-shrink-0 w-10 h-10 bg-amber-500 flex items-center justify-center rounded-lg shadow-lg shadow-amber-100">
+        <!-- ================= SECTION 1: HEADER (CLEAN KOTAK) ================= -->
+        <div class="bg-white border border-slate-200/80 rounded-lg shadow-2xs">
+            <div class="p-4 sm:px-6 sm:py-3.5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="flex items-center gap-3.5">
+                    <div class="flex-shrink-0 w-10 h-10 bg-amber-500 flex items-center justify-center rounded-md shadow-sm">
                         <i data-lucide="edit-3" class="w-5 h-5 text-white"></i>
                     </div>
                     <div class="space-y-0.5">
-                        <h2 class="text-lg font-extrabold text-[#0b1e36] tracking-tight">Presensi Manual</h2>
-                        <p class="text-[11px] text-slate-500 font-medium italic">Input kehadiran tatap muka langsung</p>
+                        <h2 class="text-base font-extrabold text-[#0b1e36] tracking-tight">Presensi Manual</h2>
+                        <p class="text-[11px] text-slate-500 font-medium">Input kehadiran tatap muka langsung</p>
                     </div>
                 </div>
 
                 <!-- Clock & Date -->
-                <div class="flex items-center gap-3 px-3 py-1.5 bg-slate-50/80 rounded-lg border border-slate-100">
+                <div class="flex items-center gap-3 px-3.5 py-1.5 bg-slate-50/80 rounded-md border border-slate-200/70">
                     <div class="text-right">
-                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">{{ now()->translatedFormat('d M Y') }}</p>
+                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-0.5">{{ now()->translatedFormat('d M Y') }}</p>
                         <p id="realtime-clock" class="text-xs font-bold text-[#0b1e36] font-mono leading-none">00:00:00</p>
                     </div>
-                    <div class="w-[1px] h-4 bg-slate-200"></div>
+                    <div class="w-[1px] h-5 bg-slate-200"></div>
                     <i data-lucide="calendar" class="w-4 h-4 text-slate-400"></i>
                 </div>
             </div>
@@ -34,13 +34,13 @@
             <!-- Input hidden untuk membawa jadwal_id -->
             <input type="hidden" name="jadwal_id" value="{{ $selectedJadwalId ?? '' }}">
 
-            <!-- ================= SECTION 2: CONFIG & FILTER ================= -->
+            <!-- ================= SECTION 2: CONFIG & FILTER (KOTAK TEGAS) ================= -->
             <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
-                <div class="md:col-span-8 bg-white p-4 rounded-xl border border-slate-200/60 shadow-sm flex items-center gap-4">
+                <div class="md:col-span-8 bg-white p-4 rounded-lg border border-slate-200/80 shadow-2xs flex items-center gap-4">
                     <div class="flex-1">
                         <label class="block text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1 mb-1">Pilih Jadwal Mengajar</label>
                         <div class="relative">
-                            <select name="pilih_jadwal" onchange="window.location.href='{{ route('guru.manual') }}?jadwal_id=' + this.value" required class="w-full pl-3 pr-10 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-[#0b1e36] outline-none focus:border-amber-500 appearance-none transition-all cursor-pointer">
+                            <select name="pilih_jadwal" onchange="window.location.href='{{ route('guru.manual') }}?jadwal_id=' + this.value" required class="w-full pl-3 pr-10 py-2 bg-slate-50 border border-slate-200 rounded-md text-xs font-bold text-[#0b1e36] outline-none focus:border-amber-500 transition-all cursor-pointer">
                                 <option value="">-- Klik untuk memilih kelas --</option>
                                 @foreach($jadwals as $j)
                                     <option value="{{ $j->id }}" {{ isset($selectedJadwalId) && $selectedJadwalId == $j->id ? 'selected' : '' }}>
@@ -48,20 +48,19 @@
                                     </option>
                                 @endforeach
                             </select>
-                            <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none"></i>
                         </div>
                     </div>
                 </div>
 
-                <div class="md:col-span-4 bg-white p-4 rounded-xl border border-slate-200/60 shadow-sm flex items-center justify-center">
-                    <button type="button" onclick="setAllStatus('H')" class="w-full h-11 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all border border-emerald-100 border-dashed cursor-pointer">
+                <div class="md:col-span-4 bg-white p-4 rounded-lg border border-slate-200/80 shadow-2xs flex items-center justify-center">
+                    <button type="button" onclick="setAllStatus('H')" class="w-full h-11 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest text-emerald-600 hover:bg-emerald-50 rounded-md transition-all border border-emerald-100 border-dashed cursor-pointer">
                         <i data-lucide="check-check" class="w-4 h-4"></i> Hadirkan Semua Siswa
                     </button>
                 </div>
             </div>
 
-            <!-- ================= SECTION 3: STUDENT LIST (LEBAR & FULL SCROLL) ================= -->
-            <div class="bg-white rounded-xl border border-slate-200/60 shadow-sm overflow-hidden">
+            <!-- ================= SECTION 3: STUDENT LIST (KOTAK TEGAS) ================= -->
+            <div class="bg-white rounded-lg border border-slate-200/80 shadow-2xs overflow-hidden">
                 <table class="w-full text-left border-collapse">
                     <thead class="bg-slate-50 border-b border-slate-100">
                         <tr class="text-[10px] font-black text-slate-400 uppercase tracking-widest">

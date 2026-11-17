@@ -13,7 +13,7 @@
         
         <!-- Notifikasi Berhasil -->
         @if(session('success'))
-            <div class="p-3 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl font-bold text-xs flex items-center gap-3 shadow-sm">
+            <div class="p-3 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-md font-bold text-xs flex items-center gap-3 shadow-2xs">
                 <i data-lucide="check-circle" class="w-4 h-4 text-emerald-500"></i>
                 {{ session('success') }}
             </div>
@@ -27,7 +27,7 @@
 
         <!-- Notifikasi Gagal Total -->
         @if(session('error'))
-            <div class="p-3 bg-rose-50 border border-rose-200 text-rose-700 rounded-xl font-bold text-xs flex items-center gap-3 shadow-sm">
+            <div class="p-3 bg-rose-50 border border-rose-200 text-rose-700 rounded-md font-bold text-xs flex items-center gap-3 shadow-2xs">
                 <i data-lucide="alert-circle" class="w-4 h-4 text-rose-500"></i>
                 {{ session('error') }}
             </div>
@@ -35,7 +35,7 @@
 
         <!-- Daftar Baris yang Gagal Diimport -->
         @if(session('import_errors') && count(session('import_errors')) > 0)
-            <div class="p-4 bg-amber-50 border border-amber-200 rounded-xl shadow-sm">
+            <div class="p-4 bg-amber-50 border border-amber-200 rounded-md shadow-2xs">
                 <p class="text-[11px] font-black text-amber-700 uppercase tracking-widest mb-2 flex items-center gap-2">
                     <i data-lucide="alert-triangle" class="w-4 h-4"></i>
                     {{ count(session('import_errors')) }} Baris Gagal Diimport (baris lain tetap berhasil)
@@ -49,10 +49,10 @@
         @endif
 
         <!-- ================= SECTION 1: HEADER ================= -->
-        <div class="bg-white px-5 py-3.5 rounded-xl border border-slate-200/60 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="bg-white px-5 py-3.5 rounded-lg border border-slate-200/80 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div class="flex items-center gap-3.5">
-                <div class="w-9 h-9 bg-[#0b1e36] text-white rounded-lg flex items-center justify-center shadow-md shrink-0">
-                    <i data-lucide="users" class="w-4.5 h-4.5"></i>
+                <div class="w-9 h-9 bg-[#0b1e36] text-white rounded-md flex items-center justify-center shadow-2xs shrink-0">
+                    <i data-lucide="users" class="w-[18px] h-[18px]"></i>
                 </div>
                 <div class="space-y-0.5">
                     <h2 class="text-base font-extrabold text-[#0b1e36] tracking-tight">Kelola Akun</h2>
@@ -61,11 +61,11 @@
             </div>
             
             <div class="w-full md:w-auto flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                <button @click="showImportModal = true" class="w-full sm:w-auto flex items-center justify-center gap-2 px-3.5 py-2 bg-white text-[#0b1e36] border border-slate-200 text-xs font-bold rounded-lg shadow-sm hover:bg-slate-50 transition-all active:scale-95 cursor-pointer">
+                <button @click="showImportModal = true" class="w-full sm:w-auto flex items-center justify-center gap-2 px-3.5 py-2 bg-white text-[#0b1e36] border border-slate-200 text-xs font-bold rounded-md shadow-2xs hover:bg-slate-50 transition-all active:scale-95 cursor-pointer">
                     <i data-lucide="file-spreadsheet" class="w-4 h-4 stroke-[2.2] shrink-0"></i>
                     <span>Import Excel</span>
                 </button>
-                <button @click="showModal = true" class="w-full sm:w-auto flex items-center justify-center gap-2 px-3.5 py-2 bg-[#0b1e36] text-white text-xs font-bold rounded-lg shadow-md hover:bg-slate-800 transition-all active:scale-95 cursor-pointer">
+                <button @click="showModal = true" class="w-full sm:w-auto flex items-center justify-center gap-2 px-3.5 py-2 bg-[#0b1e36] text-white text-xs font-bold rounded-md shadow-2xs hover:bg-slate-800 transition-all active:scale-95 cursor-pointer">
                     <i data-lucide="plus" class="w-4 h-4 stroke-[2.5] shrink-0"></i>
                     <span>Tambah Akun Baru</span>
                 </button>
@@ -73,21 +73,21 @@
         </div>
 
         <!-- ================= SECTION 2: TAB NAVIGASI ================= -->
-        <div class="flex items-center gap-1 bg-slate-200/50 p-1 rounded-xl w-full md:w-fit border border-slate-200/60 shadow-inner">
+        <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-md w-full md:w-fit border border-slate-200/80">
             <button @click="tab = 'siswa'" 
-                    :class="tab === 'siswa' ? 'bg-white text-sky-600 shadow-sm font-bold border-slate-200' : 'text-slate-400 border-transparent'"
-                    class="flex-1 md:flex-none px-6 py-2 rounded-lg text-[11px] transition-all border flex items-center justify-center gap-2">
+                    :class="tab === 'siswa' ? 'bg-sky-500 text-white shadow-xs font-bold border-transparent' : 'text-slate-500 hover:text-slate-800 border-transparent'"
+                    class="flex-1 md:flex-none px-5 py-2 rounded-md text-xs transition-all border flex items-center justify-center gap-2">
                 <i data-lucide="graduation-cap" class="w-4 h-4"></i> Data Siswa
             </button>
             <button @click="tab = 'guru'" 
-                    :class="tab === 'guru' ? 'bg-white text-indigo-600 shadow-sm font-bold border-slate-200' : 'text-slate-400 border-transparent'"
-                    class="flex-1 md:flex-none px-6 py-2 rounded-lg text-[11px] transition-all border flex items-center justify-center gap-2">
+                    :class="tab === 'guru' ? 'bg-sky-500 text-white shadow-xs font-bold border-transparent' : 'text-slate-500 hover:text-slate-800 border-transparent'"
+                    class="flex-1 md:flex-none px-5 py-2 rounded-md text-xs transition-all border flex items-center justify-center gap-2">
                 <i data-lucide="briefcase" class="w-4 h-4"></i> Data Guru
             </button>
         </div>
 
         <!-- ================= SECTION 3: AREA TABEL ================= -->
-        <div class="bg-white rounded-xl border border-slate-200/60 shadow-sm overflow-hidden">
+        <div class="bg-white rounded-lg border border-slate-200/80 shadow-2xs overflow-hidden">
             <div class="overflow-x-auto">
                 
                 <!-- TABEL DATA SISWA -->
@@ -186,7 +186,7 @@
         <template x-teleport="body">
             <div x-show="showImportModal" class="fixed inset-0 z-[9999] flex items-center justify-center p-4" x-cloak>
                 <div x-show="showImportModal" x-transition @click="showImportModal = false" class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm"></div>
-                <div x-show="showImportModal" x-transition class="relative bg-white w-full max-w-lg rounded-xl shadow-2xl overflow-hidden">
+                <div x-show="showImportModal" x-transition class="relative bg-white w-full max-w-lg rounded-lg shadow-2xl overflow-hidden">
                     <div class="h-1.5 w-full bg-emerald-500"></div>
                     <div class="p-6">
                         <div class="flex items-center justify-between mb-4">
@@ -195,10 +195,10 @@
                         </div>
 
                         <!-- Langkah 1: Unduh Template -->
-                        <div class="bg-slate-50 border border-slate-200 rounded-lg p-4 mb-4">
+                        <div class="bg-slate-50 border border-slate-200 rounded-md p-4 mb-4">
                             <p class="text-[11px] font-black text-slate-600 uppercase tracking-widest mb-1">Langkah 1</p>
                             <p class="text-xs text-slate-500 mb-3">Unduh template Excel di bawah ini, lalu isi data siswa/guru sesuai contoh yang ada di dalamnya.</p>
-                            <a href="{{ route('admin.akun.template') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-300 text-[#0b1e36] text-[11px] font-bold rounded-lg hover:bg-slate-100 transition-all">
+                            <a href="{{ route('admin.akun.template') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-300 text-[#0b1e36] text-[11px] font-bold rounded-md hover:bg-slate-100 transition-all">
                                 <i data-lucide="download" class="w-4 h-4"></i>
                                 Unduh Template Excel
                             </a>
@@ -211,19 +211,19 @@
                                 <p class="text-[11px] font-black text-slate-600 uppercase tracking-widest mb-1">Langkah 2</p>
                                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Upload File yang Sudah Diisi</label>
                                 <input type="file" name="file" required accept=".xlsx,.xls,.csv"
-                                       class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs outline-none file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-[10px] file:font-bold file:bg-[#0b1e36] file:text-white">
+                                       class="w-full px-4 py-2 bg-white border border-slate-200 rounded-md text-xs outline-none file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-[10px] file:font-bold file:bg-[#0b1e36] file:text-white">
                                 <p class="text-[10px] text-slate-400 mt-1 ml-1">Format: .xlsx, .xls, atau .csv — maksimal 5MB</p>
                             </div>
 
-                            <div class="bg-amber-50 border border-amber-100 rounded-lg p-3">
+                            <div class="bg-amber-50 border border-amber-100 rounded-md p-3">
                                 <p class="text-[10px] text-amber-700 leading-relaxed">
                                     <span class="font-black">Catatan:</span> Kolom "kelas" wajib diisi persis sama seperti nama kelas yang ada di menu Manajemen Kelas. NISN/NUPTK, email, dan setiap baris yang duplikat akan ditolak. Password akun otomatis dibuat dari NISN (siswa) atau NUPTK (guru).
                                 </p>
                             </div>
 
                             <div class="flex gap-3 pt-2 border-t border-slate-100">
-                                <button type="button" @click="showImportModal = false" class="flex-1 py-3 text-slate-400 text-[10px] font-bold uppercase tracking-widest">Batal</button>
-                                <button type="submit" class="flex-[2] py-3 bg-emerald-600 text-white text-[10px] font-bold rounded-lg shadow-lg uppercase tracking-widest">Upload & Import</button>
+                                <button type="button" @click="showImportModal = false" class="flex-1 py-2.5 text-slate-400 text-[10px] font-bold uppercase tracking-widest">Batal</button>
+                                <button type="submit" class="flex-[2] py-2.5 bg-emerald-600 text-white text-[10px] font-bold rounded-md shadow-2xs uppercase tracking-widest">Upload & Import</button>
                             </div>
                         </form>
                     </div>
@@ -235,7 +235,7 @@
         <template x-teleport="body">
             <div x-show="showModal" class="fixed inset-0 z-[9999] flex items-center justify-center p-4" x-cloak>
                 <div x-show="showModal" x-transition @click="showModal = false" class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm"></div>
-                <div x-show="showModal" x-transition class="relative bg-white w-full max-w-lg rounded-xl shadow-2xl overflow-hidden">
+                <div x-show="showModal" x-transition class="relative bg-white w-full max-w-lg rounded-lg shadow-2xl overflow-hidden">
                     <div class="h-1.5 w-full bg-[#0b1e36]"></div>
                     <div class="p-6">
                         <div class="flex items-center justify-between mb-6">
@@ -246,19 +246,19 @@
                             @csrf
                             <div class="space-y-1">
                                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Nama Lengkap</label>
-                                <input type="text" name="name" required maxlength="255" pattern="[^0-9]+" title="Nama tidak boleh mengandung angka" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none focus:border-[#0b1e36]">
+                                <input type="text" name="name" required maxlength="255" pattern="[^0-9]+" title="Nama tidak boleh mengandung angka" class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-md text-sm outline-none focus:border-[#0b1e36]">
                             </div>
                             <div class="grid grid-cols-2 gap-4">
                                 <div class="space-y-1">
                                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Role</label>
-                                    <select name="role" x-model="rolePilihan" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none">
+                                    <select name="role" x-model="rolePilihan" class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-md text-sm outline-none">
                                         <option value="siswa">Siswa</option>
                                         <option value="guru">Guru</option>
                                     </select>
                                 </div>
                                 <div class="space-y-1" x-show="rolePilihan === 'siswa'">
                                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Kelas</label>
-                                    <select name="id_kelas" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none">
+                                    <select name="id_kelas" class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-md text-sm outline-none">
                                         <option value="">Pilih Kelas</option>
                                         @foreach($kelas as $k) <option value="{{ $k->id }}">{{ $k->nama_kelas }}</option> @endforeach
                                     </select>
@@ -266,27 +266,27 @@
                             </div>
                             <div x-show="rolePilihan === 'siswa'" class="space-y-1 animate-in fade-in zoom-in">
                                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Nomor NISN</label>
-                                <input type="text" name="nisn" inputmode="numeric" maxlength="10" pattern="[0-9]{10}" title="NISN harus terdiri dari 10 digit angka" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none">
+                                <input type="text" name="nisn" inputmode="numeric" maxlength="10" pattern="[0-9]{10}" title="NISN harus terdiri dari 10 digit angka" class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-md text-sm outline-none">
                             </div>
                             <div x-show="rolePilihan === 'guru'" class="space-y-1 animate-in fade-in zoom-in">
                                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Nomor NUPTK</label>
-                                <input type="text" name="nuptk" inputmode="numeric" maxlength="16" pattern="[0-9]{16}" title="NUPTK harus terdiri dari 16 digit angka" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none">
+                                <input type="text" name="nuptk" inputmode="numeric" maxlength="16" pattern="[0-9]{16}" title="NUPTK harus terdiri dari 16 digit angka" class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-md text-sm outline-none">
                             </div>
                             <div class="space-y-1">
                                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Email</label>
-                                <input type="email" name="email" maxlength="255" pattern="[^@]+@gmail\.com" title="Email harus menggunakan domain @gmail.com" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none">
+                                <input type="email" name="email" maxlength="255" pattern="[^@]+@gmail\.com" title="Email harus menggunakan domain @gmail.com" class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-md text-sm outline-none">
                             </div>
                             <div class="space-y-1">
                                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Password</label>
-                                <input type="password" name="password" required minlength="8" autocomplete="new-password" placeholder="Minimal 8 karakter" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none focus:border-[#0b1e36]">
+                                <input type="password" name="password" required minlength="8" autocomplete="new-password" placeholder="Minimal 8 karakter" class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-md text-sm outline-none focus:border-[#0b1e36]">
                             </div>
                             <div class="space-y-1">
                                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Konfirmasi Password</label>
-                                <input type="password" name="password_confirmation" required minlength="8" autocomplete="new-password" placeholder="Ulangi password" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none focus:border-[#0b1e36]">
+                                <input type="password" name="password_confirmation" required minlength="8" autocomplete="new-password" placeholder="Ulangi password" class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-md text-sm outline-none focus:border-[#0b1e36]">
                             </div>
                             <div class="flex gap-3 pt-4 border-t border-slate-100">
-                                <button type="button" @click="showModal = false" class="flex-1 py-3 text-slate-400 text-[10px] font-bold uppercase tracking-widest">Batal</button>
-                                <button type="submit" class="flex-[2] py-3 bg-[#0b1e36] text-white text-[10px] font-bold rounded-lg shadow-lg uppercase tracking-widest">Simpan Akun</button>
+                                <button type="button" @click="showModal = false" class="flex-1 py-2.5 text-slate-400 text-[10px] font-bold uppercase tracking-widest">Batal</button>
+                                <button type="submit" class="flex-[2] py-2.5 bg-[#0b1e36] text-white text-[10px] font-bold rounded-md shadow-2xs uppercase tracking-widest">Simpan Akun</button>
                             </div>
                         </form>
                     </div>
@@ -298,7 +298,7 @@
         <template x-teleport="body">
             <div x-show="showEditModal" class="fixed inset-0 z-[9999] flex items-center justify-center p-4" x-cloak>
                 <div x-show="showEditModal" x-transition @click="showEditModal = false" class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm"></div>
-                <div x-show="showEditModal" x-transition class="relative bg-white w-full max-w-lg rounded-xl shadow-2xl overflow-hidden">
+                <div x-show="showEditModal" x-transition class="relative bg-white w-full max-w-lg rounded-lg shadow-2xl overflow-hidden">
                     <div class="h-1.5 w-full transition-all" :class="editData.role === 'siswa' ? 'bg-sky-500' : 'bg-indigo-500'"></div>
                     <div class="p-6">
                         <div class="flex items-center justify-between mb-6">
@@ -309,31 +309,31 @@
                             @csrf @method('PUT')
                             <div class="space-y-1">
                                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Nama Lengkap</label>
-                                <input type="text" name="name" x-model="editData.name" required maxlength="255" pattern="[^0-9]+" title="Nama tidak boleh mengandung angka" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none">
+                                <input type="text" name="name" x-model="editData.name" required maxlength="255" pattern="[^0-9]+" title="Nama tidak boleh mengandung angka" class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-md text-sm outline-none">
                             </div>
                             <div class="grid grid-cols-2 gap-4">
                                 <div class="space-y-1">
                                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Email</label>
-                                    <input type="email" name="email" x-model="editData.email" maxlength="255" pattern="[^@]+@gmail\.com" title="Email harus menggunakan domain @gmail.com" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none">
+                                    <input type="email" name="email" x-model="editData.email" maxlength="255" pattern="[^@]+@gmail\.com" title="Email harus menggunakan domain @gmail.com" class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-md text-sm outline-none">
                                 </div>
                                 <div class="space-y-1" x-show="editData.role === 'siswa'">
                                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Kelas</label>
-                                    <select name="id_kelas" x-model="editData.id_kelas" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none">
+                                    <select name="id_kelas" x-model="editData.id_kelas" class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-md text-sm outline-none">
                                         @foreach($kelas as $k) <option value="{{ $k->id }}">{{ $k->nama_kelas }}</option> @endforeach
                                     </select>
                                 </div>
                             </div>
                             <div x-show="editData.role === 'siswa'" class="space-y-1">
                                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">NISN</label>
-                                <input type="text" name="nisn" x-model="editData.nisn" inputmode="numeric" maxlength="10" pattern="[0-9]{10}" title="NISN harus terdiri dari 10 digit angka" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none">
+                                <input type="text" name="nisn" x-model="editData.nisn" inputmode="numeric" maxlength="10" pattern="[0-9]{10}" title="NISN harus terdiri dari 10 digit angka" class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-md text-sm outline-none">
                             </div>
                             <div x-show="editData.role === 'guru'" class="space-y-1">
                                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">NUPTK</label>
-                                <input type="text" name="nuptk" x-model="editData.nuptk" inputmode="numeric" maxlength="16" pattern="[0-9]{16}" title="NUPTK harus terdiri dari 16 digit angka" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none">
+                                <input type="text" name="nuptk" x-model="editData.nuptk" inputmode="numeric" maxlength="16" pattern="[0-9]{16}" title="NUPTK harus terdiri dari 16 digit angka" class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-md text-sm outline-none">
                             </div>
                             <div class="flex gap-3 pt-4 border-t border-slate-100">
-                                <button type="button" @click="showEditModal = false" class="flex-1 py-3 text-slate-400 text-[10px] font-bold uppercase tracking-widest">Batal</button>
-                                <button type="submit" class="flex-[2] py-3 bg-[#0b1e36] text-white text-[10px] font-bold rounded-lg shadow-lg uppercase tracking-widest">Simpan Perubahan</button>
+                                <button type="button" @click="showEditModal = false" class="flex-1 py-2.5 text-slate-400 text-[10px] font-bold uppercase tracking-widest">Batal</button>
+                                <button type="submit" class="flex-[2] py-2.5 bg-[#0b1e36] text-white text-[10px] font-bold rounded-md shadow-2xs uppercase tracking-widest">Simpan Perubahan</button>
                             </div>
                         </form>
                     </div>
@@ -345,18 +345,18 @@
         <template x-teleport="body">
             <div x-show="showDeleteModal" class="fixed inset-0 z-[10000] flex items-center justify-center p-4" x-cloak>
                 <div x-show="showDeleteModal" x-transition @click="showDeleteModal = false" class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm"></div>
-                <div x-show="showDeleteModal" x-transition class="relative bg-white w-full max-w-sm rounded-xl shadow-2xl overflow-hidden">
+                <div x-show="showDeleteModal" x-transition class="relative bg-white w-full max-w-sm rounded-lg shadow-2xl overflow-hidden">
                     <div class="p-6 text-center">
-                        <div class="w-16 h-16 bg-rose-50 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <div class="w-16 h-16 bg-rose-50 text-rose-600 rounded-md flex items-center justify-center mx-auto mb-4 border border-rose-100">
                             <i data-lucide="alert-triangle" class="w-8 h-8"></i>
                         </div>
                         <h3 class="text-lg font-extrabold text-slate-900 leading-tight">Konfirmasi Hapus</h3>
                         <p class="text-[11px] text-slate-500 mt-2">Apakah Anda yakin ingin menghapus akun ini secara permanen? Data tidak dapat dipulihkan kembali.</p>
                         <div class="flex gap-3 mt-6">
-                            <button @click="showDeleteModal = false" class="flex-1 py-2.5 bg-slate-100 text-slate-600 text-[10px] font-bold rounded-lg transition-all cursor-pointer">Batal</button>
+                            <button @click="showDeleteModal = false" class="flex-1 py-2.5 bg-slate-100 text-slate-600 text-[10px] font-bold rounded-md transition-all cursor-pointer">Batal</button>
                             <form :action="deleteUrl" method="POST" class="flex-1">
                                 @csrf @method('DELETE')
-                                <button type="submit" class="w-full py-2.5 bg-rose-600 text-white text-[10px] font-bold rounded-lg shadow-lg shadow-rose-200 transition-all uppercase tracking-widest cursor-pointer">Hapus Akun</button>
+                                <button type="submit" class="w-full py-2.5 bg-rose-600 text-white text-[10px] font-bold rounded-md shadow-2xs shadow-rose-200 transition-all uppercase tracking-widest cursor-pointer">Hapus Akun</button>
                             </form>
                         </div>
                     </div>

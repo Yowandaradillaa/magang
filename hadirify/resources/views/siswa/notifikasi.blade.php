@@ -8,23 +8,23 @@
                 this.showDetail = true;
             }
          }" 
-         class="animate-in fade-in duration-700 flex flex-col space-y-4 px-2 h-[calc(100vh-140px)] max-w-4xl mx-auto">
+         class="animate-in fade-in duration-700 flex flex-col space-y-4 px-1 lg:h-[calc(100vh-108px)] max-w-4xl mx-auto">
         
-        <!-- ================= SECTION 1: HEADER (FIXED) ================= -->
-        <div class="flex-none bg-white border border-slate-200/50 rounded-xl shadow-sm">
-            <div class="p-5 sm:px-6 sm:py-4 flex items-center justify-between gap-4">
-                <div class="flex items-center gap-4">
-                    <div class="flex-shrink-0 w-10 h-10 bg-sky-600 flex items-center justify-center rounded-lg shadow-lg shadow-sky-100">
+        <!-- ================= SECTION 1: HEADER (FIXED - GAYA KOTAK TEGAS) ================= -->
+        <div class="flex-none bg-white border border-slate-200/70 rounded-lg shadow-sm">
+            <div class="p-4 sm:px-6 sm:py-3.5 flex items-center justify-between gap-4">
+                <div class="flex items-center gap-3.5">
+                    <div class="flex-shrink-0 w-10 h-10 bg-[#0b1e36] flex items-center justify-center rounded-md shadow-sm">
                         <i data-lucide="megaphone" class="w-5 h-5 text-white"></i>
                     </div>
                     <div class="space-y-0.5">
-                        <h2 class="text-lg font-extrabold text-[#0b1e36] tracking-tight">Pusat Notifikasi</h2>
-                        <p class="text-[11px] text-slate-500 font-medium italic">Informasi & pengumuman akademik terbaru</p>
+                        <h2 class="text-base font-extrabold text-[#0b1e36] tracking-tight">Pusat Notifikasi</h2>
+                        <p class="text-[11px] text-slate-500 font-medium">Informasi & pengumuman akademik terbaru</p>
                     </div>
                 </div>
 
                 <!-- Clock -->
-                <p id="realtime-clock" class="hidden sm:block text-sm font-bold text-[#0b1e36] font-mono bg-slate-50 px-3 py-1 rounded-lg border border-slate-100">
+                <p id="realtime-clock" class="hidden sm:block text-xs font-bold text-[#0b1e36] font-mono bg-slate-50 px-3 py-1.5 rounded-md border border-slate-200/70">
                     00:00:00
                 </p>
             </div>
@@ -33,7 +33,7 @@
         <!-- ================= SECTION 2: LIST (SCROLLABLE) ================= -->
         <div class="flex-1 min-h-0 overflow-y-auto no-scrollbar pb-10 space-y-3">
             @forelse($notifikasi as $n)
-            <!-- Card Klik-able -->
+            <!-- Card Klik-able Bergaya Kotak Tegas & Berwibawa -->
             <div @click="openDetail({ 
                     judul: '{{ $n->judul }}', 
                     isi: '{{ addslashes(str_replace(["\r", "\n"], ' ', $n->isi)) }}', 
@@ -41,38 +41,35 @@
                     waktu: '{{ $n->created_at->diffForHumans() }}',
                     tanggal: '{{ $n->created_at->translatedFormat('d F Y, H:i') }}'
                  })"
-                 class="bg-white rounded-xl border border-slate-200/60 shadow-sm relative overflow-hidden group hover:border-sky-400 hover:shadow-md transition-all cursor-pointer">
+                 class="bg-white rounded-lg border border-slate-200/80 shadow-xs group hover:border-slate-300 hover:shadow-sm transition-all cursor-pointer">
                 
-                <!-- Left Accent Line -->
-                <div class="absolute left-0 top-0 bottom-0 w-[3px] bg-sky-600 group-hover:w-[5px] transition-all"></div>
-                
-                <div class="p-5 flex gap-5">
-                    <div class="hidden sm:flex shrink-0 w-10 h-10 bg-slate-50 text-slate-400 rounded-lg items-center justify-center group-hover:bg-sky-50 group-hover:text-sky-600 transition-colors">
-                        <i data-lucide="mail-open" class="w-5 h-5"></i>
+                <div class="p-4.5 sm:p-5 flex gap-4 items-start">
+                    <div class="hidden sm:flex shrink-0 w-9 h-9 bg-slate-100/80 text-slate-500 rounded-md items-center justify-center group-hover:bg-sky-50 group-hover:text-sky-600 transition-colors mt-0.5">
+                        <i data-lucide="mail" class="w-4 h-4"></i>
                     </div>
 
-                    <div class="flex-1">
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="text-sm font-extrabold text-[#0b1e36] group-hover:text-sky-600 transition-colors leading-tight">
+                    <div class="flex-1 min-w-0">
+                        <div class="flex justify-between items-start gap-3 mb-1.5">
+                            <h3 class="text-sm font-extrabold text-[#0b1e36] group-hover:text-sky-600 transition-colors leading-snug">
                                 {{ $n->judul }}
                             </h3>
                             @if($n->created_at->isToday())
-                            <span class="px-2 py-0.5 bg-rose-50 text-rose-600 text-[8px] font-black rounded border border-rose-100 uppercase animate-pulse">Baru</span>
+                            <span class="px-2 py-0.5 bg-rose-50 text-rose-600 text-[9px] font-extrabold rounded-md border border-rose-200 uppercase tracking-wider shrink-0">Baru</span>
                             @endif
                         </div>
                         
                         <!-- Snippet / Cuplikan Teks -->
-                        <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed">
+                        <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed font-normal">
                             {{ $n->isi }}
                         </p>
                         
-                        <div class="mt-4 pt-3 border-t border-slate-50 flex items-center justify-between">
-                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter flex items-center gap-1">
+                        <div class="mt-3.5 pt-2.5 border-t border-slate-100 flex items-center justify-between">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
                                 <i data-lucide="user" class="w-3 h-3"></i> {{ $n->guru->name }}
                             </span>
-                            <div class="flex items-center gap-2">
-                                <span class="text-[10px] font-mono text-slate-300">{{ $n->created_at->diffForHumans() }}</span>
-                                <i data-lucide="chevron-right" class="w-3 h-3 text-slate-300 group-hover:translate-x-1 transition-transform"></i>
+                            <div class="flex items-center gap-1.5 text-slate-400">
+                                <span class="text-[10px] font-mono">{{ $n->created_at->diffForHumans() }}</span>
+                                <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 group-hover:text-slate-600 group-hover:translate-x-0.5 transition-all"></i>
                             </div>
                         </div>
                     </div>

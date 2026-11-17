@@ -85,6 +85,7 @@ class AbsensiController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Absensi berhasil! Selamat belajar.',
+            'jadwal_id' => $absen->jadwal_id,
             'data' => $absen
         ]);
     }

@@ -302,6 +302,33 @@ test('admin dapat menetapkan password unik saat membuat akun', function () {
         ->and(Hash::check('1111111111', $siswa->password))->toBeFalse();
 });
 
+test('nama guru dengan koma dan gelar diterima saat dibuat dan diimpor', function () {
+    $this->post(route('admin.akun.store'), [
+        'name' => 'Agus Setiawan, S.Kom.',
+        'role' => 'guru',
+        'nuptk' => '1234567890123456',
+        'password' => 'PasswordAman123',
+        'password_confirmation' => 'PasswordAman123',
+    ])->assertSessionHasNoErrors();
+
+    $import = new UsersImport();
+    $import->collection(new Collection([
+        [
+            'nama' => 'Ahmad Fauzi, S.Pd.I.',
+            'role' => 'guru',
+            'email' => '',
+            'nisn' => '',
+            'nuptk' => '6543210987654321',
+            'kelas' => '',
+        ],
+    ]));
+
+    expect(User::where('name', 'Agus Setiawan, S.Kom.')->exists())->toBeTrue()
+        ->and(User::where('name', 'Ahmad Fauzi, S.Pd.I.')->exists())->toBeTrue()
+        ->and($import->getSuccessCount())->toBe(1)
+        ->and($import->getErrors())->toBe([]);
+});
+
 test('pembuatan akun menolak password yang tidak memenuhi syarat', function () {
     $this->from('/admin/akun')
         ->post(route('admin.akun.store'), [
@@ -421,7 +448,12 @@ test('scan QR berhasil sekali dan scan kedua untuk jadwal yang sama ditolak', fu
     $this->actingAs($this->siswa)
         ->postJson(route('siswa.scan.proses'), $payload)
         ->assertOk()
-        ->assertJsonPath('status', 'success');
+        ->assertJsonPath('status', 'success')
+        ->assertJsonPath('jadwal_id', $qr->jadwal_id);
+
+    $this->get(route('siswa.scan-qr'))
+        ->assertOk()
+        ->assertSee('Sudah Scan');
 
     $this->postJson(route('siswa.scan.proses'), $payload)
         ->assertUnprocessable()
@@ -452,19 +484,34 @@ test('scan QR ditolak jika siswa sudah memiliki absensi manual sakit izin atau a
     expect(\App\Models\Absensi::count())->toBe(1);
 })->with(['manual-hadir' => 'H', 'sakit' => 'S', 'izin' => 'I', 'alfa' => 'A']);
 
-test('scan QR ditolak jika berada lebih dari 200 meter dari sekolah', function () {
+test('scan QR ditolak jika berada lebih dari 10 kilometer dari sekolah', function () {
     $qr = buatQrUntukSiswa($this);
 
     $this->actingAs($this->siswa)
         ->postJson(route('siswa.scan.proses'), [
             'kode_qr' => $qr->kode_qr,
-            'latitude' => config('attendance.school.latitude') + 0.00225,
+            'latitude' => config('attendance.school.latitude') + 0.1,
             'longitude' => config('attendance.school.longitude'),
         ])
         ->assertForbidden()
-        ->assertJsonPath('message', 'Absensi hanya dapat dilakukan dalam radius maksimal 200 meter dari sekolah.');
+        ->assertJsonPath('message', 'Absensi hanya dapat dilakukan dalam radius maksimal 10000 meter dari sekolah.');
 
     expect(\App\Models\Absensi::count())->toBe(0);
+});
+
+test('scan QR berhasil dalam radius 10 kilometer dari sekolah', function () {
+    $qr = buatQrUntukSiswa($this);
+
+    $this->actingAs($this->siswa)
+        ->postJson(route('siswa.scan.proses'), [
+            'kode_qr' => $qr->kode_qr,
+            'latitude' => config('attendance.school.latitude') + 0.08,
+            'longitude' => config('attendance.school.longitude'),
+        ])
+        ->assertOk()
+        ->assertJsonPath('status', 'success');
+
+    expect(\App\Models\Absensi::count())->toBe(1);
 });
 
 test('scan QR tidak menerima lokasi di luar koordinat yang valid', function () {
@@ -512,6 +559,16 @@ test('halaman scan menampilkan status absensi siswa yang sebenarnya', function (
         ->get(route('siswa.scan-qr'))
         ->assertOk()
         ->assertSee('Sakit');
+});
+
+test('halaman scan menampilkan status belum scan untuk sesi tanpa absensi hari ini', function () {
+    buatQrUntukSiswa($this);
+
+    $this->actingAs($this->siswa)
+        ->get(route('siswa.scan-qr'))
+        ->assertOk()
+        ->assertSee('data-initial-status="Belum Scan"', false)
+        ->assertSee('attendanceStatus[');
 });
 
 test('import akun menolak identifier yang berulang dalam file dan yang sudah terdaftar', function () {

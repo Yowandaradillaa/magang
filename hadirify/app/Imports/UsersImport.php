@@ -48,8 +48,8 @@ class UsersImport implements ToCollection, WithHeadingRow, WithCalculatedFormula
                 continue;
             }
 
-            if (mb_strlen($nama) > 255 || !preg_match("/^(?=.*\\p{L})[\\p{L}\\p{M}\\s.'-]+$/u", $nama)) {
-                $this->errors[] = "Baris {$nomorBaris} ({$nama}): Nama hanya boleh berisi huruf, spasi, titik, apostrof, atau tanda hubung.";
+            if (mb_strlen($nama) > 255 || !preg_match("/^(?=.*\\p{L})[\\p{L}\\p{M}\\s.,'-]+$/u", $nama)) {
+                $this->errors[] = "Baris {$nomorBaris} ({$nama}): Nama hanya boleh berisi huruf, spasi, koma, titik, apostrof, atau tanda hubung.";
                 continue;
             }
 

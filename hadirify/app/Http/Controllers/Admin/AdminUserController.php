@@ -51,7 +51,7 @@ class AdminUserController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name'  => ['required', 'string', 'max:255', 'regex:/^(?=.*\p{L})[\p{L}\p{M}\s.\'-]+$/u'],
+            'name'  => ['required', 'string', 'max:255', 'regex:/^(?=.*\p{L})[\p{L}\p{M}\s.,\'-]+$/u'],
             'role'  => 'required|in:admin,guru,siswa',
             'email' => ['nullable', 'email:rfc', 'max:255', 'regex:/^[^@\s]+@gmail\.com$/i', Rule::unique('users', 'email')],
             'nisn'  => ['nullable', 'digits:10', Rule::unique('users', 'nisn')],
@@ -130,7 +130,7 @@ class AdminUserController extends Controller
         $user = User::findOrFail($id);
 
         $request->validate([
-            'name'  => ['sometimes', 'required', 'string', 'max:255', 'regex:/^(?=.*\p{L})[\p{L}\p{M}\s.\'-]+$/u'],
+            'name'  => ['sometimes', 'required', 'string', 'max:255', 'regex:/^(?=.*\p{L})[\p{L}\p{M}\s.,\'-]+$/u'],
             'email' => ['nullable', 'email:rfc', 'max:255', 'regex:/^[^@\s]+@gmail\.com$/i', Rule::unique('users', 'email')->ignore($user->id)],
             'nisn'  => ['nullable', 'digits:10', Rule::unique('users', 'nisn')->ignore($user->id)],
             'nuptk' => ['nullable', 'digits:16', Rule::unique('users', 'nuptk')->ignore($user->id)],

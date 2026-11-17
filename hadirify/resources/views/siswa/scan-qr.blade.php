@@ -108,19 +108,19 @@
                                 @php
                                     $sudahAbsen = $jadwal->absensis->where('siswa_id', Auth::id())->where('tanggal', now()->toDateString())->first();
                                     $labelStatus = $sudahAbsen ? match ($sudahAbsen->status) {
-                                        'H' => 'Hadir',
+                                        'H' => 'Sudah Scan',
                                         'I' => 'Izin',
                                         'S' => 'Sakit',
                                         'A' => 'Alfa',
                                         default => 'Tercatat',
                                     } : null;
                                 @endphp
-                                
-                                @if($sudahAbsen)
-                                    <span class="text-[8px] font-black px-2 py-0.5 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded uppercase">{{ $labelStatus }}</span>
-                                @else
-                                    <span class="text-[8px] font-black px-2 py-0.5 bg-amber-50 text-amber-600 border border-amber-100 rounded uppercase animate-pulse">Belum Scan</span>
-                                @endif
+                                <span
+                                    data-initial-status="{{ $labelStatus ?? 'Belum Scan' }}"
+                                    x-text="attendanceStatus[{{ $jadwal->id }}] ?? $el.dataset.initialStatus"
+                                    :class="(attendanceStatus[{{ $jadwal->id }}] ?? $el.dataset.initialStatus) === 'Belum Scan' ? 'text-amber-600 bg-amber-50 border-amber-100 animate-pulse' : 'text-emerald-600 bg-emerald-50 border-emerald-100'"
+                                    class="text-[8px] font-black px-2 py-0.5 border rounded uppercase"
+                                ></span>
                             </div>
                             <div class="flex items-center gap-3 text-slate-400">
                                 <span class="text-[10px] font-bold flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3"></i> {{ $jadwal->jam_mulai }} - {{ $jadwal->jam_selesai }}</span>
@@ -145,6 +145,7 @@
             return {
                 gpsValid: false, 
                 status: null,
+                attendanceStatus: {},
                 isScanning: false,
                 isCheckingLocation: false,
                 jarakMeter: null,
@@ -231,6 +232,9 @@
                     .then(res => res.json())
                     .then(data => {
                         this.status = { type: data.status === 'success' ? 'success' : 'error', msg: data.message };
+                        if (data.status === 'success' && data.data?.jadwal_id) {
+                            this.attendanceStatus[data.data.jadwal_id] = 'Sudah Scan';
+                        }
                     })
                     .catch(() => {
                         this.status = { type: 'error', msg: '❌ Masalah jaringan server' };

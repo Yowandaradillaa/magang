@@ -4,6 +4,6 @@ return [
     'school' => [
         'latitude' => -7.801533,
         'longitude' => 110.352726,
-        'radius_meters' => 200,
+        'radius_meters' => 10000,
     ],
 ];

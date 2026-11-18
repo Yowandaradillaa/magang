@@ -15,7 +15,7 @@
         
         <!-- Notifikasi Berhasil -->
         @if(session('success'))
-            <div class="p-3 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl font-bold text-xs flex items-center gap-3 shadow-sm">
+            <div class="p-3 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-md font-bold text-xs flex items-center gap-3 shadow-2xs">
                 <i data-lucide="check-circle" class="w-4 h-4 text-emerald-500"></i>
                 {{ session('success') }}
             </div>
@@ -23,7 +23,7 @@
 
         <!-- Notifikasi Gagal Total -->
         @if(session('error'))
-            <div class="p-3 bg-rose-50 border border-rose-200 text-rose-700 rounded-xl font-bold text-xs flex items-center gap-3 shadow-sm">
+            <div class="p-3 bg-rose-50 border border-rose-200 text-rose-700 rounded-md font-bold text-xs flex items-center gap-3 shadow-2xs">
                 <i data-lucide="alert-circle" class="w-4 h-4 text-rose-500"></i>
                 {{ session('error') }}
             </div>
@@ -31,7 +31,7 @@
 
         <!-- Daftar Baris yang Gagal Diimport -->
         @if(session('import_errors') && count(session('import_errors')) > 0)
-            <div class="p-4 bg-amber-50 border border-amber-200 rounded-xl shadow-sm">
+            <div class="p-4 bg-amber-50 border border-amber-200 rounded-md shadow-2xs">
                 <p class="text-[11px] font-black text-amber-700 uppercase tracking-widest mb-2 flex items-center gap-2">
                     <i data-lucide="alert-triangle" class="w-4 h-4"></i>
                     {{ count(session('import_errors')) }} Baris Gagal Diimport
@@ -44,10 +44,10 @@
             </div>
         @endif
         <!-- ================= SECTION 1: HEADER MANAJEMEN KELAS ================= -->
-        <div class="bg-white px-5 py-3.5 rounded-xl border border-slate-200/60 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="bg-white px-5 py-3.5 rounded-lg border border-slate-200/80 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div class="flex items-center gap-3.5">
-                <div class="w-9 h-9 bg-[#0b1e36] text-white rounded-lg flex items-center justify-center shadow-md shrink-0">
-                    <i data-lucide="building" class="w-4.5 h-4.5"></i>
+                <div class="w-9 h-9 bg-[#0b1e36] text-white rounded-md flex items-center justify-center shadow-2xs shrink-0">
+                    <i data-lucide="building" class="w-[18px] h-[18px]"></i>
                 </div>
                 <div class="space-y-0.5">
                     <h2 class="text-base font-extrabold text-[#0b1e36] tracking-tight">Manajemen Kelas</h2>
@@ -58,11 +58,11 @@
             </div>
             
             <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                <button @click="showImportKelasModal = true" class="w-full sm:w-auto flex items-center justify-center gap-2 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg shadow-sm transition-all active:scale-95 cursor-pointer">
+                <button @click="showImportKelasModal = true" class="w-full sm:w-auto flex items-center justify-center gap-2 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-md shadow-2xs transition-all active:scale-95 cursor-pointer">
                     <i data-lucide="file-spreadsheet" class="w-4 h-4 stroke-[2.2] shrink-0"></i>
                     <span>Import Excel</span>
                 </button>
-                <button @click="showModal = true" class="w-full sm:w-auto flex items-center justify-center gap-2 px-3.5 py-2 bg-[#0b1e36] hover:bg-slate-800 text-white text-xs font-bold rounded-lg shadow-md transition-all active:scale-95 cursor-pointer">
+                <button @click="showModal = true" class="w-full sm:w-auto flex items-center justify-center gap-2 px-3.5 py-2 bg-[#0b1e36] hover:bg-slate-800 text-white text-xs font-bold rounded-md shadow-2xs transition-all active:scale-95 cursor-pointer">
                     <i data-lucide="plus" class="w-4 h-4 stroke-[2.5] shrink-0"></i>
                     <span>Tambah Kelas Baru</span>
                 </button>
@@ -70,7 +70,7 @@
         </div>
 
         <!-- ================= SECTION 2: TABEL KELAS ================= -->
-        <div class="bg-white rounded-xl border border-slate-200/60 shadow-sm overflow-hidden">
+        <div class="bg-white rounded-lg border border-slate-200/80 shadow-2xs overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead class="bg-slate-50 border-b border-slate-100">
@@ -127,10 +127,10 @@
         </div>
 
         <!-- ================= SECTION 3: HEADER JADWAL MENGAJAR ================= -->
-        <div class="bg-white px-5 py-3.5 rounded-xl border border-slate-200/60 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 mt-6">
+        <div class="bg-white px-5 py-3.5 rounded-lg border border-slate-200/80 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-4 mt-6">
             <div class="flex items-center gap-3.5">
-                <div class="w-9 h-9 bg-[#0b1e36] text-white rounded-lg flex items-center justify-center shadow-md shrink-0">
-                    <i data-lucide="calendar" class="w-4.5 h-4.5"></i>
+                <div class="w-9 h-9 bg-[#0b1e36] text-white rounded-md flex items-center justify-center shadow-2xs shrink-0">
+                    <i data-lucide="calendar" class="w-[18px] h-[18px]"></i>
                 </div>
                 <div class="space-y-0.5">
                     <h2 class="text-base font-extrabold text-[#0b1e36] tracking-tight">Jadwal Mengajar Guru & Kelas</h2>
@@ -141,11 +141,11 @@
             </div>
             
             <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                <button @click="showImportJadwalModal = true" class="w-full sm:w-auto flex items-center justify-center gap-2 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg shadow-sm transition-all active:scale-95 cursor-pointer">
+                <button @click="showImportJadwalModal = true" class="w-full sm:w-auto flex items-center justify-center gap-2 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-md shadow-2xs transition-all active:scale-95 cursor-pointer">
                     <i data-lucide="file-spreadsheet" class="w-4 h-4 stroke-[2.2] shrink-0"></i>
                     <span>Import Excel</span>
                 </button>
-                <button @click="showJadwalModal = true" class="w-full sm:w-auto flex items-center justify-center gap-2 px-3.5 py-2 bg-[#0b1e36] hover:bg-slate-800 text-white text-xs font-bold rounded-lg shadow-md transition-all active:scale-95 cursor-pointer">
+                <button @click="showJadwalModal = true" class="w-full sm:w-auto flex items-center justify-center gap-2 px-3.5 py-2 bg-[#0b1e36] hover:bg-slate-800 text-white text-xs font-bold rounded-md shadow-2xs transition-all active:scale-95 cursor-pointer">
                     <i data-lucide="plus" class="w-4 h-4 stroke-[2.5] shrink-0"></i>
                     <span>Tambah Jadwal</span>
                 </button>
@@ -153,7 +153,7 @@
         </div>
 
         <!-- ================= SECTION 4: TABEL JADWAL MENGAJAR ================= -->
-        <div class="bg-white rounded-xl border border-slate-200/60 shadow-sm overflow-hidden">
+        <div class="bg-white rounded-lg border border-slate-200/80 shadow-2xs overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead class="bg-slate-50 border-b border-slate-100">
@@ -221,7 +221,7 @@
         <template x-teleport="body">
             <div x-show="showModal" class="fixed inset-0 z-[9999] flex items-center justify-center p-4" x-cloak>
                 <div x-show="showModal" x-transition @click="showModal = false" class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm"></div>
-                <div x-show="showModal" x-transition class="relative bg-white w-full max-w-md rounded-xl shadow-2xl overflow-hidden">
+                <div x-show="showModal" x-transition class="relative bg-white w-full max-w-md rounded-lg shadow-2xl overflow-hidden">
                     <div class="h-1.5 w-full bg-[#0b1e36]"></div>
                     <div class="p-6">
                         <div class="flex items-center justify-between mb-6">
@@ -232,31 +232,31 @@
                             @csrf
                             <div class="space-y-1">
                                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Nama Kelas</label>
-                                <input type="text" name="nama_kelas" required placeholder="Contoh: XII PPLG 1" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:border-[#0b1e36] outline-none">
+                                <input type="text" name="nama_kelas" required placeholder="Contoh: XII PPLG 1" class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-md text-sm focus:border-[#0b1e36] outline-none">
                             </div>
                             <div class="space-y-1">
                                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Mata Pelajaran</label>
-                                <input type="text" name="mata_pelajaran" required placeholder="Contoh: Pemrograman Web" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:border-[#0b1e36] outline-none">
+                                <input type="text" name="mata_pelajaran" required placeholder="Contoh: Pemrograman Web" class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-md text-sm focus:border-[#0b1e36] outline-none">
                             </div>
                             <div class="grid grid-cols-2 gap-4">
                                 <div class="space-y-1">
                                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Tahun Ajaran</label>
-                                    <select name="tahun_ajaran" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none">
+                                    <select name="tahun_ajaran" required class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-md text-sm outline-none">
                                         <option value="">Pilih</option>
                                         @php $y = date('Y'); for($i=-1;$i<=2;$i++){ $v=($y+$i)."/".($y+$i+1); echo "<option value='$v'>$v</option>"; } @endphp
                                     </select>
                                 </div>
                                 <div class="space-y-1">
                                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Wali Kelas</label>
-                                    <select name="id_wali_kelas" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none">
+                                    <select name="id_wali_kelas" required class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-md text-sm outline-none">
                                         <option value="">Pilih Guru</option>
                                         @foreach($gurus as $guru) <option value="{{ $guru->id }}">{{ $guru->name }}</option> @endforeach
                                     </select>
                                 </div>
                             </div>
                             <div class="flex gap-3 pt-4 border-t border-slate-100">
-                                <button type="button" @click="showModal = false" class="flex-1 py-3 text-slate-400 text-[10px] font-bold uppercase tracking-widest cursor-pointer">Batal</button>
-                                <button type="submit" class="flex-[2] py-3 bg-[#0b1e36] text-white text-[10px] font-bold rounded-lg shadow-lg uppercase tracking-widest cursor-pointer">Simpan Kelas</button>
+                                <button type="button" @click="showModal = false" class="flex-1 py-2.5 text-slate-400 text-[10px] font-bold uppercase tracking-widest cursor-pointer">Batal</button>
+                                <button type="submit" class="flex-[2] py-2.5 bg-[#0b1e36] text-white text-[10px] font-bold rounded-md shadow-2xs uppercase tracking-widest cursor-pointer">Simpan Kelas</button>
                             </div>
                         </form>
                     </div>
@@ -268,7 +268,7 @@
         <template x-teleport="body">
             <div x-show="showJadwalModal" class="fixed inset-0 z-[9999] flex items-center justify-center p-4" x-cloak>
                 <div x-show="showJadwalModal" x-transition @click="showJadwalModal = false" class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm"></div>
-                <div x-show="showJadwalModal" x-transition class="relative bg-white w-full max-w-md rounded-xl shadow-2xl overflow-hidden">
+                <div x-show="showJadwalModal" x-transition class="relative bg-white w-full max-w-md rounded-lg shadow-2xl overflow-hidden">
                     <div class="h-1.5 w-full bg-[#0b1e36]"></div>
                     <div class="p-6">
                         <div class="flex items-center justify-between mb-6">
@@ -292,7 +292,7 @@
                             @csrf
                             <div class="space-y-1">
                                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Pilih Kelas</label>
-                                <select name="id_kelas" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none">
+                                <select name="id_kelas" required class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-md text-sm outline-none">
                                     <option value="">-- Pilih Kelas --</option>
                                     @foreach($kelas as $k)
                                         <option value="{{ $k->id }}" @selected(old('id_kelas') == $k->id)>{{ $k->nama_kelas }}</option>
@@ -301,7 +301,7 @@
                             </div>
                             <div class="space-y-1">
                                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Mata Pelajaran</label>
-                                <select name="id_mapel" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none">
+                                <select name="id_mapel" required class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-md text-sm outline-none">
                                     <option value="">-- Pilih Mapel --</option>
                                     @foreach($mapels as $m)
                                         <option value="{{ $m->id }}" @selected(old('id_mapel') == $m->id)>{{ $m->nama_mapel }}</option>
@@ -310,7 +310,7 @@
                             </div>
                             <div class="space-y-1">
                                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Guru Pengampu</label>
-                                <select name="id_guru" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none">
+                                <select name="id_guru" required class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-md text-sm outline-none">
                                     <option value="">-- Pilih Guru --</option>
                                     @foreach($gurus as $guru)
                                         <option value="{{ $guru->id }}" @selected(old('id_guru') == $guru->id)>{{ $guru->name }}</option>
@@ -320,7 +320,7 @@
                             <div class="grid grid-cols-3 gap-2">
                                 <div class="space-y-1">
                                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Hari</label>
-                                    <select name="hari" required class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs outline-none">
+                                    <select name="hari" required class="w-full px-3 py-2 bg-white border border-slate-200 rounded-md text-xs outline-none">
                                         <option value="">Pilih hari</option>
                                         <option value="Senin" @selected(old('hari') === 'Senin')>Senin</option>
                                         <option value="Selasa" @selected(old('hari') === 'Selasa')>Selasa</option>
@@ -332,16 +332,16 @@
                                 </div>
                                 <div class="space-y-1">
                                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Jam Mulai</label>
-                                    <input type="time" name="jam_mulai" value="{{ old('jam_mulai') }}" required class="w-full px-2 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs outline-none">
+                                    <input type="time" name="jam_mulai" value="{{ old('jam_mulai') }}" required class="w-full px-2 py-2 bg-white border border-slate-200 rounded-md text-xs outline-none">
                                 </div>
                                 <div class="space-y-1">
                                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Jam Selesai</label>
-                                    <input type="time" name="jam_selesai" value="{{ old('jam_selesai') }}" required class="w-full px-2 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs outline-none">
+                                    <input type="time" name="jam_selesai" value="{{ old('jam_selesai') }}" required class="w-full px-2 py-2 bg-white border border-slate-200 rounded-md text-xs outline-none">
                                 </div>
                             </div>
                             <div class="flex gap-3 pt-4 border-t border-slate-100">
-                                <button type="button" @click="showJadwalModal = false" class="flex-1 py-3 text-slate-400 text-[10px] font-bold uppercase tracking-widest cursor-pointer">Batal</button>
-                                <button type="submit" class="flex-[2] py-3 bg-[#0b1e36] text-white text-[10px] font-bold rounded-lg shadow-lg uppercase tracking-widest cursor-pointer">Simpan Jadwal</button>
+                                <button type="button" @click="showJadwalModal = false" class="flex-1 py-2.5 text-slate-400 text-[10px] font-bold uppercase tracking-widest cursor-pointer">Batal</button>
+                                <button type="submit" class="flex-[2] py-2.5 bg-[#0b1e36] text-white text-[10px] font-bold rounded-md shadow-2xs uppercase tracking-widest cursor-pointer">Simpan Jadwal</button>
                             </div>
                         </form>
                     </div>
@@ -353,7 +353,7 @@
         <template x-teleport="body">
             <div x-show="showEditModal" class="fixed inset-0 z-[9999] flex items-center justify-center p-4" x-cloak>
                 <div x-show="showEditModal" x-transition @click="showEditModal = false" class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm"></div>
-                <div x-show="showEditModal" x-transition class="relative bg-white w-full max-w-md rounded-xl shadow-2xl overflow-hidden border border-blue-100">
+                <div x-show="showEditModal" x-transition class="relative bg-white w-full max-w-md rounded-lg shadow-2xl overflow-hidden border border-blue-100">
                     <div class="h-1.5 w-full bg-blue-600"></div>
                     <div class="p-6">
                         <div class="flex items-center justify-between mb-6">
@@ -364,29 +364,29 @@
                             @csrf @method('PUT')
                             <div class="space-y-1">
                                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Nama Identitas Kelas</label>
-                                <input type="text" name="nama_kelas" x-model="editData.nama_kelas" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:border-blue-600 outline-none transition-all">
+                                <input type="text" name="nama_kelas" x-model="editData.nama_kelas" required class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-md text-sm focus:border-blue-600 outline-none transition-all">
                             </div>
                             <div class="space-y-1">
                                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Mata Pelajaran</label>
-                                <input type="text" name="mata_pelajaran" x-model="editData.mata_pelajaran" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:border-blue-600 outline-none transition-all">
+                                <input type="text" name="mata_pelajaran" x-model="editData.mata_pelajaran" required class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-md text-sm focus:border-blue-600 outline-none transition-all">
                             </div>
                             <div class="grid grid-cols-2 gap-4">
                                 <div class="space-y-1">
                                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Tahun Ajaran</label>
-                                    <select name="tahun_ajaran" x-model="editData.tahun_ajaran" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none">
+                                    <select name="tahun_ajaran" x-model="editData.tahun_ajaran" required class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-md text-sm outline-none">
                                         @php $y = date('Y'); for($i=-1;$i<=2;$i++){ $v=($y+$i)."/".($y+$i+1); echo "<option value='$v'>$v</option>"; } @endphp
                                     </select>
                                 </div>
                                 <div class="space-y-1">
                                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Wali Kelas</label>
-                                    <select name="id_wali_kelas" x-model="editData.id_wali_kelas" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none">
+                                    <select name="id_wali_kelas" x-model="editData.id_wali_kelas" required class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-md text-sm outline-none">
                                         @foreach($gurus as $guru) <option value="{{ $guru->id }}">{{ $guru->name }}</option> @endforeach
                                     </select>
                                 </div>
                             </div>
                             <div class="flex gap-3 pt-4 border-t border-slate-100">
-                                <button type="button" @click="showEditModal = false" class="flex-1 py-3 text-slate-400 text-[10px] font-bold uppercase tracking-widest cursor-pointer">Batal</button>
-                                <button type="submit" class="flex-[2] py-3 bg-blue-600 text-white text-[10px] font-bold rounded-lg shadow-lg uppercase tracking-widest cursor-pointer">Update Data</button>
+                                <button type="button" @click="showEditModal = false" class="flex-1 py-2.5 text-slate-400 text-[10px] font-bold uppercase tracking-widest cursor-pointer">Batal</button>
+                                <button type="submit" class="flex-[2] py-2.5 bg-blue-600 text-white text-[10px] font-bold rounded-md shadow-2xs uppercase tracking-widest cursor-pointer">Update Data</button>
                             </div>
                         </form>
                     </div>
@@ -398,7 +398,7 @@
         <template x-teleport="body">
             <div x-show="showEditJadwalModal" class="fixed inset-0 z-[9999] flex items-center justify-center p-4" x-cloak>
                 <div x-show="showEditJadwalModal" x-transition @click="showEditJadwalModal = false" class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm"></div>
-                <div x-show="showEditJadwalModal" x-transition class="relative bg-white w-full max-w-md rounded-xl shadow-2xl overflow-hidden border border-blue-100">
+                <div x-show="showEditJadwalModal" x-transition class="relative bg-white w-full max-w-md rounded-lg shadow-2xl overflow-hidden border border-blue-100">
                     <div class="h-1.5 w-full bg-blue-600"></div>
                     <div class="p-6">
                         <div class="flex items-center justify-between mb-6">
@@ -413,7 +413,7 @@
                             
                             <div class="space-y-1">
                                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Pilih Kelas</label>
-                                <select name="id_kelas" x-model="editJadwalData.id_kelas" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:border-blue-600 outline-none transition-all">
+                                <select name="id_kelas" x-model="editJadwalData.id_kelas" required class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-md text-sm focus:border-blue-600 outline-none transition-all">
                                     <option value="">-- Pilih Kelas --</option>
                                     @foreach($kelas as $k)
                                         <option value="{{ $k->id }}">{{ $k->nama_kelas }}</option>
@@ -423,7 +423,7 @@
 
                             <div class="space-y-1">
                                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Mata Pelajaran</label>
-                                <select name="id_mapel" x-model="editJadwalData.id_mapel" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:border-blue-600 outline-none transition-all">
+                                <select name="id_mapel" x-model="editJadwalData.id_mapel" required class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-md text-sm focus:border-blue-600 outline-none transition-all">
                                     <option value="">-- Pilih Mapel --</option>
                                     @foreach($mapels as $m)
                                         <option value="{{ $m->id }}">{{ $m->nama_mapel }}</option>
@@ -433,7 +433,7 @@
 
                             <div class="space-y-1">
                                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Guru Pengampu</label>
-                                <select name="id_guru" x-model="editJadwalData.id_guru" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:border-blue-600 outline-none transition-all">
+                                <select name="id_guru" x-model="editJadwalData.id_guru" required class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-md text-sm focus:border-blue-600 outline-none transition-all">
                                     <option value="">-- Pilih Guru --</option>
                                     @foreach($gurus as $guru)
                                         <option value="{{ $guru->id }}">{{ $guru->name }}</option>
@@ -444,7 +444,7 @@
                             <div class="grid grid-cols-3 gap-2">
                                 <div class="space-y-1">
                                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Hari</label>
-                                    <select name="hari" x-model="editJadwalData.hari" required class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:border-blue-600 outline-none transition-all">
+                                    <select name="hari" x-model="editJadwalData.hari" required class="w-full px-3 py-2 bg-white border border-slate-200 rounded-md text-xs focus:border-blue-600 outline-none transition-all">
                                         <option value="">Pilih hari</option>
                                         <option value="Senin">Senin</option>
                                         <option value="Selasa">Selasa</option>
@@ -456,17 +456,17 @@
                                 </div>
                                 <div class="space-y-1">
                                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Jam Mulai</label>
-                                    <input type="time" name="jam_mulai" x-model="editJadwalData.jam_mulai" required class="w-full px-2 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:border-blue-600 outline-none transition-all">
+                                    <input type="time" name="jam_mulai" x-model="editJadwalData.jam_mulai" required class="w-full px-2 py-2 bg-white border border-slate-200 rounded-md text-xs focus:border-blue-600 outline-none transition-all">
                                 </div>
                                 <div class="space-y-1">
                                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Jam Selesai</label>
-                                    <input type="time" name="jam_selesai" x-model="editJadwalData.jam_selesai" required class="w-full px-2 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:border-blue-600 outline-none transition-all">
+                                    <input type="time" name="jam_selesai" x-model="editJadwalData.jam_selesai" required class="w-full px-2 py-2 bg-white border border-slate-200 rounded-md text-xs focus:border-blue-600 outline-none transition-all">
                                 </div>
                             </div>
 
                             <div class="flex gap-3 pt-4 border-t border-slate-100">
-                                <button type="button" @click="showEditJadwalModal = false" class="flex-1 py-3 text-slate-400 text-[10px] font-bold uppercase tracking-widest cursor-pointer hover:text-slate-600 transition-all">Batal</button>
-                                <button type="submit" class="flex-[2] py-3 bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-bold rounded-lg shadow-lg uppercase tracking-widest cursor-pointer transition-all active:scale-95">Update Jadwal</button>
+                                <button type="button" @click="showEditJadwalModal = false" class="flex-1 py-2.5 text-slate-400 text-[10px] font-bold uppercase tracking-widest cursor-pointer hover:text-slate-600 transition-all">Batal</button>
+                                <button type="submit" class="flex-[2] py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-bold rounded-md shadow-2xs uppercase tracking-widest cursor-pointer transition-all active:scale-95">Update Jadwal</button>
                             </div>
                         </form>
                     </div>
@@ -478,18 +478,18 @@
         <template x-teleport="body">
             <div x-show="showDeleteModal" class="fixed inset-0 z-[10000] flex items-center justify-center p-4" x-cloak>
                 <div x-show="showDeleteModal" x-transition @click="showDeleteModal = false" class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm"></div>
-                <div x-show="showDeleteModal" x-transition class="relative bg-white w-full max-w-sm rounded-xl shadow-2xl overflow-hidden border border-rose-100">
+                <div x-show="showDeleteModal" x-transition class="relative bg-white w-full max-w-sm rounded-lg shadow-2xl overflow-hidden border border-rose-100">
                     <div class="p-6 text-center">
-                        <div class="w-16 h-16 bg-rose-50 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <div class="w-16 h-16 bg-rose-50 text-rose-600 rounded-md flex items-center justify-center mx-auto mb-4 border border-rose-100">
                             <i data-lucide="alert-triangle" class="w-8 h-8"></i>
                         </div>
                         <h3 class="text-lg font-extrabold text-slate-900 leading-tight">Hapus Kelas?</h3>
                         <p class="text-[11px] text-slate-500 mt-2">Menghapus kelas akan berdampak pada jadwal dan absensi siswa yang terhubung. Data tidak dapat dikembalikan!</p>
                         <div class="flex gap-3 mt-6">
-                            <button @click="showDeleteModal = false" class="flex-1 py-2.5 bg-slate-100 text-slate-600 text-[10px] font-bold rounded-lg hover:bg-slate-200 transition-all cursor-pointer">BATAL</button>
+                            <button @click="showDeleteModal = false" class="flex-1 py-2.5 bg-slate-100 text-slate-600 text-[10px] font-bold rounded-md hover:bg-slate-200 transition-all cursor-pointer">BATAL</button>
                             <form :action="deleteUrl" method="POST" class="flex-1">
                                 @csrf @method('DELETE')
-                                <button type="submit" class="w-full py-2.5 bg-rose-600 text-white text-[10px] font-bold rounded-lg shadow-lg shadow-rose-200 transition-all uppercase tracking-widest cursor-pointer">HAPUS DATA</button>
+                                <button type="submit" class="w-full py-2.5 bg-rose-600 text-white text-[10px] font-bold rounded-md shadow-2xs shadow-rose-200 transition-all uppercase tracking-widest cursor-pointer">HAPUS DATA</button>
                             </form>
                         </div>
                     </div>
@@ -501,12 +501,12 @@
         <template x-teleport="body">
             <div x-show="showImportKelasModal" class="fixed inset-0 z-[10000] flex items-center justify-center p-4" x-cloak>
                 <div x-show="showImportKelasModal" x-transition @click="showImportKelasModal = false" class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm"></div>
-                <div x-show="showImportKelasModal" x-transition class="relative bg-white w-full max-w-md rounded-xl shadow-2xl overflow-hidden border border-slate-200">
+                <div x-show="showImportKelasModal" x-transition class="relative bg-white w-full max-w-md rounded-lg shadow-2xl overflow-hidden border border-slate-200">
                     <div class="h-1.5 w-full bg-emerald-600"></div>
                     <div class="p-6">
                         <div class="flex items-center justify-between mb-4">
                             <div class="flex items-center gap-2.5">
-                                <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                                <div class="w-8 h-8 rounded-md bg-emerald-50 text-emerald-600 flex items-center justify-center">
                                     <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
                                 </div>
                                 <div>
@@ -520,12 +520,12 @@
                         </div>
 
                         <!-- Kotak Unduh Template -->
-                        <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl mb-4 flex items-center justify-between">
+                        <div class="p-3 bg-slate-50 border border-slate-200 rounded-md mb-4 flex items-center justify-between">
                             <div class="text-[11px] text-slate-600 font-medium">
                                 <span class="font-bold text-[#0b1e36] block">Belum punya formatnya?</span>
                                 Gunakan template standar
                             </div>
-                            <a href="{{ route('admin.kelas.template') }}" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 hover:text-emerald-600 hover:border-emerald-300 rounded-lg text-[10px] font-bold shadow-sm transition-all flex items-center gap-1.5">
+                            <a href="{{ route('admin.kelas.template') }}" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 hover:text-emerald-600 hover:border-emerald-300 rounded-md text-[10px] font-bold shadow-2xs transition-all flex items-center gap-1.5">
                                 <i data-lucide="download" class="w-3.5 h-3.5"></i>
                                 Unduh Template
                             </a>
@@ -537,15 +537,15 @@
                             <div class="space-y-1.5">
                                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Pilih File (.xlsx, .xls, .csv)</label>
                                 <input type="file" name="file" required accept=".xlsx, .xls, .csv" 
-                                       class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-[10px] file:font-bold file:bg-[#0b1e36] file:text-white file:cursor-pointer hover:file:bg-slate-800 transition-all cursor-pointer">
+                                       class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-md text-xs file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-[10px] file:font-bold file:bg-[#0b1e36] file:text-white file:cursor-pointer hover:file:bg-slate-800 transition-all cursor-pointer">
                                 <p class="text-[10px] text-slate-400 italic ml-1">Format kolom: <b>Nama Kelas, Tahun Ajaran, Wali Kelas</b> (opsional)</p>
                             </div>
 
                             <div class="flex gap-2.5 pt-3 border-t border-slate-100">
-                                <button type="button" @click="showImportKelasModal = false" class="flex-1 py-2.5 text-slate-400 hover:text-slate-600 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer">
+                                <button type="button" @click="showImportKelasModal = false" class="flex-1 py-2.5 text-slate-400 hover:text-slate-600 text-[10px] font-bold uppercase tracking-wider rounded-md transition-all cursor-pointer">
                                     Batal
                                 </button>
-                                <button type="submit" class="flex-[2] py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold rounded-lg shadow-lg uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-2">
+                                <button type="submit" class="flex-[2] py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold rounded-md shadow-2xs uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-2">
                                     <i data-lucide="upload" class="w-3.5 h-3.5"></i>
                                     Mulai Import
                                 </button>
@@ -560,12 +560,12 @@
         <template x-teleport="body">
             <div x-show="showImportJadwalModal" class="fixed inset-0 z-[10000] flex items-center justify-center p-4" x-cloak>
                 <div x-show="showImportJadwalModal" x-transition @click="showImportJadwalModal = false" class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm"></div>
-                <div x-show="showImportJadwalModal" x-transition class="relative bg-white w-full max-w-md rounded-xl shadow-2xl overflow-hidden border border-slate-200">
+                <div x-show="showImportJadwalModal" x-transition class="relative bg-white w-full max-w-md rounded-lg shadow-2xl overflow-hidden border border-slate-200">
                     <div class="h-1.5 w-full bg-emerald-600"></div>
                     <div class="p-6">
                         <div class="flex items-center justify-between mb-4">
                             <div class="flex items-center gap-2.5">
-                                <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                                <div class="w-8 h-8 rounded-md bg-emerald-50 text-emerald-600 flex items-center justify-center">
                                     <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
                                 </div>
                                 <div>
@@ -579,12 +579,12 @@
                         </div>
 
                         <!-- Kotak Unduh Template -->
-                        <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl mb-4 flex items-center justify-between">
+                        <div class="p-3 bg-slate-50 border border-slate-200 rounded-md mb-4 flex items-center justify-between">
                             <div class="text-[11px] text-slate-600 font-medium">
                                 <span class="font-bold text-[#0b1e36] block">Belum punya formatnya?</span>
                                 Gunakan template standar
                             </div>
-                            <a href="{{ route('admin.jadwal.template') }}" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 hover:text-emerald-600 hover:border-emerald-300 rounded-lg text-[10px] font-bold shadow-sm transition-all flex items-center gap-1.5">
+                            <a href="{{ route('admin.jadwal.template') }}" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 hover:text-emerald-600 hover:border-emerald-300 rounded-md text-[10px] font-bold shadow-2xs transition-all flex items-center gap-1.5">
                                 <i data-lucide="download" class="w-3.5 h-3.5"></i>
                                 Unduh Template
                             </a>
@@ -596,20 +596,24 @@
                             <div class="space-y-1.5">
                                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Pilih File (.xlsx, .xls, .csv)</label>
                                 <input type="file" name="file" required accept=".xlsx, .xls, .csv" 
-                                       class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-[10px] file:font-bold file:bg-[#0b1e36] file:text-white file:cursor-pointer hover:file:bg-slate-800 transition-all cursor-pointer">
+                                       class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-md text-xs file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-[10px] file:font-bold file:bg-[#0b1e36] file:text-white file:cursor-pointer hover:file:bg-slate-800 transition-all cursor-pointer">
                                 <p class="text-[10px] text-slate-400 italic ml-1">Format kolom: <b>Hari, Waktu, Nama Kelas, Nama Mapel, Nama Guru</b></p>
                             </div>
 
                             <div class="flex gap-2.5 pt-3 border-t border-slate-100">
-                                <button type="button" @click="showImportJadwalModal = false" class="flex-1 py-2.5 text-slate-400 hover:text-slate-600 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer">
+                                <button type="button" @click="showImportJadwalModal = false" class="flex-1 py-2.5 text-slate-400 hover:text-slate-600 text-[10px] font-bold uppercase tracking-wider rounded-md transition-all cursor-pointer">
                                     Batal
                                 </button>
-                                <button type="submit" class="flex-[2] py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold rounded-lg shadow-lg uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-2">
+                                <button type="submit" class="flex-[2] py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold rounded-md shadow-2xs uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-2">
                                     <i data-lucide="upload" class="w-3.5 h-3.5"></i>
                                     Mulai Import
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            </div>
+        </template>
                     </div>
                 </div>
             </div>

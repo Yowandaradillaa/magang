@@ -82,11 +82,21 @@ class AbsensiController extends Controller
             ], 422);
         }
 
+        $absen->load(['jadwal.mapel', 'jadwal.guru', 'jadwal.kelas']);
+
         return response()->json([
             'status' => 'success',
-            'message' => 'Absensi berhasil! Selamat belajar.',
-            'jadwal_id' => $absen->jadwal_id,
-            'data' => $absen
+            'message' => 'Absensi berhasil dicatat! Selamat belajar.',
+            'data' => [
+                'id' => $absen->id,
+                'jadwal_id' => $absen->jadwal_id,
+                'mapel' => $absen->jadwal?->mapel?->nama_mapel ?? 'Mata Pelajaran',
+                'guru' => $absen->jadwal?->guru?->name ?? 'Guru Pengampu',
+                'kelas' => $absen->jadwal?->kelas?->nama_kelas ?? '',
+                'waktu' => now()->format('H:i:s') . ' WIB',
+                'tanggal' => now()->translatedFormat('l, d F Y'),
+                'status' => 'Hadir'
+            ]
         ]);
     }
 

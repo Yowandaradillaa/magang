@@ -13,95 +13,111 @@
         $recentAbsensi = \App\Models\Absensi::with(['siswa.kelas'])->latest('updated_at')->take(7)->get();
     @endphp
 
-    <div class="space-y-10 pb-12 text-slate-800">
+    <div class="space-y-6 pb-8 text-slate-800">
         
-        <!-- Banner Utama (Clean White dengan Garis Vertikal Navy #0b1e36 di Kiri) -->
-        <!-- Banner Utama (Dengan Warna Biru Navy Soft yang Hidup) -->
-<div class="bg-gradient-to-r from-slate-100 via-sky-50/50 to-white p-6 md:p-8 rounded-2xl border border-slate-200/80 border-l-4 border-l-[#0b1e36] flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-sm">
-            <div class="space-y-1.5">
-                <div class="text-xs font-semibold text-slate-500 flex items-center gap-1.5">
-                    <i data-lucide="school" class="w-4 h-4 text-[#0b1e36]"></i>
+        <!-- Hero Banner Utama -->
+        <div class="bg-gradient-to-r from-[#0b1e36] via-[#122c4f] to-[#183b66] text-white p-5 md:p-6 rounded-lg shadow-2xs relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="absolute -right-12 -top-12 w-48 h-48 bg-sky-400/10 rounded-full blur-2xl pointer-events-none"></div>
+            <div class="space-y-1.5 relative z-10">
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/10 border border-white/15 text-[11px] font-semibold text-sky-200">
+                    <i data-lucide="school" class="w-3.5 h-3.5 text-sky-300"></i>
                     <span>SMA Muhammadiyah 7 Yogyakarta</span>
-                </div>
-                <h1 class="text-2xl font-extrabold text-[#0b1e36] tracking-tight">
+                </span>
+                <h1 class="text-xl md:text-2xl font-extrabold tracking-tight text-white">
                     Dashboard Admin
                 </h1>
-                <p class="text-sm text-slate-500 font-normal">
-                    Selamat datang, <strong>Administrator</strong>. Monitoring operasional presensi harian sekolah.
-                </p>
+                
             </div>
 
             <!-- Jam & Tanggal Real-time -->
-            <div class="text-left md:text-right shrink-0">
-                <p id="realtime-date" class="text-xs font-medium text-slate-400 mb-0.5">
+            <div class="relative z-10 bg-white/10 backdrop-blur-md border border-white/15 rounded-md px-4 py-2.5 text-left md:text-right shrink-0">
+                <p id="realtime-date" class="text-[11px] font-medium text-sky-200 mb-0.5">
                     {{ date('d F Y') }}
                 </p>
-                <p id="realtime-clock" class="text-xl font-bold text-[#0b1e36] font-mono">
+                <p id="realtime-clock" class="text-lg md:text-xl font-bold text-white font-mono leading-tight">
                     {{ date('H:i:s') }} WIB
                 </p>
             </div>
         </div>
 
-        <!-- Akses Pintas Navigasi Modul (Clean Minimalist Pills) -->
-        <div class="flex flex-wrap items-center gap-2.5">
-            <span class="text-xs font-semibold text-slate-400 mr-1">Navigasi Cepat:</span>
-            <a href="/admin/akun" class="px-3.5 py-1.5 bg-white border border-slate-200/80 rounded-xl text-xs font-medium text-slate-600 hover:text-[#0b1e36] hover:border-slate-300 transition-colors inline-flex items-center gap-2">
-                <i data-lucide="users" class="w-3.5 h-3.5 text-slate-400"></i> Kelola Akun
+        <!-- Akses Pintas Navigasi Modul -->
+        <div class="flex flex-wrap items-center gap-2">
+            <span class="text-xs font-semibold text-slate-500 mr-1">Navigasi Cepat:</span>
+            <a href="/admin/akun" class="px-3 py-1.5 bg-white border border-slate-200 rounded-md text-xs font-semibold text-slate-600 hover:text-[#0b1e36] hover:border-sky-300 hover:bg-sky-50/40 transition-all inline-flex items-center gap-1.5 shadow-2xs">
+                <i data-lucide="users" class="w-3.5 h-3.5 text-sky-600"></i> Kelola Akun
             </a>
-            <a href="/admin/kelas" class="px-3.5 py-1.5 bg-white border border-slate-200/80 rounded-xl text-xs font-medium text-slate-600 hover:text-[#0b1e36] hover:border-slate-300 transition-colors inline-flex items-center gap-2">
-                <i data-lucide="building" class="w-3.5 h-3.5 text-slate-400"></i> Kelas & Jadwal
+            <a href="/admin/kelas" class="px-3 py-1.5 bg-white border border-slate-200 rounded-md text-xs font-semibold text-slate-600 hover:text-[#0b1e36] hover:border-sky-300 hover:bg-sky-50/40 transition-all inline-flex items-center gap-1.5 shadow-2xs">
+                <i data-lucide="building" class="w-3.5 h-3.5 text-indigo-600"></i> Kelas & Jadwal
             </a>
-            <a href="/admin/koreksi" class="px-3.5 py-1.5 bg-white border border-slate-200/80 rounded-xl text-xs font-medium text-slate-600 hover:text-[#0b1e36] hover:border-slate-300 transition-colors inline-flex items-center gap-2">
-                <i data-lucide="edit-3" class="w-3.5 h-3.5 text-slate-400"></i> Koreksi Absen
+            <a href="/admin/koreksi" class="px-3 py-1.5 bg-white border border-slate-200 rounded-md text-xs font-semibold text-slate-600 hover:text-[#0b1e36] hover:border-sky-300 hover:bg-sky-50/40 transition-all inline-flex items-center gap-1.5 shadow-2xs">
+                <i data-lucide="edit-3" class="w-3.5 h-3.5 text-amber-600"></i> Koreksi Absen
             </a>
-            <a href="/admin/laporan" class="px-3.5 py-1.5 bg-white border border-slate-200/80 rounded-xl text-xs font-medium text-slate-600 hover:text-[#0b1e36] hover:border-slate-300 transition-colors inline-flex items-center gap-2">
-                <i data-lucide="bar-chart-2" class="w-3.5 h-3.5 text-slate-400"></i> Laporan Sekolah
+            <a href="/admin/laporan" class="px-3 py-1.5 bg-white border border-slate-200 rounded-md text-xs font-semibold text-slate-600 hover:text-[#0b1e36] hover:border-sky-300 hover:bg-sky-50/40 transition-all inline-flex items-center gap-1.5 shadow-2xs">
+                <i data-lucide="bar-chart-2" class="w-3.5 h-3.5 text-emerald-600"></i> Laporan Sekolah
             </a>
-            <a href="/admin/mapel" class="px-3.5 py-1.5 bg-white border border-slate-200/80 rounded-xl text-xs font-medium text-slate-600 hover:text-[#0b1e36] hover:border-slate-300 transition-colors inline-flex items-center gap-2">
-                <i data-lucide="book-open" class="w-3.5 h-3.5 text-slate-400"></i> Mata Pelajaran
+            <a href="/admin/mapel" class="px-3 py-1.5 bg-white border border-slate-200 rounded-md text-xs font-semibold text-slate-600 hover:text-[#0b1e36] hover:border-sky-300 hover:bg-sky-50/40 transition-all inline-flex items-center gap-1.5 shadow-2xs">
+                <i data-lucide="book-open" class="w-3.5 h-3.5 text-slate-600"></i> Mata Pelajaran
             </a>
         </div>
 
-        <!-- Kartu Statistik (Minimalis Tanpa Ikon Kotak Berlebihan) -->
-        <!-- Kartu Statistik (Warna Lebih Hidup & Tegas) -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            
-            <!-- Kartu 1: Total Siswa (Biru) -->
-            <div class="bg-sky-100/70 p-6 rounded-2xl border border-sky-200 shadow-sm space-y-2">
-                <p class="text-sm font-bold text-sky-900">Total Siswa</p>
-                <div class="text-4xl font-extrabold text-[#0b1e36] tracking-tight">{{ number_format($totalSiswa) }}</div>
-                <p class="text-xs text-sky-800 font-medium">Siswa aktif terdaftar di database</p>
-            </div>
-
-            <!-- Kartu 2: Total Guru (Indigo / Ungu) -->
-            <div class="bg-indigo-100/70 p-6 rounded-2xl border border-indigo-200 shadow-sm space-y-2">
-                <p class="text-sm font-bold text-indigo-900">Total Guru</p>
-                <div class="text-4xl font-extrabold text-indigo-950 tracking-tight">{{ number_format($totalGuru) }}</div>
-                <p class="text-xs text-indigo-800 font-medium">Tenaga pendidik dan staf pengajar</p>
-            </div>
-
-            <!-- Kartu 3: Kehadiran Hari Ini (Emerald / Hijau) -->
-            <div class="bg-emerald-100/70 p-6 rounded-2xl border border-emerald-200 shadow-sm space-y-2">
-                <p class="text-sm font-bold text-emerald-900">Kehadiran Hari Ini</p>
-                <div class="flex items-baseline gap-2">
-                    <span class="text-4xl font-extrabold text-emerald-700 tracking-tight">{{ number_format($totalHadir) }}</span>
-                    <span class="text-sm font-medium text-emerald-800">/ {{ $totalSiswa }} siswa</span>
+        <!-- Kartu Statistik Seragam -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <!-- Kartu 1: Total Siswa -->
+            <div class="bg-white p-5 rounded-md border border-slate-200/80 shadow-2xs space-y-3">
+                <div class="flex items-center justify-between">
+                    <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Siswa</p>
+                    <div class="w-9 h-9 rounded-md bg-sky-50 text-sky-600 border border-sky-100 flex items-center justify-center">
+                        <i data-lucide="graduation-cap" class="w-[18px] h-[18px]"></i>
+                    </div>
                 </div>
-                <p class="text-xs text-emerald-800 font-medium">
-                    Rasio kehadiran: <span class="font-bold text-emerald-900">{{ $persenHadir }}%</span> (Izin/Sakit: {{ $totalIzin + $totalSakit }})
+                <div class="text-3xl font-extrabold text-[#0b1e36] tracking-tight">{{ number_format($totalSiswa) }}</div>
+                <p class="text-xs text-slate-500 font-medium">Siswa aktif terdaftar di sistem</p>
+            </div>
+
+            <!-- Kartu 2: Total Guru -->
+            <div class="bg-white p-5 rounded-md border border-slate-200/80 shadow-2xs space-y-3">
+                <div class="flex items-center justify-between">
+                    <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Guru</p>
+                    <div class="w-9 h-9 rounded-md bg-indigo-50 text-indigo-600 border border-indigo-100 flex items-center justify-center">
+                        <i data-lucide="briefcase" class="w-[18px] h-[18px]"></i>
+                    </div>
+                </div>
+                <div class="text-3xl font-extrabold text-[#0b1e36] tracking-tight">{{ number_format($totalGuru) }}</div>
+                <p class="text-xs text-slate-500 font-medium">Tenaga pendidik & staf pengajar</p>
+            </div>
+
+            <!-- Kartu 3: Kehadiran Hari Ini -->
+            <div class="bg-white p-5 rounded-md border border-slate-200/80 shadow-2xs space-y-3">
+                <div class="flex items-center justify-between">
+                    <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Kehadiran Hari Ini</p>
+                    <div class="w-9 h-9 rounded-md bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center">
+                        <i data-lucide="user-check" class="w-[18px] h-[18px]"></i>
+                    </div>
+                </div>
+                <div class="flex items-baseline gap-2">
+                    <span class="text-3xl font-extrabold text-emerald-600 tracking-tight">{{ number_format($totalHadir) }}</span>
+                    <span class="text-xs font-semibold text-slate-400">/ {{ $totalSiswa }} siswa</span>
+                </div>
+                <p class="text-xs text-slate-500 font-medium">
+                    Rasio: <span class="px-1.5 py-0.5 rounded-md bg-emerald-50 text-emerald-700 font-bold">{{ $persenHadir }}%</span>
+                    • Izin/Sakit: {{ $totalIzin + $totalSakit }}
                 </p>
             </div>
-
         </div>
 
-        <!-- Tabel Aktivitas Presensi Terbaru (Natural & Clean Layout) -->
-        <div class="bg-white rounded-2xl border border-slate-200/70 overflow-hidden">
-            <div class="p-6 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div>
-                    <h2 class="text-base font-bold text-[#0b1e36]">Aktivitas Presensi Terbaru</h2>
-                    <p class="text-xs text-slate-500 mt-0.5">Catatan kehadiran siswa terkini yang terhubung ke sistem</p>
+        <!-- Tabel Aktivitas Presensi Terbaru -->
+        <div class="bg-white rounded-lg border border-slate-200/80 shadow-2xs overflow-hidden">
+            <div class="p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-md bg-slate-100 text-[#0b1e36] flex items-center justify-center shrink-0">
+                        <i data-lucide="activity" class="w-[18px] h-[18px]"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-bold text-[#0b1e36]">Aktivitas Presensi Terbaru</h2>
+                        <p class="text-xs text-slate-500">Catatan kehadiran siswa terkini yang terhubung ke sistem</p>
+                    </div>
                 </div>
-                <a href="/admin/laporan" class="inline-flex items-center gap-1.5 text-xs font-semibold text-[#0b1e36] hover:underline">
+                <a href="/admin/laporan" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-slate-50 hover:bg-slate-100 border border-slate-200 text-xs font-semibold text-[#0b1e36] transition-colors">
                     Lihat Laporan Lengkap <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                 </a>
             </div>
@@ -109,46 +125,46 @@
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
-                        <tr class="bg-slate-50/60 border-b border-slate-100 text-xs font-semibold text-slate-500">
-                            <th class="py-3.5 px-6">Nama Siswa</th>
-                            <th class="py-3.5 px-4">Kelas</th>
-                            <th class="py-3.5 px-4">Waktu Absen</th>
-                            <th class="py-3.5 px-4">Status</th>
-                            <th class="py-3.5 px-4">Metode</th>
-                            <th class="py-3.5 px-6 text-right">Aksi</th>
+                        <tr class="bg-slate-50/80 border-b border-slate-100 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                            <th class="py-3 px-5">Nama Siswa</th>
+                            <th class="py-3 px-4">Kelas</th>
+                            <th class="py-3 px-4">Waktu Absen</th>
+                            <th class="py-3 px-4">Status</th>
+                            <th class="py-3 px-4">Metode</th>
+                            <th class="py-3 px-5 text-right">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100 text-xs">
                         @forelse($recentAbsensi as $absensi)
-                            <tr class="hover:bg-slate-50/40 transition-colors">
-                                <td class="py-3.5 px-6 font-semibold text-slate-800">
+                            <tr class="hover:bg-slate-50/60 transition-colors">
+                                <td class="py-3 px-5 font-semibold text-slate-800">
                                     {{ $absensi->siswa->name ?? 'Siswa' }}
                                 </td>
-                                <td class="py-3.5 px-4 text-slate-600 font-medium">
+                                <td class="py-3 px-4 text-slate-600 font-medium">
                                     {{ $absensi->siswa->kelas->nama_kelas ?? '-' }}
                                 </td>
-                                <td class="py-3.5 px-4 text-slate-500 font-mono">
+                                <td class="py-3 px-4 text-slate-500 font-mono">
                                     {{ \Carbon\Carbon::parse($absensi->tanggal)->format('d/m/Y') }}
                                     @if($absensi->waktu_absen)
                                         <span class="text-slate-400 font-normal">({{ \Carbon\Carbon::parse($absensi->waktu_absen)->format('H:i') }})</span>
                                     @endif
                                 </td>
-                                <td class="py-3.5 px-4">
+                                <td class="py-3 px-4">
                                     @if($absensi->status === 'H')
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200/60">Hadir</span>
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/70">Hadir</span>
                                     @elseif($absensi->status === 'I')
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-sky-50 text-sky-700 border border-sky-200/60">Izin</span>
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold bg-sky-50 text-sky-700 border border-sky-200/70">Izin</span>
                                     @elseif($absensi->status === 'S')
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700 border border-indigo-200/60">Sakit</span>
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200/70">Sakit</span>
                                     @else
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-rose-50 text-rose-700 border border-rose-200/60">Alpa</span>
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold bg-rose-50 text-rose-700 border border-rose-200/70">Alpa</span>
                                     @endif
                                 </td>
-                                <td class="py-3.5 px-4 text-slate-500 capitalize">
+                                <td class="py-3 px-4 text-slate-500 capitalize">
                                     {{ $absensi->metode ?? 'Sistem' }}
                                 </td>
-                                <td class="py-3.5 px-6 text-right">
-                                    <a href="/admin/koreksi" class="text-slate-400 hover:text-[#0b1e36] font-medium inline-flex items-center gap-1 text-xs">
+                                <td class="py-3 px-5 text-right">
+                                    <a href="/admin/koreksi" class="text-slate-500 hover:text-[#0b1e36] font-semibold inline-flex items-center gap-1 text-xs">
                                         <i data-lucide="edit-2" class="w-3.5 h-3.5"></i> Edit
                                     </a>
                                 </td>

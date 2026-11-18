@@ -22,6 +22,31 @@ class QRController extends Controller
         $jadwals = Jadwal::with(['kelas', 'mapel'])
                     ->where('id_guru', Auth::id())
                     ->get();
+
+        $activeQr = QRCode::where('guru_id', Auth::id())
+                    ->where('status', 'aktif')
+                    ->where('waktu_expired', '>', now())
+                    ->with('jadwal.mapel', 'jadwal.kelas')
+                    ->latest()
+                    ->first();
+
+        if ($activeQr && $activeQr->jadwal) {
+            $qrImage = base64_encode(
+                QrCodeFacade::format('svg')
+                    ->size(450)
+                    ->margin(2)
+                    ->errorCorrection('M')
+                    ->generate($activeQr->kode_qr)
+            );
+
+            return view('guru.qr', [
+                'jadwals' => $jadwals,
+                'qrImage' => $qrImage,
+                'qrToken' => $activeQr->kode_qr,
+                'jadwalAktif' => $activeQr->jadwal,
+                'qrId' => $activeQr->id
+            ]);
+        }
         
         return view('guru.qr', compact('jadwals'));
     }
@@ -33,7 +58,15 @@ class QRController extends Controller
     {
         $jadwalAktif = Jadwal::with(['mapel', 'kelas'])->findOrFail($jadwalId);
         
-        $token = Str::random(40);
+        // Tutup semua sesi aktif sebelumnya milik guru ini agar tidak menumpuk
+        QRCode::where('guru_id', Auth::id())
+            ->where('status', 'aktif')
+            ->update([
+                'status' => 'expired',
+                'waktu_expired' => now()
+            ]);
+
+        $token = Str::random(32);
         $expired = Carbon::now()->addMinutes(15);
 
         // Simpan data QR ke database
@@ -46,20 +79,26 @@ class QRController extends Controller
             'status'        => 'aktif'
         ]);
 
+        // Error correction 'M' (15%) + margin(2) membuat grid QR jauh lebih renggang, besar, dan mudah dibaca kamera
         $qrImage = base64_encode(
-            QrCodeFacade::format('svg')->size(400)->errorCorrection('H')->generate($token)
+            QrCodeFacade::format('svg')
+                ->size(450)
+                ->margin(2)
+                ->errorCorrection('M')
+                ->generate($token)
         );
 
         $jadwals = Jadwal::with(['kelas', 'mapel'])
                     ->where('id_guru', Auth::id())
                     ->get();
 
-        // Kirim 'qrId' ke view agar tombol STOP tahu data mana yang mau ditutup
+        // Kirim 'qrId' dan 'qrToken' ke view
         return view('guru.qr', [
             'qrImage' => $qrImage,
+            'qrToken' => $token,
             'jadwalAktif' => $jadwalAktif,
             'jadwals' => $jadwals,
-            'qrId' => $qrRecord->id // <--- Tambahan ini penting
+            'qrId' => $qrRecord->id
         ]);
     }
 
@@ -69,14 +108,21 @@ class QRController extends Controller
      */
     public function stopSession($id)
     {
-        // Cari data QR berdasarkan ID-nya
-        $qr = QRCode::findOrFail($id);
+        // Tutup semua sesi aktif milik guru yang sedang login
+        QRCode::where('guru_id', Auth::id())
+            ->where('status', 'aktif')
+            ->update([
+                'status' => 'expired',
+                'waktu_expired' => now()
+            ]);
 
-        // Update status jadi expired dan waktu expired jadi sekarang
-        $qr->update([
-            'status' => 'expired',
-            'waktu_expired' => now()
-        ]);
+        // Pastikan record spesifik berdasarkan ID juga berstatus expired jika ada
+        if ($id) {
+            QRCode::where('id', $id)->update([
+                'status' => 'expired',
+                'waktu_expired' => now()
+            ]);
+        }
         
         return redirect()->route('guru.qr')->with('success', 'Sesi absensi telah berhasil ditutup secara manual.');
     }

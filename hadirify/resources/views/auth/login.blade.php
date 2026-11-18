@@ -80,11 +80,7 @@
                 </div>
             </div>
 
-            <!-- Footer Panel Kiri -->
-            <div class="relative z-10 pt-4 border-t border-white/10 text-xs text-slate-400 font-medium flex items-center justify-between">
-                <span>Versi 2.0 • SMA Mutu</span>
-                <span class="text-sky-300/80">Yogyakarta, Indonesia</span>
-            </div>
+            
         </div>
 
         <!-- ================= SISI KANAN: FORM PANEL (100% Mobile, 50% Desktop) ================= -->
@@ -135,7 +131,7 @@
                 @endif
 
                 <!-- Form Login -->
-                <form method="POST" action="{{ route('login.proses') }}" class="space-y-4">
+                <form method="POST" action="{{ route('login.proses', [], false) }}" class="space-y-4">
                     @csrf 
 
                     <!-- Input ID Pengguna / Email -->
@@ -149,35 +145,35 @@
                                    class="w-full h-12 pl-11 pr-4 text-sm bg-slate-50/80 border border-slate-200 rounded-xl text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-[#0b1e36] focus:ring-4 focus:ring-blue-500/10 hover:border-slate-300 outline-none transition-all duration-200" 
                                    placeholder="Email, NISN, atau NUPTK" 
                                    type="text" required autofocus/>
-                            <i data-lucide="user" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-slate-400 group-focus-within:text-[#0b1e36] transition-colors"></i>
+                            <i data-lucide="user" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-slate-400 group-focus-within:text-[#0b1e36] transition-colors"></i>
                         </div>
                     </div>
 
                     <!-- Input Password dengan Toggle Mata (Alpine.js) -->
                     <div class="space-y-1.5" x-data="{ showPassword: false }">
-                        <div class="flex justify-between items-center ml-0.5">
-                            <label class="text-xs font-bold text-slate-700" for="password">Kata Sandi</label>
-                            <a class="text-xs font-semibold text-blue-600 hover:text-blue-700 hover:underline transition-colors" href="#">Lupa sandi?</a>
-                        </div>
+                        <label class="block text-xs font-bold text-slate-700 ml-0.5" for="password">Kata Sandi</label>
                         <div class="relative group">
                             <input :type="showPassword ? 'text' : 'password'" 
                                    name="password" id="password" 
                                    class="w-full h-12 pl-11 pr-11 text-sm bg-slate-50/80 border border-slate-200 rounded-xl text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-[#0b1e36] focus:ring-4 focus:ring-blue-500/10 hover:border-slate-300 outline-none transition-all duration-200" 
                                    placeholder="••••••••" 
                                    required/>
-                            <i data-lucide="lock" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-slate-400 group-focus-within:text-[#0b1e36] transition-colors"></i>
+                            <i data-lucide="lock" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-slate-400 group-focus-within:text-[#0b1e36] transition-colors"></i>
                             
                             <!-- Tombol Mata Interaktif -->
                             <button type="button" @click="showPassword = !showPassword" 
                                     class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 focus:outline-none cursor-pointer p-1 rounded-md transition-colors"
                                     title="Tampilkan / Sembunyikan Sandi">
                                 <span x-show="!showPassword">
-                                    <i data-lucide="eye" class="w-4.5 h-4.5"></i>
+                                    <i data-lucide="eye" class="w-[18px] h-[18px]"></i>
                                 </span>
                                 <span x-show="showPassword" style="display: none;">
-                                    <i data-lucide="eye-off" class="w-4.5 h-4.5"></i>
+                                    <i data-lucide="eye-off" class="w-[18px] h-[18px]"></i>
                                 </span>
                             </button>
+                        </div>
+                        <div class="flex justify-end pt-1">
+                            <a class="text-xs font-semibold text-blue-600 hover:text-blue-700 hover:underline transition-colors" href="{{ Route::has('password.request') ? route('password.request') : '#' }}">Lupa sandi?</a>
                         </div>
                     </div>
 
@@ -185,7 +181,7 @@
                     <div class="pt-2">
                         <button type="submit" 
                                 class="w-full h-12 bg-[#0b1e36] hover:bg-[#112a4a] text-white text-xs font-bold uppercase tracking-wider rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-[#0b1e36]/20 transition-all duration-200 active:scale-[0.98] cursor-pointer">
-                            <span>Masuk ke Sistem</span>
+                            <span>Masuk</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 stroke-[2.5]"></i>
                         </button>
                     </div>
@@ -195,7 +191,7 @@
                 <!-- Footer Panel Form -->
                 <div class="mt-auto border-t border-slate-100">
                     <p class="text-[11px] text-slate-400 text-center pb-6 pt-4">
-                        &copy; 2026 SMA Muhammadiyah 7 Yogyakarta
+                        &copy; 2026 TI UMY
                     </p>
                 </div>
 
@@ -207,6 +203,13 @@
     <script>
         // Inisialisasi ikon Lucide
         lucide.createIcons();
+
+        // Mencegah error 419 Page Expired saat halaman dipulihkan dari cache browser HP (BFcache)
+        window.addEventListener('pageshow', function (event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
     </script>
 </body>
 </html>

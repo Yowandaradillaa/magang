@@ -201,18 +201,27 @@ class AdminJadwalController extends Controller
     public function koreksiIndex(Request $request) 
     {
         $search = $request->input('search');
+        $periode = $request->input('periode', 'semua');
 
-        $absensis = Absensi::with(['siswa', 'jadwal.mapel', 'siswa.kelas'])
+        $query = Absensi::with(['siswa', 'jadwal.mapel', 'siswa.kelas'])
             ->when($search, function ($query, $search) {
                 return $query->whereHas('siswa', function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%")
                       ->orWhere('nisn', 'like', "%{$search}%");
                 });
-            })
-            ->latest()
-            ->get();
+            });
 
-        return view('admin.koreksi', compact('absensis'));
+        if ($periode === 'hari_ini') {
+            $query->whereDate('tanggal', now()->toDateString());
+        } elseif ($periode === 'minggu_ini') {
+            $query->whereBetween('tanggal', [now()->startOfWeek()->toDateString(), now()->endOfWeek()->toDateString()]);
+        } elseif ($periode === 'bulan_ini') {
+            $query->whereMonth('tanggal', now()->month)->whereYear('tanggal', now()->year);
+        }
+
+        $absensis = $query->latest('tanggal')->latest('id')->paginate(10)->withQueryString();
+
+        return view('admin.koreksi', compact('absensis', 'periode'));
     }
 
     // Koreksi Absensi Siswa oleh Admin

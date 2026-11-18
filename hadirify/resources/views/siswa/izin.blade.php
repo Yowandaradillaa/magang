@@ -7,7 +7,7 @@
             isSuccess: @json((bool) session('success')) 
          }" 
          x-init="if(showModal) setTimeout(() => showModal = false, 4000)"
-         class="animate-in fade-in duration-700 flex flex-col space-y-4 px-2 h-[calc(100vh-140px)] max-w-3xl mx-auto">
+         class="animate-in fade-in duration-700 flex flex-col space-y-4 px-1 lg:h-[calc(100vh-108px)] max-w-3xl mx-auto">
 
         <!-- ================= SECTION 1: POPUP NOTIFIKASI (MODERN) ================= -->
         <template x-teleport="body">
@@ -41,21 +41,21 @@
             </div>
         </template>
 
-        <!-- ================= SECTION 2: HEADER (FIXED) ================= -->
-        <div class="flex-none bg-white border border-slate-200/50 rounded-xl shadow-sm">
-            <div class="p-5 sm:px-6 sm:py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div class="flex items-center gap-4">
-                    <div class="flex-shrink-0 w-10 h-10 bg-amber-500 flex items-center justify-center rounded-lg shadow-lg shadow-amber-100">
+        <!-- ================= SECTION 2: HEADER (FIXED - KOTAK ELEGAN) ================= -->
+        <div class="flex-none bg-white border border-slate-200/70 rounded-lg shadow-2xs">
+            <div class="p-4 sm:px-6 sm:py-3.5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="flex items-center gap-3.5">
+                    <div class="flex-shrink-0 w-10 h-10 bg-amber-500 flex items-center justify-center rounded-md shadow-sm">
                         <i data-lucide="file-signature" class="w-5 h-5 text-white"></i>
                     </div>
                     <div class="space-y-0.5">
-                        <h2 class="text-lg font-extrabold text-[#0b1e36] tracking-tight leading-none">Formulir Izin</h2>
-                        <p class="text-[11px] text-slate-500 font-medium italic">Silakan lengkapi alasan & bukti sah</p>
+                        <h2 class="text-base font-extrabold text-[#0b1e36] tracking-tight leading-none">Formulir Izin</h2>
+                        <p class="text-[11px] text-slate-500 font-medium">Silakan lengkapi alasan & bukti sah</p>
                     </div>
                 </div>
 
                 <!-- Clock & Date -->
-                <div class="flex items-center gap-3 px-3 py-1.5 bg-slate-50/80 rounded-lg border border-slate-100">
+                <div class="flex items-center gap-3 px-3 py-1.5 bg-slate-50/80 rounded-md border border-slate-200/70">
                     <div class="text-right">
                         <p id="realtime-clock" class="text-xs font-bold text-[#0b1e36] font-mono leading-none">{{ date('H:i:s') }}</p>
                     </div>
@@ -65,11 +65,9 @@
             </div>
         </div>
 
-        <!-- ================= SECTION 3: FORM CONTENT (SCROLLABLE) ================= -->
+        <!-- ================= SECTION 3: FORM CONTENT (SCROLLABLE - KOTAK TEGAS) ================= -->
         <div class="flex-1 min-h-0 overflow-y-auto no-scrollbar pb-10">
-            <div class="bg-white rounded-xl border border-slate-200/60 shadow-sm relative overflow-hidden">
-                <!-- Left Accent Line -->
-                <div class="absolute left-0 top-0 bottom-0 w-[3px] bg-amber-500"></div>
+            <div class="bg-white rounded-lg border border-slate-200/70 shadow-xs">
                 
                 <form method="POST" action="{{ route('siswa.izin.ajukan') }}" enctype="multipart/form-data" class="p-6 md:p-8 space-y-6"
                     x-data="{ submitting: false }"
